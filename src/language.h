@@ -2,10 +2,12 @@
 
 
 #include <QTextStream>
+#include <QList>
+#include <QSharedPointer>
 
-class Language {
+class Context {
 public:
-    Language(QString name);
+    Context(QString name);
 
     void printDescription(QTextStream& out);
 
@@ -13,8 +15,16 @@ protected:
     QString name;
 };
 
+typedef QSharedPointer<Context> ContextPtr;
 
-class Context {
+
+class Language {
+public:
+    Language(QString name, QList<ContextPtr> contexts);
+
+    void printDescription(QTextStream& out);
+
 protected:
-    std::string name;
+    QString name;
+    QList<ContextPtr> contexts;
 };

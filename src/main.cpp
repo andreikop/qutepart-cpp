@@ -31,6 +31,10 @@ int main(int argc, char** argv) {
     QXmlStreamReader xmlReader(&syntaxFile);
 
     Language* language = loadLanguage(xmlReader);
+    if (language == nullptr) {
+        qCritical() << "Failed to parse XML file. " << xmlReader.errorString();
+    }
+
     QTextStream out(stdout);
     language->printDescription(out);
 }

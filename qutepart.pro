@@ -1,5 +1,7 @@
 TARGET = editor
 
+CONFIG += debug
+
 CONFIG += qt
 QT += widgets
 
