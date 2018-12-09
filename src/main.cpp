@@ -19,7 +19,7 @@ int runEditor(int argc, char** argv) {
     return app.exec();
 }
 
-int main(int argc, char** argv) {
+int main(int /*argc*/, char** /*argv*/) {
     // runEditor(argc, argv);
 
     QFile syntaxFile("../syntax/rtf.xml");
