@@ -5,17 +5,43 @@
 #include <QList>
 #include <QSharedPointer>
 
+
+class Context;
+typedef QSharedPointer<Context> ContextPtr;
+class ContextSwitcher;
+typedef QSharedPointer<ContextSwitcher> ContextSwitcherPtr;
+
+
 class Context {
 public:
-    Context(QString name);
+    Context(QString name,
+            ContextSwitcherPtr lineEndContext,
+            ContextSwitcherPtr lineBeginContext,
+            ContextSwitcherPtr fallthroughContext,
+            bool dynamic);
 
     void printDescription(QTextStream& out);
 
 protected:
     QString name;
+    ContextSwitcherPtr lineEndContext;
+    ContextSwitcherPtr lineBeginContext;
+    ContextSwitcherPtr fallthroughContext;
+    bool dynamic;
 };
 
-typedef QSharedPointer<Context> ContextPtr;
+
+class ContextSwitcher {
+public:
+    ContextSwitcher(int popsCount, ContextPtr contextToSwitch, const QString& contextOperation);
+    QString toString();
+
+protected:
+    int popsCount;
+    ContextPtr contextToSwitch;
+    QString contextOperation;
+
+};
 
 
 class Language {

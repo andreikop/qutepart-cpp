@@ -33,6 +33,32 @@ bool parseBoolAttribute(const QString& value, QString& error) {
 }
 
 
+ContextSwitcherPtr makeContextSwitcher(QString contextOperation/*, parser, formatConverterFunction*/) {
+    int popsCount = 0;
+    ContextPtr contextToSwitch;
+
+    QString rest = contextOperation;
+    while(rest.startsWith("#pop")){
+        popsCount += 1;
+        rest = rest.remove(0, 4); // 4 is length of '#pop'
+    }
+
+    if(rest == "#stay"){
+        if (popsCount > 0){
+            qWarning() << QString("Invalid context operation '%1'").arg(contextOperation);
+        }
+    } else {
+        // contextToSwitch = _getContext(rest, parser, formatConverterFunction, None)
+    }
+
+    if (popsCount > 0 || ( ! contextToSwitch.isNull())){
+        return ContextSwitcherPtr(new ContextSwitcher(popsCount, contextToSwitch, contextOperation));
+    } else {
+        return ContextSwitcherPtr();
+    }
+}
+
+
 Context* loadContext(QXmlStreamReader& xmlReader) {
     QString error;
 
@@ -58,9 +84,9 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
     //     format = formatConverterFunction(format)
 
     QString lineEndContextText = getAttribute(attrs, "lineEndContext", "#stay");
-    // lineEndContext = _makeContextSwitcher(lineEndContextText,  context.parser, formatConverterFunction)
+    ContextSwitcherPtr lineEndContext = makeContextSwitcher(lineEndContextText/*,  context.parser, formatConverterFunction*/);
     QString lineBeginContextText = getAttribute(attrs, "lineEndContext", "#stay");
-    // lineBeginContext = _makeContextSwitcher(lineBeginContextText, context.parser, formatConverterFunction)
+    ContextSwitcherPtr lineBeginContext = makeContextSwitcher(lineBeginContextText/*, context.parser, formatConverterFunction*/);
 
     bool fallthrough = parseBoolAttribute(getAttribute(attrs, "fallthrough", "false"), error);
 
@@ -68,11 +94,11 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
         xmlReader.raiseError(QString("Failed to parse 'fallthrough': %1").arg(error));
     }
 
+    ContextSwitcherPtr fallthroughContext;
+
     if(fallthrough) {
         QString fallthroughContextText = safeGetRequiredAttribute(attrs, "fallthroughContext", "#stay");
-        // fallthroughContext = _makeContextSwitcher(fallthroughContextText, context.parser, formatConverterFunction)
-    } else {
-        // fallthroughContext = None
+        fallthroughContext = makeContextSwitcher(fallthroughContextText/*, context.parser, formatConverterFunction*/);
     }
 
     bool dynamic = parseBoolAttribute(getAttribute(attrs, "dynamic", "false"), error);
@@ -86,7 +112,8 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
 
     xmlReader.skipCurrentElement();
 
-    return new Context(name.toString());
+    // TODO add attribute, format, textType
+    return new Context(name.toString(), lineEndContext, lineBeginContext, fallthroughContext, dynamic);
 }
 
 Language* loadLanguage(QXmlStreamReader& xmlReader) {
@@ -114,9 +141,16 @@ Language* loadLanguage(QXmlStreamReader& xmlReader) {
         return nullptr;
     }
 
-    if ( ! xmlReader.readNextStartElement() ||
-         xmlReader.name() != "contexts") {
-        xmlReader.raiseError("<contexts> tag not found");
+    while (xmlReader.readNextStartElement()) {
+        if (xmlReader.name() == "list") {
+            xmlReader.skipCurrentElement(); // TODO load list
+        } else {
+            break;
+        }
+    }
+
+    if (xmlReader.name() != "contexts") {
+        xmlReader.raiseError(QString("<contexts> tag not found. Found <%1>").arg(xmlReader.name().toString()));
         return nullptr;
     }
 
