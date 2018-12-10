@@ -36,7 +36,7 @@ Context::Context(const QString& name,
 
 
 void Context::printDescription(QTextStream& out) {
-    out << "\t Context " << this->name << "\n";
+    out << "\tContext " << this->name << "\n";
     out << "\t\tattribute: " << attribute << "\n";
     if( ! lineEndContext.isNull()) {
         out << "\t\tlineEndContext: " << lineEndContext.toString() << "\n";

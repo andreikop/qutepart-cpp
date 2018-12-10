@@ -8,12 +8,11 @@ QString getAttribute(QXmlStreamAttributes attrs, QString name, QString defaultVa
         return attrs.value(name).toString();
     } else {
         if (required) {
-            qWarning() << "Required attribute '" << name << "' is not set";
+            qWarning() << "Required attribute " << name << " is not set";
         }
         return defaultValue;
     }
 }
-
 
 QString safeGetRequiredAttribute(QXmlStreamAttributes attrs, QString name, QString defaultValue) {
     return getAttribute(attrs, name, defaultValue, true);
@@ -128,12 +127,20 @@ Language* loadLanguage(QXmlStreamReader& xmlReader) {
     }
 
     QXmlStreamAttributes attrs = xmlReader.attributes();
+
     if ( ! attrs.hasAttribute("name")) {
         xmlReader.raiseError("Not found top level <language> tag");
         return nullptr;
     }
 
-    QStringRef name = attrs.value("name");
+    QString name = safeGetRequiredAttribute(attrs, "name", "<not set>");
+    QStringList extensions = safeGetRequiredAttribute(attrs, "extensions", QString::null).split(';', QString::SkipEmptyParts    );
+    QStringList mimetypes = safeGetRequiredAttribute(attrs, "mimetypes", QString::null).split(';', QString::SkipEmptyParts);
+    qDebug() << mimetypes.length();
+    int priority = getAttribute(attrs, "priority", QString::null).toInt();  // TODO check bad int
+    QString error;
+    bool hidden = parseBoolAttribute(getAttribute(attrs, "hidden", "false"), error);
+    QString indenter = getAttribute(attrs, "indenter", QString::null);
 
     if ( ! xmlReader.readNextStartElement() ||
          xmlReader.name() != "highlighting") {
@@ -168,6 +175,7 @@ Language* loadLanguage(QXmlStreamReader& xmlReader) {
         contexts.append(ContextPtr(ctx));
     }
 
-    Language* language = new Language(name.toString(), contexts);
+    Language* language = new Language(name, extensions, mimetypes,
+                                      priority, hidden, indenter, contexts);
     return language;
 }

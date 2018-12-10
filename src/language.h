@@ -10,11 +10,23 @@
 
 class Language {
 public:
-    Language(QString name, QList<ContextPtr> contexts);
+    Language(const QString& name,
+             const QStringList& extensions,
+             const QStringList& mimetypes,
+             int priority,
+             bool hidden,
+             const QString& indenter,
+             const QList<ContextPtr>& contexts);
 
     void printDescription(QTextStream& out);
 
 protected:
     QString name;
+    QStringList extensions;
+    QStringList mimetypes;
+    int priority;
+    bool hidden;
+    QString indenter;
+
     QList<ContextPtr> contexts;
 };
