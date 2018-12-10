@@ -33,7 +33,7 @@ bool parseBoolAttribute(const QString& value, QString& error) {
 }
 
 
-ContextSwitcherPtr makeContextSwitcher(QString contextOperation/*, parser, formatConverterFunction*/) {
+ContextSwitcher makeContextSwitcher(QString contextOperation/*, parser, formatConverterFunction*/) {
     int popsCount = 0;
     ContextPtr contextToSwitch;
 
@@ -52,9 +52,9 @@ ContextSwitcherPtr makeContextSwitcher(QString contextOperation/*, parser, forma
     }
 
     if (popsCount > 0 || ( ! contextToSwitch.isNull())){
-        return ContextSwitcherPtr(new ContextSwitcher(popsCount, contextToSwitch, contextOperation));
+        return ContextSwitcher(popsCount, contextToSwitch, contextOperation);
     } else {
-        return ContextSwitcherPtr();
+        return ContextSwitcher();
     }
 }
 
@@ -84,9 +84,9 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
     //     format = formatConverterFunction(format)
 
     QString lineEndContextText = getAttribute(attrs, "lineEndContext", "#stay");
-    ContextSwitcherPtr lineEndContext = makeContextSwitcher(lineEndContextText/*,  context.parser, formatConverterFunction*/);
+    ContextSwitcher lineEndContext = makeContextSwitcher(lineEndContextText/*,  context.parser, formatConverterFunction*/);
     QString lineBeginContextText = getAttribute(attrs, "lineEndContext", "#stay");
-    ContextSwitcherPtr lineBeginContext = makeContextSwitcher(lineBeginContextText/*, context.parser, formatConverterFunction*/);
+    ContextSwitcher lineBeginContext = makeContextSwitcher(lineBeginContextText/*, context.parser, formatConverterFunction*/);
 
     bool fallthrough = parseBoolAttribute(getAttribute(attrs, "fallthrough", "false"), error);
 
@@ -94,7 +94,7 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
         xmlReader.raiseError(QString("Failed to parse 'fallthrough': %1").arg(error));
     }
 
-    ContextSwitcherPtr fallthroughContext;
+    ContextSwitcher fallthroughContext;
 
     if(fallthrough) {
         QString fallthroughContextText = safeGetRequiredAttribute(attrs, "fallthroughContext", "#stay");

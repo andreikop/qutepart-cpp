@@ -9,38 +9,40 @@
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
 class ContextSwitcher;
-typedef QSharedPointer<ContextSwitcher> ContextSwitcherPtr;
-
-
-class Context {
-public:
-    Context(QString name,
-            ContextSwitcherPtr lineEndContext,
-            ContextSwitcherPtr lineBeginContext,
-            ContextSwitcherPtr fallthroughContext,
-            bool dynamic);
-
-    void printDescription(QTextStream& out);
-
-protected:
-    QString name;
-    ContextSwitcherPtr lineEndContext;
-    ContextSwitcherPtr lineBeginContext;
-    ContextSwitcherPtr fallthroughContext;
-    bool dynamic;
-};
 
 
 class ContextSwitcher {
 public:
+    ContextSwitcher();
     ContextSwitcher(int popsCount, ContextPtr contextToSwitch, const QString& contextOperation);
-    QString toString();
+
+    QString toString() const;
+    bool isNull() const;
 
 protected:
     int popsCount;
     ContextPtr contextToSwitch;
     QString contextOperation;
 
+};
+
+
+class Context {
+public:
+    Context(QString name,
+            ContextSwitcher lineEndContext,
+            ContextSwitcher lineBeginContext,
+            ContextSwitcher fallthroughContext,
+            bool dynamic);
+
+    void printDescription(QTextStream& out);
+
+protected:
+    QString name;
+    ContextSwitcher lineEndContext;
+    ContextSwitcher lineBeginContext;
+    ContextSwitcher fallthroughContext;
+    bool dynamic;
 };
 
 
