@@ -7,14 +7,15 @@ CONFIG += qt
 QT += widgets
 
 SOURCES = \
+    src/context.cpp \
+    src/language.cpp \
+    src/loader.cpp \
     src/main.cpp \
     src/qutepart.cpp \
-    src/syntax_highlighter.cpp \
-    src/language.cpp \
-    src/loader.cpp
+    src/syntax_highlighter.cpp
 
 HEADERS = \
-    src/qutepart.h \
-    src/syntax_highlighter.h \
+    src/context.h \
     src/language.h \
-    src/language.cpp
+    src/qutepart.h \
+    src/syntax_highlighter.h
