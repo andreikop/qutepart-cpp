@@ -108,12 +108,12 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
 
     // context.setValues(attribute, format, lineEndContext, lineBeginContext, fallthroughContext, dynamic, textType)
 
-    QStringRef name = attrs.value("name");
+    QString name = attrs.value("name").toString();
 
     xmlReader.skipCurrentElement();
 
-    // TODO add attribute, format, textType
-    return new Context(name.toString(), lineEndContext, lineBeginContext, fallthroughContext, dynamic);
+    // TODO add format, textType
+    return new Context(name, attribute, lineEndContext, lineBeginContext, fallthroughContext, dynamic);
 }
 
 Language* loadLanguage(QXmlStreamReader& xmlReader) {

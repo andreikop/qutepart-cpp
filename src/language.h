@@ -29,16 +29,18 @@ protected:
 
 class Context {
 public:
-    Context(QString name,
-            ContextSwitcher lineEndContext,
-            ContextSwitcher lineBeginContext,
-            ContextSwitcher fallthroughContext,
+    Context(const QString& name,
+            const QString& attribute,
+            const ContextSwitcher& lineEndContext,
+            const ContextSwitcher& lineBeginContext,
+            const ContextSwitcher& fallthroughContext,
             bool dynamic);
 
     void printDescription(QTextStream& out);
 
 protected:
     QString name;
+    QString attribute;
     ContextSwitcher lineEndContext;
     ContextSwitcher lineBeginContext;
     ContextSwitcher fallthroughContext;
