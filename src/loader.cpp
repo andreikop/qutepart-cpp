@@ -3,19 +3,24 @@
 #include <QDebug>
 
 
-QString getAttribute(QXmlStreamAttributes attrs, QString name, QString defaultValue, bool required=false) {
+QString getAttribute(QXmlStreamAttributes attrs, QString name, QString defaultValue, bool warnIfNotSet=false) {
     if (attrs.hasAttribute(name)) {
         return attrs.value(name).toString();
     } else {
-        if (required) {
+        if (warnIfNotSet) {
             qWarning() << "Required attribute " << name << " is not set";
         }
         return defaultValue;
     }
 }
 
-QString safeGetRequiredAttribute(QXmlStreamAttributes attrs, QString name, QString defaultValue) {
-    return getAttribute(attrs, name, defaultValue, true);
+QString getRequiredAttribute(QXmlStreamAttributes attrs, QString name, QString& error) {
+    if (attrs.hasAttribute(name)) {
+        return attrs.value(name).toString();
+    } else {
+        error = QString("Required attribute %1 is not set").arg(name);
+        return QString::null;
+    }
 }
 
 bool parseBoolAttribute(const QString& value, QString& error) {
@@ -58,16 +63,18 @@ ContextSwitcher makeContextSwitcher(QString contextOperation/*, parser, formatCo
 }
 
 
-Context* loadContext(QXmlStreamReader& xmlReader) {
-    QString error;
-
+Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
-    if ( ! attrs.hasAttribute("name")) {
-        xmlReader.raiseError("Not found top level <language> tag");
+
+    QString name = getRequiredAttribute(attrs, "name", error);
+    if ( ! error.isNull()) {
         return nullptr;
     }
 
-    QString attribute = safeGetRequiredAttribute(attrs, "attribute", "<not set>").toLower();
+    QString attribute = getRequiredAttribute(attrs, "attribute", error).toLower();
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
 
     // if attribute != '<not set>':  // there are no attributes for internal contexts, used by rules. See perl.xml
     //     try:
@@ -88,26 +95,22 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
     ContextSwitcher lineBeginContext = makeContextSwitcher(lineBeginContextText/*, context.parser, formatConverterFunction*/);
 
     bool fallthrough = parseBoolAttribute(getAttribute(attrs, "fallthrough", "false"), error);
-
     if ( ! error.isNull()) {
-        xmlReader.raiseError(QString("Failed to parse 'fallthrough': %1").arg(error));
+        error = QString("Failed to parse 'fallthrough': %1").arg(error);
+        return nullptr;
     }
 
     ContextSwitcher fallthroughContext;
 
     if(fallthrough) {
-        QString fallthroughContextText = safeGetRequiredAttribute(attrs, "fallthroughContext", "#stay");
+        QString fallthroughContextText = getAttribute(attrs, "fallthroughContext", "#stay", true);
         fallthroughContext = makeContextSwitcher(fallthroughContextText/*, context.parser, formatConverterFunction*/);
     }
 
     bool dynamic = parseBoolAttribute(getAttribute(attrs, "dynamic", "false"), error);
     if ( ! error.isNull()) {
-        xmlReader.raiseError(QString("Failed to parse 'dynamic': %1").arg(error));
+        error = QString("Failed to parse 'dynamic': %1").arg(error);
     }
-
-    // context.setValues(attribute, format, lineEndContext, lineBeginContext, fallthroughContext, dynamic, textType)
-
-    QString name = attrs.value("name").toString();
 
     xmlReader.skipCurrentElement();
 
@@ -115,36 +118,56 @@ Context* loadContext(QXmlStreamReader& xmlReader) {
     return new Context(name, attribute, lineEndContext, lineBeginContext, fallthroughContext, dynamic);
 }
 
-Language* loadLanguage(QXmlStreamReader& xmlReader) {
+Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
-        xmlReader.raiseError("Failed to read start element");
+        error = "Failed to read start element";
         return nullptr;
     }
 
     if (xmlReader.name() != "language") {
-        xmlReader.raiseError("'name' attribute not found in <language>");
+        error = "'name' attribute not found in <language>";
         return nullptr;
     }
 
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
-    if ( ! attrs.hasAttribute("name")) {
-        xmlReader.raiseError("Not found top level <language> tag");
+    QString name = getRequiredAttribute(attrs, "name", error);
+    if ( ! error.isNull()) {
         return nullptr;
     }
 
-    QString name = safeGetRequiredAttribute(attrs, "name", "<not set>");
-    QStringList extensions = safeGetRequiredAttribute(attrs, "extensions", QString::null).split(';', QString::SkipEmptyParts    );
-    QStringList mimetypes = safeGetRequiredAttribute(attrs, "mimetypes", QString::null).split(';', QString::SkipEmptyParts);
-    qDebug() << mimetypes.length();
-    int priority = getAttribute(attrs, "priority", QString::null).toInt();  // TODO check bad int
-    QString error;
-    bool hidden = parseBoolAttribute(getAttribute(attrs, "hidden", "false"), error);
+    QString extensionsStr = getRequiredAttribute(attrs, "extensions", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    QString mimetypesStr = getAttribute(attrs, "mimetypes", QString::null);
+    QString priorityStr = getAttribute(attrs, "priority", QString::null);
+    QString hiddenStr = getAttribute(attrs, "hidden", "false");
     QString indenter = getAttribute(attrs, "indenter", QString::null);
+
+    int priority = 0;
+    if ( ! priorityStr.isNull()) {
+        bool intOk = true;
+        priorityStr.toInt(&intOk);
+        if ( ! intOk) {
+            error = QString("Bad integer priority value '%1'").arg(priorityStr);
+            return nullptr;
+        }
+    }
+
+    bool hidden = parseBoolAttribute(hiddenStr, error);
+    if ( ! error.isNull()) {
+        error = QString("Failed to parse 'hidden' attribute: %1").arg(error);
+        return nullptr;
+    }
+
+    QStringList extensions = extensionsStr.split(';', QString::SkipEmptyParts);
+    QStringList mimetypes = extensionsStr.split(';', QString::SkipEmptyParts);
 
     if ( ! xmlReader.readNextStartElement() ||
          xmlReader.name() != "highlighting") {
-        xmlReader.raiseError("<highlighting> tag not found");
+        error = "<highlighting> tag not found";
         return nullptr;
     }
 
@@ -157,18 +180,18 @@ Language* loadLanguage(QXmlStreamReader& xmlReader) {
     }
 
     if (xmlReader.name() != "contexts") {
-        xmlReader.raiseError(QString("<contexts> tag not found. Found <%1>").arg(xmlReader.name().toString()));
+        error = QString("<contexts> tag not found. Found <%1>").arg(xmlReader.name().toString());
         return nullptr;
     }
 
     QList<ContextPtr> contexts;
     while (xmlReader.readNextStartElement()) {
         if (xmlReader.name() != "context") {
-            xmlReader.raiseError(QString("Not expected tag <%1>").arg(xmlReader.name().toString()));
+            error = QString("Not expected tag <%1>").arg(xmlReader.name().toString());
             return nullptr;
         }
 
-        Context* ctx = loadContext(xmlReader);
+        Context* ctx = loadContext(xmlReader, error);
         if (ctx == nullptr) {
             return nullptr;
         }
