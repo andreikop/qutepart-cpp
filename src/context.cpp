@@ -25,13 +25,15 @@ Context::Context(const QString& name,
                  const ContextSwitcher& lineEndContext,
                  const ContextSwitcher& lineBeginContext,
                  const ContextSwitcher& fallthroughContext,
-                 bool dynamic)
+                 bool dynamic,
+                 const QList<RulePtr>& rules)
   : name(name),
     attribute(attribute),
     lineEndContext(lineEndContext),
     lineBeginContext(lineBeginContext),
     fallthroughContext(fallthroughContext),
-    dynamic(dynamic)
+    dynamic(dynamic),
+    rules(rules)
 {}
 
 

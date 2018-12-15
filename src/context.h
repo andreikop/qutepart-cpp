@@ -8,6 +8,9 @@ class Context;
 typedef QSharedPointer<Context> ContextPtr;
 class ContextSwitcher;
 
+class AbstractRule;
+typedef QSharedPointer<AbstractRule> RulePtr;
+
 
 class ContextSwitcher {
 public:
@@ -32,7 +35,8 @@ public:
             const ContextSwitcher& lineEndContext,
             const ContextSwitcher& lineBeginContext,
             const ContextSwitcher& fallthroughContext,
-            bool dynamic);
+            bool dynamic,
+            const QList<RulePtr>& rules);
 
     void printDescription(QTextStream& out);
 
@@ -43,4 +47,5 @@ protected:
     ContextSwitcher lineBeginContext;
     ContextSwitcher fallthroughContext;
     bool dynamic;
+    QList<RulePtr> rules;
 };
