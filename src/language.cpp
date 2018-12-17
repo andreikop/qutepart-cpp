@@ -17,7 +17,7 @@ Language::Language(const QString& name,
     contexts(contexts)
 {}
 
-void Language::printDescription(QTextStream& out) {
+void Language::printDescription(QTextStream& out) const {
     out << "Language " << name << "\n";
     out << "\textensions: " << extensions.join(", ") << "\n";
     if ( ! mimetypes.isEmpty()) {

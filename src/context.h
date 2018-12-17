@@ -38,7 +38,7 @@ public:
             bool dynamic,
             const QList<RulePtr>& rules);
 
-    void printDescription(QTextStream& out);
+    void printDescription(QTextStream& out) const;
 
 protected:
     QString name;

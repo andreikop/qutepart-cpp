@@ -76,8 +76,7 @@ ContextSwitcher makeContextSwitcher(QString contextOperation/*, parser, formatCo
     }
 }
 
-AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
-    QXmlStreamAttributes attrs = xmlReader.attributes();
+AbstractRuleParams parseAbstractRuleParams(const QXmlStreamAttributes& attrs, QString& error) {
     QString attribute = getAttribute(attrs, "attribute");
 
     QString contextText = getAttribute(attrs, "context", "#stay");
@@ -86,19 +85,19 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     bool lookAhead = parseBoolAttribute(getAttribute(attrs, "lookAhead", "false"), error);
     if ( ! error.isNull()) {
         error = QString("Failed to parse 'lookAhead': %1").arg(error);
-        return nullptr;
+        return AbstractRuleParams();
     }
 
     bool firstNonSpace = parseBoolAttribute(getAttribute(attrs, "firstNonSpace", "false"), error);
     if ( ! error.isNull()) {
         error = QString("Failed to parse 'firstNonSpace': %1").arg(error);
-        return nullptr;
+        return AbstractRuleParams();
     }
 
     bool dynamic = parseBoolAttribute(getAttribute(attrs, "dynamic", "false"), error);
     if ( ! error.isNull()) {
         error = QString("Failed to parse 'dynamic': %1").arg(error);
-        return nullptr;
+        return AbstractRuleParams();
     }
 
     char textType = 0; // TODO
@@ -112,7 +111,7 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         column = parseIntAttribute(columnStr, error);
         if ( ! error.isNull()) {
             error = QString("Bad integer column value: %1").arg(error);
-            return nullptr;
+            return AbstractRuleParams();
         }
     }
 
@@ -134,30 +133,60 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         textType = None
 #endif
 
-    return new AbstractRule(/*parentContext,*/
-                            textType, attribute,
-                            context, lookAhead,
-                            firstNonSpace, column,
-                            dynamic);
+    return AbstractRuleParams {
+        textType, attribute,
+        context, lookAhead,
+        firstNonSpace, column,
+        dynamic};
+}
+
+KeywordRule* loadKeyword(const QXmlStreamAttributes& attrs, const AbstractRuleParams& params, QString& error) {
+    QString string = getRequiredAttribute(attrs, "String", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    return new KeywordRule(params, string);
+}
+
+AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
+    QXmlStreamAttributes attrs = xmlReader.attributes();
+
+    AbstractRuleParams params = parseAbstractRuleParams(attrs, error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    AbstractRule* result = nullptr;
+    if (xmlReader.name() == "keyword") {
+        result = loadKeyword(attrs, params, error);
+    } else {
+        result = new AbstractRule(/*parentContext,*/ params);
+    }
+
+    bool ret = xmlReader.readNextStartElement();
+    if (ret) {
+        // TODO proper nested tags reading here
+        // error = "Rule must not have nested tags";
+        // delete result;
+        // return nullptr;
+        xmlReader.skipCurrentElement();
+        xmlReader.readNextStartElement();
+    }
+
+    return result;
 }
 
 QList<RulePtr> loadRules(QXmlStreamReader& xmlReader, QString& error) {
     QList<RulePtr> rules;
 
     while (xmlReader.readNextStartElement()) {
-        if (xmlReader.name() != "rule") {
-            break;
-        }
-
         AbstractRule* rule = loadRule(xmlReader, error);
         if ( ! error.isNull()) {
-            if (rule != nullptr) {
-                delete rule;
-            }
-
             break;
         }
         rules.append(RulePtr(rule));
+
     }
 
     return rules;
@@ -214,7 +243,10 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
     }
 
     QList<RulePtr> rules = loadRules(xmlReader, error);
-    xmlReader.skipCurrentElement();
+    if ( ! error.isNull()) {
+        error = QString("Failed to parse context %1: %2").arg(name).arg(error);
+        return nullptr;
+    }
 
     // TODO add format, textType
     return new Context(name, attribute, lineEndContext, lineBeginContext, fallthroughContext, dynamic, rules);

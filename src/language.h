@@ -18,7 +18,7 @@ public:
              const QString& indenter,
              const QList<ContextPtr>& contexts);
 
-    void printDescription(QTextStream& out);
+    void printDescription(QTextStream& out) const;
 
 protected:
     QString name;

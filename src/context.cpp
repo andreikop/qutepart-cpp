@@ -1,4 +1,5 @@
 #include "context.h"
+#include "rules.h"
 
 
 ContextSwitcher::ContextSwitcher()
@@ -37,7 +38,7 @@ Context::Context(const QString& name,
 {}
 
 
-void Context::printDescription(QTextStream& out) {
+void Context::printDescription(QTextStream& out) const {
     out << "\tContext " << this->name << "\n";
     out << "\t\tattribute: " << attribute << "\n";
     if( ! lineEndContext.isNull()) {
@@ -51,5 +52,9 @@ void Context::printDescription(QTextStream& out) {
     }
     if(dynamic) {
         out << "\t\tdynamic\n";
+    }
+
+    foreach(RulePtr rule, rules) {
+        rule->printDescription(out);
     }
 }
