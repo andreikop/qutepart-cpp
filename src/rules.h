@@ -28,7 +28,7 @@ public:
     AbstractRule(/*ContextPtr parentContext,*/ const AbstractRuleParams& params);
     virtual ~AbstractRule() {};
 
-    virtual void printDescription(QTextStream& out) const;
+    virtual QString description() const;
 
 protected:
     // ContextPtr parentContext;
@@ -48,7 +48,7 @@ public:
     KeywordRule (const AbstractRuleParams& params,
                  const QString& string);
 
-    void printDescription(QTextStream& out) const override;
+    QString description() const override;
 
 private:
     QString string;
@@ -61,7 +61,7 @@ public:
                    const QString& value,
                    int index);
 
-    void printDescription(QTextStream& out) const override;
+    QString description() const override;
 
 private:
     QString value;

@@ -1,5 +1,6 @@
 #include "rules.h"
 
+
 AbstractRule::AbstractRule(/*ContextPtr parentContext,*/
                            const AbstractRuleParams& params):
     /*parentContext(parentContext),*/
@@ -12,8 +13,8 @@ AbstractRule::AbstractRule(/*ContextPtr parentContext,*/
     dynamic(params.dynamic)
 {}
 
-void AbstractRule::printDescription(QTextStream& out) const {
-    out << "\t\tAbstractRule\n";
+QString AbstractRule::description() const {
+    return "AbstractRule";
 }
 
 
@@ -23,8 +24,8 @@ KeywordRule::KeywordRule(const AbstractRuleParams& params,
     string(string)
 {}
 
-void KeywordRule::printDescription(QTextStream& out) const {
-    out << "\t\tKeyword(" << string << ")\n";
+QString KeywordRule::description() const {
+    return QString("Keyword(%1)").arg(string);
 }
 
 DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
@@ -35,11 +36,7 @@ DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
     index(index)
 {}
 
-void DetectCharRule::printDescription(QTextStream& out) const {
-    out << "\t\tDetectChar(" << value;
-    if (value.isNull()) {
-        out << " index:" << index;
-    }
-
-    out << ")\n";
+QString DetectCharRule::description() const {
+    QString indexStr = value.isNull() ? QString(" index: %1").arg(index) : "";
+    return QString("Keyword(%1%2)").arg(value).arg(indexStr);
 }
