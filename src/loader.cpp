@@ -152,13 +152,15 @@ AbstractRuleParams parseAbstractRuleParams(const QXmlStreamAttributes& attrs, QS
         dynamic};
 }
 
-KeywordRule* loadKeyword(const QXmlStreamAttributes& attrs, const AbstractRuleParams& params, QString& error) {
-    QString string = getRequiredAttribute(attrs, "String", error);
+template<class RuleClass> RuleClass* loadStringRule(const QXmlStreamAttributes& attrs,
+                                                    const AbstractRuleParams& params,
+                                                    QString& error) {
+    QString value = getRequiredAttribute(attrs, "String", error);
     if ( ! error.isNull()) {
         return nullptr;
     }
 
-    return new KeywordRule(params, string);
+    return new RuleClass(params, value);
 }
 
 DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
@@ -221,11 +223,13 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
 
     AbstractRule* result = nullptr;
     if (name == "keyword") {
-        result = loadKeyword(attrs, params, error);
+        result = loadStringRule<KeywordRule>(attrs, params, error);
     } else if (name == "DetectChar") {
         result = loadDetectChar(attrs, params, error);
     } else if (name == "Detect2Chars") {
         result = loadDetect2Chars(attrs, params, error);
+    } else if (name == "AnyChar") {
+        result = loadStringRule<AnyCharRule>(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

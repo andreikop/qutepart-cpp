@@ -14,19 +14,14 @@ AbstractRule::AbstractRule(/*ContextPtr parentContext,*/
 {}
 
 QString AbstractRule::description() const {
-    return "AbstractRule";
+    return QString("%1(%2)").arg(name()).arg(args());
 }
 
-
-KeywordRule::KeywordRule(const AbstractRuleParams& params,
-                         const QString& string):
+AbstractStringRule::AbstractStringRule(const AbstractRuleParams& params,
+                                       const QString& value):
     AbstractRule(params),
-    string(string)
+    value(value)
 {}
-
-QString KeywordRule::description() const {
-    return QString("Keyword(%1)").arg(string);
-}
 
 DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
                                const QString& value,
@@ -36,17 +31,10 @@ DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
     index(index)
 {}
 
-QString DetectCharRule::description() const {
-    QString indexStr = value.isNull() ? QString(" index: %1").arg(index) : "";
-    return QString("DetectChar(%1%2)").arg(value).arg(indexStr);
-}
-
-Detect2CharsRule::Detect2CharsRule(const AbstractRuleParams& params,
-                                   const QString& value):
-    AbstractRule(params),
-    value(value)
-{}
-
-QString Detect2CharsRule::description() const {
-    return QString("Detect2Chars(%1)").arg(value);
+QString DetectCharRule::args() const {
+    if (value.isNull()) {
+        return QString("index: %1").arg(index);
+    } else {
+        return value;
+    }
 }

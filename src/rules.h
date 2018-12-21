@@ -31,6 +31,9 @@ public:
     virtual QString description() const;
 
 protected:
+    virtual QString name() const {return "AbstractRule";};
+    virtual QString args() const {return QString::null;};
+
     // ContextPtr parentContext;
     QString format;             // may be null
     char textType;              // may be 0
@@ -42,16 +45,23 @@ protected:
     bool dynamic;
 };
 
-
-class KeywordRule: public AbstractRule {
+// A rule which has 1 string as a parameter
+class AbstractStringRule: public AbstractRule {
 public:
-    KeywordRule (const AbstractRuleParams& params,
-                 const QString& string);
+    AbstractStringRule (const AbstractRuleParams& params,
+                        const QString& value);
 
-    QString description() const override;
+protected:
+    QString args() const override {return value;};
+    QString value;
+};
 
-private:
-    QString string;
+
+class KeywordRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
+
+public:
+    QString name() const override {return "Keyword";};
 };
 
 
@@ -61,7 +71,8 @@ public:
                    const QString& value,
                    int index);
 
-    QString description() const override;
+    QString name() const override {return "DetectChar";};
+    QString args() const override;
 
 private:
     QString value;
@@ -69,13 +80,17 @@ private:
 };
 
 
-class Detect2CharsRule: public AbstractRule {
+class Detect2CharsRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
 public:
-    Detect2CharsRule(const AbstractRuleParams& params,
-                     const QString& value);
 
-    QString description() const override;
+    QString name() const override {return "Detect2Chars";};
+};
 
-private:
-    QString value;
+
+class AnyCharRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
+public:
+
+    QString name() const override {return "AnyChar";};
 };
