@@ -50,6 +50,18 @@ int parseIntAttribute(const QString& value, QString& error) {
     return result;
 }
 
+QString processEscapeSequences(QString value) {
+    value.replace("\\a", "\a");
+    value.replace("\\b", "\b");
+    value.replace("\\f", "\f");
+    value.replace("\\n", "\n");
+    value.replace("\\r", "\r");
+    value.replace("\\t", "\t");
+    value.replace("\\\\", "\\");
+
+    return value;
+}
+
 ContextSwitcher makeContextSwitcher(QString contextOperation/*, parser, formatConverterFunction*/) {
     int popsCount = 0;
     ContextPtr contextToSwitch;
@@ -157,7 +169,7 @@ DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
         return nullptr;
     }
 
-    // value = processEscapeSequences(value);
+    value = processEscapeSequences(value);
 
     int index = 0;
 

@@ -65,5 +65,5 @@ void showSyntax(const QString& fileName) {
 int main(int /*argc*/, char** /*argv*/) {
     // return runEditor(argc, argv);
     // parseAllFiles();
-    showSyntax("perl.xml");
+    showSyntax("python.xml");
 }
