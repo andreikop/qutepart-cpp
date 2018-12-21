@@ -49,6 +49,21 @@ public:
                  const QString& string);
 
     void printDescription(QTextStream& out) const override;
+
 private:
     QString string;
+};
+
+
+class DetectCharRule: public AbstractRule {
+public:
+    DetectCharRule(const AbstractRuleParams& params,
+                   const QString& value,
+                   int index);
+
+    void printDescription(QTextStream& out) const override;
+
+private:
+    QString value;
+    int index;
 };

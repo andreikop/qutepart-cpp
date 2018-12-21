@@ -26,3 +26,20 @@ KeywordRule::KeywordRule(const AbstractRuleParams& params,
 void KeywordRule::printDescription(QTextStream& out) const {
     out << "\t\tKeyword(" << string << ")\n";
 }
+
+DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
+                               const QString& value,
+                               int index):
+    AbstractRule(params),
+    value(value),
+    index(index)
+{}
+
+void DetectCharRule::printDescription(QTextStream& out) const {
+    out << "\t\tDetectChar(" << value;
+    if (value.isNull()) {
+        out << " index:" << index;
+    }
+
+    out << ")\n";
+}

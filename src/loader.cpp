@@ -149,6 +149,36 @@ KeywordRule* loadKeyword(const QXmlStreamAttributes& attrs, const AbstractRulePa
     return new KeywordRule(params, string);
 }
 
+DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
+                               const AbstractRuleParams& params,
+                               QString& error) {
+    QString value = getRequiredAttribute(attrs, "char", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    // value = processEscapeSequences(value);
+
+    int index = 0;
+
+    if (params.dynamic) {
+        bool ok = false;
+        index = value.toInt(&ok);
+        if ( ! ok) {
+            error = QString("Bad integer value: %1").arg(value);
+            return nullptr;
+        }
+
+        if (index < 0) {
+            error = QString("Bad integer value: %1").arg(value);
+            return nullptr;
+        }
+        value = QString::null;
+    }
+
+    return new DetectCharRule(params, value, index);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -160,6 +190,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     AbstractRule* result = nullptr;
     if (xmlReader.name() == "keyword") {
         result = loadKeyword(attrs, params, error);
+    } else if (xmlReader.name() == "DetectChar") {
+        result = loadDetectChar(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }
