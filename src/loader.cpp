@@ -230,6 +230,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadDetect2Chars(attrs, params, error);
     } else if (name == "AnyChar") {
         result = loadStringRule<AnyCharRule>(attrs, params, error);
+    } else if (name == "StringDetect") {
+        result = loadStringRule<StringDetectRule>(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

@@ -94,3 +94,11 @@ public:
 
     QString name() const override {return "AnyChar";};
 };
+
+
+class StringDetectRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
+public:
+
+    QString name() const override {return "StringDetect";};
+};
