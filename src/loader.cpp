@@ -191,6 +191,24 @@ DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
     return new DetectCharRule(params, value, index);
 }
 
+Detect2CharsRule* loadDetect2Chars(const QXmlStreamAttributes& attrs,
+                                   const AbstractRuleParams& params,
+                                   QString& error) {
+
+    QString char0 = getRequiredAttribute(attrs, "char", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+    QString char1 = getRequiredAttribute(attrs, "char1", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    QString value = processEscapeSequences(char0 + char1);
+
+    return new Detect2CharsRule(params, value);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -199,11 +217,15 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
+    QStringRef name = xmlReader.name();
+
     AbstractRule* result = nullptr;
-    if (xmlReader.name() == "keyword") {
+    if (name == "keyword") {
         result = loadKeyword(attrs, params, error);
-    } else if (xmlReader.name() == "DetectChar") {
+    } else if (name == "DetectChar") {
         result = loadDetectChar(attrs, params, error);
+    } else if (name == "Detect2Chars") {
+        result = loadDetect2Chars(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

@@ -67,3 +67,15 @@ private:
     QString value;
     int index;
 };
+
+
+class Detect2CharsRule: public AbstractRule {
+public:
+    Detect2CharsRule(const AbstractRuleParams& params,
+                     const QString& value);
+
+    QString description() const override;
+
+private:
+    QString value;
+};

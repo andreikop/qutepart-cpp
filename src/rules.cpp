@@ -38,5 +38,15 @@ DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
 
 QString DetectCharRule::description() const {
     QString indexStr = value.isNull() ? QString(" index: %1").arg(index) : "";
-    return QString("Keyword(%1%2)").arg(value).arg(indexStr);
+    return QString("DetectChar(%1%2)").arg(value).arg(indexStr);
+}
+
+Detect2CharsRule::Detect2CharsRule(const AbstractRuleParams& params,
+                                   const QString& value):
+    AbstractRule(params),
+    value(value)
+{}
+
+QString Detect2CharsRule::description() const {
+    return QString("Detect2Chars(%1)").arg(value);
 }
