@@ -17,22 +17,16 @@ QString AbstractRule::description() const {
     return QString("%1(%2)").arg(name()).arg(args());
 }
 
-AbstractStringRule::AbstractStringRule(const AbstractRuleParams& params,
-                                       const QString& value):
-    AbstractRule(params),
-    value(value)
-{}
 
-KeywordRule::KeywordRule(const AbstractRuleParams& params,
-                         const QString& value,
-                         bool insensitive):
+AbstractStringRule::AbstractStringRule(const AbstractRuleParams& params,
+                                       const QString& value,
+                                       bool insensitive):
     AbstractRule(params),
     value(value),
     insensitive(insensitive)
 {}
 
-
-QString KeywordRule::args() const {
+QString AbstractStringRule::args() const {
     QString result = value;
     if (insensitive) {
         result += " insensitive";
@@ -56,21 +50,4 @@ QString DetectCharRule::args() const {
     } else {
         return value;
     }
-}
-
-WordDetectRule::WordDetectRule(const AbstractRuleParams& params,
-                               const QString& value,
-                               bool insensitive):
-    AbstractStringRule(params, value),
-    insensitive(insensitive)
-{}
-
-
-QString WordDetectRule::args() {
-    QString result = value;
-    if (insensitive) {
-        result += " insensitive";
-    }
-
-    return result;
 }

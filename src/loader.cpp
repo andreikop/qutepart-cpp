@@ -160,24 +160,13 @@ template<class RuleClass> RuleClass* loadStringRule(const QXmlStreamAttributes& 
         return nullptr;
     }
 
-    return new RuleClass(params, value);
-}
-
-KeywordRule* loadKeywordRule(const QXmlStreamAttributes& attrs,
-                             const AbstractRuleParams& params,
-                             QString& error) {
-    QString value = getRequiredAttribute(attrs, "String", error);
-    if ( ! error.isNull()) {
-        return nullptr;
-    }
-
     bool insensitive = parseBoolAttribute(getAttribute(attrs, "insensitive", "false"), error);
     if ( ! error.isNull()) {
         error = QString("Failed to parse 'insensitive': %1").arg(error);
         return nullptr;
     }
 
-    return new KeywordRule(params, value, insensitive);
+    return new RuleClass(params, value, insensitive);
 }
 
 DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
@@ -225,24 +214,7 @@ Detect2CharsRule* loadDetect2Chars(const QXmlStreamAttributes& attrs,
 
     QString value = processEscapeSequences(char0 + char1);
 
-    return new Detect2CharsRule(params, value);
-}
-
-WordDetectRule* loadWordDetectRule(const QXmlStreamAttributes& attrs,
-                                   const AbstractRuleParams& params,
-                                   QString& error) {
-    QString value = getRequiredAttribute(attrs, "String", error);
-    if ( ! error.isNull()) {
-        return nullptr;
-    }
-
-    bool insensitive = parseBoolAttribute(getAttribute(attrs, "insensitive", "false"), error);
-    if ( ! error.isNull()) {
-        error = QString("Failed to parse 'insensitive': %1").arg(error);
-        return nullptr;
-    }
-
-    return new WordDetectRule(params, value, insensitive);
+    return new Detect2CharsRule(params, value, false);
 }
 
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
@@ -257,7 +229,7 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
 
     AbstractRule* result = nullptr;
     if (name == "keyword") {
-        result = loadKeywordRule(attrs, params, error);
+        result = loadStringRule<KeywordRule>(attrs, params, error);
     } else if (name == "DetectChar") {
         result = loadDetectChar(attrs, params, error);
     } else if (name == "Detect2Chars") {
@@ -267,7 +239,7 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     } else if (name == "StringDetect") {
         result = loadStringRule<StringDetectRule>(attrs, params, error);
     } else if (name == "WordDetect") {
-        result = loadWordDetectRule(attrs, params, error);
+        result = loadStringRule<WordDetectRule>(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

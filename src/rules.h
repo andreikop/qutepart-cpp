@@ -49,26 +49,21 @@ protected:
 class AbstractStringRule: public AbstractRule {
 public:
     AbstractStringRule (const AbstractRuleParams& params,
-                        const QString& value);
-
-protected:
-    QString args() const override {return value;};
-    QString value;
-};
-
-
-class KeywordRule: public AbstractRule {
-public:
-    KeywordRule(const AbstractRuleParams& params,
-                const QString& value,
-                bool insensitive);
-
-    QString name() const override {return "Keyword";};
+                        const QString& value,
+                        bool insensitive);
 
 protected:
     QString args() const override;
     QString value;
     bool insensitive;
+};
+
+
+class KeywordRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
+
+public:
+    QString name() const override {return "Keyword";};
 };
 
 
@@ -112,16 +107,7 @@ public:
 
 
 class WordDetectRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
 public:
-    WordDetectRule(const AbstractRuleParams& params,
-                   const QString& value,
-                   bool insensitive);
-
-    QString args();
-
     QString name() const override {return "WordDetect";};
-
-private:
-    QString value;
-    bool insensitive;
 };
