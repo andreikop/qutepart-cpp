@@ -81,3 +81,9 @@ QString RegExpRule::args() const {
 
     return result;
 }
+
+AbstractNumberRule::AbstractNumberRule(const AbstractRuleParams& params,
+                                       const QList<RulePtr>& childRules):
+    AbstractRule(params),
+    childRules(childRules)
+{}

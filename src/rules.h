@@ -127,3 +127,27 @@ private:
     bool wordStart;
     bool lineStart;
 };
+
+
+class AbstractNumberRule: public AbstractRule {
+public:
+    AbstractNumberRule(const AbstractRuleParams& params,
+                       const QList<RulePtr>& childRules);
+
+protected:
+   QList<RulePtr> childRules;
+};
+
+class IntRule: public AbstractNumberRule {
+    using AbstractNumberRule::AbstractNumberRule;
+
+public:
+    QString name() const override {return "Int";};
+};
+
+class FloatRule: public AbstractNumberRule {
+    using AbstractNumberRule::AbstractNumberRule;
+
+public:
+    QString name() const override {return "Float";};
+};

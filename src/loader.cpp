@@ -268,6 +268,10 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadStringRule<WordDetectRule>(attrs, params, error);
     } else if (name == "RegExpr") {
         result = loadRegExp(attrs, params, error);
+    } else if (name == "Int") {
+        result = new IntRule(params, QList<RulePtr>()); // TODO load children
+    } else if (name == "Float") {
+        result = new FloatRule(params, QList<RulePtr>()); // TODO load children
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }
