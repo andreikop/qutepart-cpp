@@ -28,6 +28,7 @@ public:
     AbstractRule(/*ContextPtr parentContext,*/ const AbstractRuleParams& params);
     virtual ~AbstractRule() {};
 
+    virtual void printDescription(QTextStream& out) const;
     virtual QString description() const;
 
 protected:
@@ -134,8 +135,9 @@ public:
     AbstractNumberRule(const AbstractRuleParams& params,
                        const QList<RulePtr>& childRules);
 
+    void printDescription(QTextStream& out) const override;
 protected:
-   QList<RulePtr> childRules;
+    QList<RulePtr> childRules;
 };
 
 class IntRule: public AbstractNumberRule {

@@ -4,6 +4,8 @@
 #include "loader.h"
 
 
+QList<RulePtr> loadRules(QXmlStreamReader& xmlReader, QString& error);
+
 
 QString getAttribute(QXmlStreamAttributes attrs, QString name,
                      QString defaultValue=QString::null,
@@ -243,6 +245,22 @@ RegExpRule* loadRegExp(const QXmlStreamAttributes& attrs,
     return new RegExpRule(params, value, insensitive, minimal, wordStart, lineStart);
 }
 
+template<class RuleClass>
+RuleClass* loadNumberRule(QXmlStreamReader& xmlReader,
+                          const AbstractRuleParams& params,
+                          QString& error) {
+    QList<RulePtr> children = loadRules(xmlReader, error);
+
+    if ( ! error.isNull()) {
+        error = QString("Failed to load child rules of number: %1").arg(error);
+        return nullptr;
+    }
+
+    xmlReader.readNextStartElement(); // go to next tag
+
+    return new RuleClass(params, children);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -269,11 +287,15 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     } else if (name == "RegExpr") {
         result = loadRegExp(attrs, params, error);
     } else if (name == "Int") {
-        result = new IntRule(params, QList<RulePtr>()); // TODO load children
+        result = loadNumberRule<IntRule>(xmlReader, params, error);
     } else if (name == "Float") {
-        result = new FloatRule(params, QList<RulePtr>()); // TODO load children
+        result = loadNumberRule<FloatRule>(xmlReader, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
+    }
+
+    if ( ! error.isNull()) {
+        return nullptr;
     }
 
     bool ret = xmlReader.readNextStartElement();
@@ -432,7 +454,7 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     QList<ContextPtr> contexts;
     while (xmlReader.readNextStartElement()) {
         if (xmlReader.name() != "context") {
-            error = QString("Not expected tag <%1>").arg(xmlReader.name().toString());
+            error = QString("Not expected tag when parsing contexts <%1>").arg(xmlReader.name().toString());
             return nullptr;
         }
 

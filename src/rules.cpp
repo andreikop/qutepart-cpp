@@ -13,6 +13,10 @@ AbstractRule::AbstractRule(/*ContextPtr parentContext,*/
     dynamic(params.dynamic)
 {}
 
+void AbstractRule::printDescription(QTextStream& out) const {
+    out << "\t\t" << description() << "\n";
+}
+
 QString AbstractRule::description() const {
     return QString("%1(%2)").arg(name()).arg(args());
 }
@@ -87,3 +91,11 @@ AbstractNumberRule::AbstractNumberRule(const AbstractRuleParams& params,
     AbstractRule(params),
     childRules(childRules)
 {}
+
+void AbstractNumberRule::printDescription(QTextStream& out) const {
+    AbstractRule::printDescription(out);
+
+    foreach(RulePtr rule, childRules) {
+        out << "\t\t\t" << rule->description() << "\n";
+    }
+}

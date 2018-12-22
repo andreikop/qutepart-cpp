@@ -55,6 +55,6 @@ void Context::printDescription(QTextStream& out) const {
     }
 
     foreach(RulePtr rule, rules) {
-        out << "\t\t" << rule->description() << "\n";
+        rule->printDescription(out);
     }
 }
