@@ -51,3 +51,33 @@ QString DetectCharRule::args() const {
         return value;
     }
 }
+
+
+RegExpRule::RegExpRule(const AbstractRuleParams& params,
+                       const QString& value, bool insensitive,
+                       bool minimal, bool wordStart, bool lineStart):
+    AbstractRule(params),
+    value(value),
+    insensitive(insensitive),
+    minimal(minimal),
+    wordStart(wordStart),
+    lineStart(lineStart)
+{}
+
+QString RegExpRule::args() const {
+    QString result = value;
+    if (insensitive) {
+        result += " insensitive";
+    }
+    if (minimal) {
+        result += " minimal";
+    }
+    if (wordStart) {
+        result += " wordStart";
+    }
+    if (lineStart) {
+        result += " lineStart";
+    }
+
+    return result;
+}

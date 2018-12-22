@@ -111,3 +111,19 @@ class WordDetectRule: public AbstractStringRule {
 public:
     QString name() const override {return "WordDetect";};
 };
+
+class RegExpRule: public AbstractRule {
+public:
+    RegExpRule(const AbstractRuleParams& params,
+               const QString& value, bool insensitive,
+               bool minimal, bool wordStart, bool lineStart);
+
+    QString name() const override {return "RegExpr";};
+    QString args() const override;
+private:
+    QString value;
+    bool insensitive;
+    bool minimal;
+    bool wordStart;
+    bool lineStart;
+};

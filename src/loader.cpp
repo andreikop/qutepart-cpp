@@ -217,6 +217,32 @@ Detect2CharsRule* loadDetect2Chars(const QXmlStreamAttributes& attrs,
     return new Detect2CharsRule(params, value, false);
 }
 
+RegExpRule* loadRegExp(const QXmlStreamAttributes& attrs,
+                       const AbstractRuleParams& params,
+                       QString& error) {
+    QString value = getRequiredAttribute(attrs, "String", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    bool insensitive = parseBoolAttribute(getAttribute(attrs, "insensitive", "false"), error);
+    if ( ! error.isNull()) {
+        error = QString("Failed to parse 'insensitive': %1").arg(error);
+        return nullptr;
+    }
+
+    bool minimal = parseBoolAttribute(getAttribute(attrs, "minimal", "false"), error);
+    if ( ! error.isNull()) {
+        error = QString("Failed to parse 'minimal': %1").arg(error);
+        return nullptr;
+    }
+
+    bool wordStart = false; // TODO
+    bool lineStart = false; // TODO
+
+    return new RegExpRule(params, value, insensitive, minimal, wordStart, lineStart);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -240,6 +266,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadStringRule<StringDetectRule>(attrs, params, error);
     } else if (name == "WordDetect") {
         result = loadStringRule<WordDetectRule>(attrs, params, error);
+    } else if (name == "RegExpr") {
+        result = loadRegExp(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }
