@@ -38,3 +38,20 @@ QString DetectCharRule::args() const {
         return value;
     }
 }
+
+WordDetectRule::WordDetectRule(const AbstractRuleParams& params,
+                               const QString& value,
+                               bool insensitive):
+    AbstractStringRule(params, value),
+    insensitive(insensitive)
+{}
+
+
+QString WordDetectRule::args() {
+    QString result = value;
+    if (insensitive) {
+        result += " insensitive";
+    }
+
+    return result;
+}

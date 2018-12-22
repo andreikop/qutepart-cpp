@@ -102,3 +102,19 @@ public:
 
     QString name() const override {return "StringDetect";};
 };
+
+
+class WordDetectRule: public AbstractStringRule {
+public:
+    WordDetectRule(const AbstractRuleParams& params,
+                   const QString& value,
+                   bool insensitive);
+
+    QString args();
+
+    QString name() const override {return "WordDetect";};
+
+private:
+    QString value;
+    bool insensitive;
+};

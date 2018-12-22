@@ -211,6 +211,23 @@ Detect2CharsRule* loadDetect2Chars(const QXmlStreamAttributes& attrs,
     return new Detect2CharsRule(params, value);
 }
 
+WordDetectRule* loadWordDetectRule(const QXmlStreamAttributes& attrs,
+                                   const AbstractRuleParams& params,
+                                   QString& error) {
+    QString value = getRequiredAttribute(attrs, "String", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    bool insensitive = parseBoolAttribute(getAttribute(attrs, "insensitive", "false"), error);
+    if ( ! error.isNull()) {
+        error = QString("Failed to parse 'insensitive': %1").arg(error);
+        return nullptr;
+    }
+
+    return new WordDetectRule(params, value, insensitive);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -232,6 +249,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadStringRule<AnyCharRule>(attrs, params, error);
     } else if (name == "StringDetect") {
         result = loadStringRule<StringDetectRule>(attrs, params, error);
+    } else if (name == "WordDetect") {
+        result = loadWordDetectRule(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

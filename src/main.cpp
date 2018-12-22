@@ -62,8 +62,12 @@ void showSyntax(const QString& fileName) {
     delete language;
 }
 
-int main(int /*argc*/, char** /*argv*/) {
+int main(int argc, char** argv) {
+    QString lang = "zsh";
+    if (argc > 1) {
+        lang = argv[1];
+    }
     // return runEditor(argc, argv);
     // parseAllFiles();
-    showSyntax("zsh.xml");
+    showSyntax(lang + ".xml");
 }
