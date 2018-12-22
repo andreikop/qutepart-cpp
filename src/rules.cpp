@@ -23,6 +23,25 @@ AbstractStringRule::AbstractStringRule(const AbstractRuleParams& params,
     value(value)
 {}
 
+KeywordRule::KeywordRule(const AbstractRuleParams& params,
+                         const QString& value,
+                         bool insensitive):
+    AbstractRule(params),
+    value(value),
+    insensitive(insensitive)
+{}
+
+
+QString KeywordRule::args() const {
+    QString result = value;
+    if (insensitive) {
+        result += " insensitive";
+    }
+
+    return result;
+}
+
+
 DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
                                const QString& value,
                                int index):

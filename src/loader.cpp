@@ -163,6 +163,23 @@ template<class RuleClass> RuleClass* loadStringRule(const QXmlStreamAttributes& 
     return new RuleClass(params, value);
 }
 
+KeywordRule* loadKeywordRule(const QXmlStreamAttributes& attrs,
+                             const AbstractRuleParams& params,
+                             QString& error) {
+    QString value = getRequiredAttribute(attrs, "String", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    bool insensitive = parseBoolAttribute(getAttribute(attrs, "insensitive", "false"), error);
+    if ( ! error.isNull()) {
+        error = QString("Failed to parse 'insensitive': %1").arg(error);
+        return nullptr;
+    }
+
+    return new KeywordRule(params, value, insensitive);
+}
+
 DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
                                const AbstractRuleParams& params,
                                QString& error) {
@@ -240,7 +257,7 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
 
     AbstractRule* result = nullptr;
     if (name == "keyword") {
-        result = loadStringRule<KeywordRule>(attrs, params, error);
+        result = loadKeywordRule(attrs, params, error);
     } else if (name == "DetectChar") {
         result = loadDetectChar(attrs, params, error);
     } else if (name == "Detect2Chars") {

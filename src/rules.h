@@ -57,11 +57,18 @@ protected:
 };
 
 
-class KeywordRule: public AbstractStringRule {
-    using AbstractStringRule::AbstractStringRule;
-
+class KeywordRule: public AbstractRule {
 public:
+    KeywordRule(const AbstractRuleParams& params,
+                const QString& value,
+                bool insensitive);
+
     QString name() const override {return "Keyword";};
+
+protected:
+    QString args() const override;
+    QString value;
+    bool insensitive;
 };
 
 
