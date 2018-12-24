@@ -201,6 +201,15 @@ public:
     QString name() const override {return "LineContinue";};
 };
 
+
+class IncludeRulesRule: public AbstractStringRule {
+    using AbstractStringRule::AbstractStringRule;
+public:
+
+    QString name() const override {return "IncludeRules";};
+};
+
+
 class DetectSpacesRule: public AbstractRule {
     using AbstractRule::AbstractRule;
 

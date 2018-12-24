@@ -273,6 +273,17 @@ RangeDetectRule* loadRangeDetectRule(const QXmlStreamAttributes& attrs,
     return new RangeDetectRule(params, char0, char1);
 }
 
+IncludeRulesRule* loadIncludeRulesRule(const QXmlStreamAttributes& attrs,
+                                       const AbstractRuleParams& params,
+                                       QString& error) {
+    QString contextName = getRequiredAttribute(attrs, "context", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    return new IncludeRulesRule(params, contextName, false);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -314,6 +325,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadRangeDetectRule(attrs, params, error);
     } else if (name == "LineContinue") {
         result = new LineContinueRule(params);
+    } else if (name == "IncludeRules") {
+        result = loadIncludeRulesRule(attrs, params, error);
     } else if (name == "DetectSpaces") {
         result = new DetectSpacesRule(params);
     } else if (name == "DetectIdentifier") {
