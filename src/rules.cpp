@@ -99,3 +99,14 @@ void AbstractNumberRule::printDescription(QTextStream& out) const {
         out << "\t\t\t" << rule->description() << "\n";
     }
 }
+
+
+RangeDetectRule::RangeDetectRule(const AbstractRuleParams& params, const QString& char0, const QString& char1):
+    AbstractRule(params),
+    char0(char0),
+    char1(char1)
+{}
+
+QString RangeDetectRule::args() const {
+    return QString("%1 - %2").arg(char0, char1);
+}

@@ -182,3 +182,14 @@ class HlCCharRule: public AbstractRule {
 public:
     QString name() const override {return "HlCChar";};
 };
+
+class RangeDetectRule: public AbstractRule {
+public:
+    RangeDetectRule(const AbstractRuleParams& params, const QString& char0, const QString& char1);
+    QString name() const override {return "RangeDetect";};
+    QString args() const override;
+
+private:
+    const QString char0;
+    const QString char1;
+};

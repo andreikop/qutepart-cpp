@@ -204,7 +204,6 @@ DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
 Detect2CharsRule* loadDetect2Chars(const QXmlStreamAttributes& attrs,
                                    const AbstractRuleParams& params,
                                    QString& error) {
-
     QString char0 = getRequiredAttribute(attrs, "char", error);
     if ( ! error.isNull()) {
         return nullptr;
@@ -259,6 +258,21 @@ RuleClass* loadNumberRule(QXmlStreamReader& xmlReader,
     return new RuleClass(params, children);
 }
 
+RangeDetectRule* loadRangeDetectRule(const QXmlStreamAttributes& attrs,
+                                     const AbstractRuleParams& params,
+                                     QString& error) {
+    QString char0 = getRequiredAttribute(attrs, "char", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+    QString char1 = getRequiredAttribute(attrs, "char1", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    return new RangeDetectRule(params, char0, char1);
+}
+
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
@@ -296,6 +310,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = new HlCStringCharRule(params);
     } else if (name == "HlCChar") {
         result = new HlCCharRule(params);
+    } else if (name == "RangeDetect") {
+        result = loadRangeDetectRule(attrs, params, error);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }
