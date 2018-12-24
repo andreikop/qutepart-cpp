@@ -290,6 +290,14 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadNumberRule<IntRule>(xmlReader, params, error);
     } else if (name == "Float") {
         result = loadNumberRule<FloatRule>(xmlReader, params, error);
+    } else if (name == "HlCHex") {
+        result = new HlCHexRule(params);
+    } else if (name == "HlCOct") {
+        result = new HlCOctRule(params);
+    } else if (name == "HlCStringChar") {
+        result = new HlCStringCharRule(params);
+    } else if (name == "HlCChar") {
+        result = new HlCCharRule(params);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

@@ -153,3 +153,32 @@ class FloatRule: public AbstractNumberRule {
 public:
     QString name() const override {return "Float";};
 };
+
+class HlCOctRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "HlCOct";};
+};
+
+class HlCHexRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "HlCHex";};
+};
+
+class HlCStringCharRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "HlCStringChar";};
+};
+
+
+class HlCCharRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "HlCChar";};
+};
