@@ -312,6 +312,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = new HlCCharRule(params);
     } else if (name == "RangeDetect") {
         result = loadRangeDetectRule(attrs, params, error);
+    } else if (name == "LineContinue") {
+        result = new LineContinueRule(params);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }

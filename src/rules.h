@@ -193,3 +193,10 @@ private:
     const QString char0;
     const QString char1;
 };
+
+class LineContinueRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "LineContinue";};
+};
