@@ -256,8 +256,6 @@ RuleClass* loadNumberRule(QXmlStreamReader& xmlReader,
         return nullptr;
     }
 
-    xmlReader.readNextStartElement(); // go to next tag
-
     return new RuleClass(params, children);
 }
 
@@ -306,13 +304,7 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    bool ret = xmlReader.readNextStartElement();
-    if (ret) {
-        // TODO proper nested tags reading here
-        // error = "Rule must not have nested tags";
-        // delete result;
-        // return nullptr;
-        xmlReader.skipCurrentElement();
+    if ( ! xmlReader.isEndElement()) {
         xmlReader.readNextStartElement();
     }
 
