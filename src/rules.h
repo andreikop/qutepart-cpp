@@ -200,3 +200,17 @@ class LineContinueRule: public AbstractRule {
 public:
     QString name() const override {return "LineContinue";};
 };
+
+class DetectSpacesRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "DetectSpaces";};
+};
+
+class DetectIdentifierRule: public AbstractRule {
+    using AbstractRule::AbstractRule;
+
+public:
+    QString name() const override {return "DetectIdentifier";};
+};

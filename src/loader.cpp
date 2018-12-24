@@ -314,6 +314,10 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
         result = loadRangeDetectRule(attrs, params, error);
     } else if (name == "LineContinue") {
         result = new LineContinueRule(params);
+    } else if (name == "DetectSpaces") {
+        result = new DetectSpacesRule(params);
+    } else if (name == "DetectIdentifier") {
+        result = new DetectIdentifierRule(params);
     } else {
         result = new AbstractRule(/*parentContext,*/ params);
     }
