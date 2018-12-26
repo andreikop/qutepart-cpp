@@ -1,9 +1,7 @@
 #include "rules.h"
 
 
-AbstractRule::AbstractRule(/*ContextPtr parentContext,*/
-                           const AbstractRuleParams& params):
-    /*parentContext(parentContext),*/
+AbstractRule::AbstractRule(const AbstractRuleParams& params):
     textType(params.textType),
     attribute(params.attribute),
     context(params.context),
@@ -19,6 +17,10 @@ void AbstractRule::printDescription(QTextStream& out) const {
 
 QString AbstractRule::description() const {
     return QString("%1(%2)").arg(name()).arg(args());
+}
+
+void AbstractRule::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
+    context.resolveContextReferences(contexts, error);
 }
 
 
@@ -109,4 +111,27 @@ RangeDetectRule::RangeDetectRule(const AbstractRuleParams& params, const QString
 
 QString RangeDetectRule::args() const {
     return QString("%1 - %2").arg(char0, char1);
+}
+
+IncludeRulesRule::IncludeRulesRule(const AbstractRuleParams& params, const QString& contextName):
+    AbstractRule(params),
+    contextName(contextName)
+{}
+
+void IncludeRulesRule::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
+    AbstractRule::resolveContextReferences(contexts, error);
+    if ( ! error.isNull()) {
+        return;
+    }
+
+    if (contextName.startsWith('#')) {
+        return; //TODO
+    }
+
+    if ( ! contexts.contains(contextName)) {
+        error = QString("Failed to include rules from context '%1' because not exists").arg(contextName);
+        return;
+    }
+
+    context = contexts[contextName];
 }

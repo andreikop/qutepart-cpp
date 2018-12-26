@@ -25,17 +25,18 @@ struct AbstractRuleParams {
 
 class AbstractRule {
 public:
-    AbstractRule(/*ContextPtr parentContext,*/ const AbstractRuleParams& params);
+    AbstractRule(const AbstractRuleParams& params);
     virtual ~AbstractRule() {};
 
     virtual void printDescription(QTextStream& out) const;
     virtual QString description() const;
 
+    virtual void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
+
 protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
 
-    // ContextPtr parentContext;
     QString format;             // may be null
     char textType;              // may be 0
     QString attribute;          // may be null
@@ -202,11 +203,18 @@ public:
 };
 
 
-class IncludeRulesRule: public AbstractStringRule {
-    using AbstractStringRule::AbstractStringRule;
+class IncludeRulesRule: public AbstractRule {
 public:
+    IncludeRulesRule(const AbstractRuleParams& params, const QString& contextName);
 
     QString name() const override {return "IncludeRules";};
+    QString args() const override {return contextName;};
+
+    void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) override;
+
+private:
+    QString contextName;
+    ContextPtr context;
 };
 
 

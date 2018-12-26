@@ -2,6 +2,7 @@
 
 #include <QTextStream>
 #include <QSharedPointer>
+#include <QHash>
 
 
 class Context;
@@ -15,16 +16,18 @@ typedef QSharedPointer<AbstractRule> RulePtr;
 class ContextSwitcher {
 public:
     ContextSwitcher();
-    ContextSwitcher(int popsCount, ContextPtr contextToSwitch, const QString& contextOperation);
+    ContextSwitcher(int popsCount, const QString& contextName, const QString& contextOperation);
 
     QString toString() const;
     bool isNull() const;
 
+    void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
+
 protected:
     int popsCount;
-    ContextPtr contextToSwitch;
+    QString contextName;
+    ContextPtr context;
     QString contextOperation;
-
 };
 
 
@@ -40,8 +43,12 @@ public:
 
     void printDescription(QTextStream& out) const;
 
+    QString name() const;
+
+    void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
+
 protected:
-    QString name;
+    QString _name;
     QString attribute;
     ContextSwitcher lineEndContext;
     ContextSwitcher lineBeginContext;

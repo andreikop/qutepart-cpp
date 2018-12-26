@@ -64,9 +64,9 @@ QString processEscapeSequences(QString value) {
     return value;
 }
 
-ContextSwitcher makeContextSwitcher(QString contextOperation/*, parser, formatConverterFunction*/) {
+ContextSwitcher makeContextSwitcher(QString contextOperation) {
     int popsCount = 0;
-    ContextPtr contextToSwitch;
+    QString contextToSwitch;
 
     QString rest = contextOperation;
     while(rest.startsWith("#pop")){
@@ -79,8 +79,7 @@ ContextSwitcher makeContextSwitcher(QString contextOperation/*, parser, formatCo
             qWarning() << QString("Invalid context operation '%1'").arg(contextOperation);
         }
     } else {
-        // TODO
-        // contextToSwitch = _getContext(rest, parser, formatConverterFunction, None)
+        contextToSwitch = rest;
     }
 
     if (popsCount > 0 || ( ! contextToSwitch.isNull())){
@@ -281,7 +280,7 @@ IncludeRulesRule* loadIncludeRulesRule(const QXmlStreamAttributes& attrs,
         return nullptr;
     }
 
-    return new IncludeRulesRule(params, contextName, false);
+    return new IncludeRulesRule(params, contextName);
 }
 
 AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
@@ -421,6 +420,37 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
     return new Context(name, attribute, lineEndContext, lineBeginContext, fallthroughContext, dynamic, rules);
 }
 
+QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {
+    if (xmlReader.name() != "contexts") {
+        error = QString("<contexts> tag not found. Found <%1>").arg(xmlReader.name().toString());
+        return QList<ContextPtr>();
+    }
+
+    QHash<QString, ContextPtr> contexts;
+    while (xmlReader.readNextStartElement()) {
+        if (xmlReader.name() != "context") {
+            error = QString("Not expected tag when parsing contexts <%1>").arg(xmlReader.name().toString());
+            return QList<ContextPtr>();
+        }
+
+        Context* ctx = loadContext(xmlReader, error);
+        if (ctx == nullptr) {
+            return QList<ContextPtr>();
+        }
+
+        contexts[ctx->name()] = ContextPtr(ctx);
+    }
+
+    foreach(ContextPtr ctx, contexts.values()) {
+        ctx->resolveContextReferences(contexts, error);
+        if ( ! error.isNull()) {
+            return QList<ContextPtr>();
+        }
+    }
+
+    return contexts.values();
+}
+
 Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
@@ -481,23 +511,9 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
         }
     }
 
-    if (xmlReader.name() != "contexts") {
-        error = QString("<contexts> tag not found. Found <%1>").arg(xmlReader.name().toString());
+    QList<ContextPtr> contexts = loadContexts(xmlReader, error);
+    if ( ! error.isNull()) {
         return nullptr;
-    }
-
-    QList<ContextPtr> contexts;
-    while (xmlReader.readNextStartElement()) {
-        if (xmlReader.name() != "context") {
-            error = QString("Not expected tag when parsing contexts <%1>").arg(xmlReader.name().toString());
-            return nullptr;
-        }
-
-        Context* ctx = loadContext(xmlReader, error);
-        if (ctx == nullptr) {
-            return nullptr;
-        }
-        contexts.append(ContextPtr(ctx));
     }
 
     Language* language = new Language(name, extensions, mimetypes,

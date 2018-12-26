@@ -6,9 +6,9 @@ ContextSwitcher::ContextSwitcher()
   : popsCount(0)
 {}
 
-ContextSwitcher::ContextSwitcher(int popsCount, ContextPtr contextToSwitch, const QString& contextOperation)
+ContextSwitcher::ContextSwitcher(int popsCount, const QString& contextName, const QString& contextOperation)
   : popsCount(popsCount),
-    contextToSwitch(contextToSwitch),
+    contextName(contextName),
     contextOperation(contextOperation)
 {}
 
@@ -20,6 +20,23 @@ bool ContextSwitcher::isNull() const {
     return contextOperation.isEmpty();
 }
 
+void ContextSwitcher::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
+    if (contextName.isEmpty()) {
+        return;
+    }
+
+    if (contextName.startsWith('#')) {
+        return; //TODO
+    }
+
+    if ( ! contexts.contains(contextName)) {
+        error = QString("Failed to get context '%1'").arg(contextName);
+        return;
+    }
+
+    context = contexts[contextName];
+}
+
 
 Context::Context(const QString& name,
                  const QString& attribute,
@@ -27,8 +44,8 @@ Context::Context(const QString& name,
                  const ContextSwitcher& lineBeginContext,
                  const ContextSwitcher& fallthroughContext,
                  bool dynamic,
-                 const QList<RulePtr>& rules)
-  : name(name),
+                 const QList<RulePtr>& rules):
+    _name(name),
     attribute(attribute),
     lineEndContext(lineEndContext),
     lineBeginContext(lineBeginContext),
@@ -37,9 +54,8 @@ Context::Context(const QString& name,
     rules(rules)
 {}
 
-
 void Context::printDescription(QTextStream& out) const {
-    out << "\tContext " << this->name << "\n";
+    out << "\tContext " << this->_name << "\n";
     out << "\t\tattribute: " << attribute << "\n";
     if( ! lineEndContext.isNull()) {
         out << "\t\tlineEndContext: " << lineEndContext.toString() << "\n";
@@ -56,5 +72,33 @@ void Context::printDescription(QTextStream& out) const {
 
     foreach(RulePtr rule, rules) {
         rule->printDescription(out);
+    }
+}
+
+QString Context::name() const {
+    return _name;
+}
+
+void Context::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
+    lineEndContext.resolveContextReferences(contexts, error);
+    if ( ! error.isNull()) {
+        return;
+    }
+
+    lineBeginContext.resolveContextReferences(contexts, error);
+    if ( ! error.isNull()) {
+        return;
+    }
+
+    fallthroughContext.resolveContextReferences(contexts, error);
+    if ( ! error.isNull()) {
+        return;
+    }
+
+    foreach(RulePtr rule, rules) {
+        rule->resolveContextReferences(contexts, error);
+        if ( ! error.isNull()) {
+            return;
+        }
     }
 }
