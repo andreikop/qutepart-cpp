@@ -451,6 +451,45 @@ QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {
     return contexts.values();
 }
 
+QStringList loadKeywordList(QXmlStreamReader& xmlReader, QString& error) {
+    QStringList list;
+    while (xmlReader.readNextStartElement()) {
+        if (xmlReader.name() != "item") {
+            error = QString("Not expected tag <%1> when loading list").arg(xmlReader.name().toString());
+            return QStringList();
+        }
+        list << xmlReader.readElementText();
+    }
+
+    return list;
+}
+
+QHash<QString, QStringList> loadKeywordLists(QXmlStreamReader& xmlReader, QString& error) {
+    QHash<QString, QStringList> lists;
+
+    while (xmlReader.readNextStartElement()) {
+        if (xmlReader.name() != "list") {
+            return lists;
+        }
+
+        QXmlStreamAttributes attrs = xmlReader.attributes();
+
+        QString name = getRequiredAttribute(attrs, "name", error);
+        if ( ! error.isNull()) {
+            return QHash<QString, QStringList>();
+        }
+
+        QStringList list = loadKeywordList(xmlReader, error);
+        if ( ! error.isNull()) {
+            return QHash<QString, QStringList>();
+        }
+
+        lists[name] = list;
+    }
+
+    return lists;
+}
+
 Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
@@ -503,17 +542,21 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    while (xmlReader.readNextStartElement()) {
-        if (xmlReader.name() == "list") {
-            xmlReader.skipCurrentElement(); // TODO load list
-        } else {
-            break;
-        }
+    QHash<QString, QStringList> keywordLists = loadKeywordLists(xmlReader, error);
+    if ( ! error.isNull()) {
+        return nullptr;
     }
 
     QList<ContextPtr> contexts = loadContexts(xmlReader, error);
     if ( ! error.isNull()) {
         return nullptr;
+    }
+
+    foreach(ContextPtr context, contexts) {
+        context->setKeywordLists(keywordLists, error);
+        if ( ! error.isNull()) {
+            return nullptr;
+        }
     }
 
     Language* language = new Language(name, extensions, mimetypes,

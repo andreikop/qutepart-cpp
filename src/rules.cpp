@@ -42,6 +42,15 @@ QString AbstractStringRule::args() const {
 }
 
 
+void KeywordRule::setKeywordLists(const QHash<QString, QStringList>& lists, QString& error) {
+    if ( ! lists.contains(value)) {
+        error = QString("List '%1' not found").arg(error);
+        return;
+    }
+    items = lists[value];
+}
+
+
 DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
                                const QString& value,
                                int index):

@@ -102,3 +102,12 @@ void Context::resolveContextReferences(const QHash<QString, ContextPtr>& context
         }
     }
 }
+
+void Context::setKeywordLists(const QHash<QString, QStringList>& lists, QString& error) {
+    foreach(RulePtr rule, rules) {
+        rule->setKeywordLists(lists, error);
+        if ( ! error.isNull()) {
+            break;
+        }
+    }
+}

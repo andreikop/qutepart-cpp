@@ -46,6 +46,7 @@ public:
     QString name() const;
 
     void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
+    void setKeywordLists(const QHash<QString, QStringList>& lists, QString& error);
 
 protected:
     QString _name;
