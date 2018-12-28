@@ -52,12 +52,24 @@ QString AbstractStringRule::args() const {
 }
 
 
-void KeywordRule::setKeywordLists(const QHash<QString, QStringList>& lists, QString& error) {
-    if ( ! lists.contains(value)) {
+KeywordRule::KeywordRule(const AbstractRuleParams& params,
+                         const QString& listName):
+    AbstractRule(params),
+    listName(listName),
+    caseSensitive(true)
+{}
+
+void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
+                                   const QString& deliminators,
+                                   bool caseSensitive,
+                                   QString& error) {
+    if ( ! lists.contains(listName)) {
         error = QString("List '%1' not found").arg(error);
         return;
     }
-    items = lists[value];
+    items = lists[listName];
+    this->caseSensitive = caseSensitive;
+    this->deliminators = deliminators;
 }
 
 

@@ -32,7 +32,7 @@ public:
     virtual QString description() const;
 
     virtual void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
-    virtual void setKeywordLists(const QHash<QString, QStringList>&, QString&) {};
+    virtual void setKeywordParams(const QHash<QString, QStringList>&, const QString&, bool, QString&) {};
     void setStyles(const QHash<QString, StylePtr>& styles, QString& error);
 
 protected:
@@ -65,15 +65,24 @@ protected:
 };
 
 
-class KeywordRule: public AbstractStringRule {
-    using AbstractStringRule::AbstractStringRule;
-
+class KeywordRule: public AbstractRule {
 public:
-    void setKeywordLists(const QHash<QString, QStringList>& lists, QString& error) override;
+    KeywordRule(const AbstractRuleParams& params,
+                const QString& listName);
+
+    void setKeywordParams(const QHash<QString, QStringList>& lists,
+                          const QString& deliminators,
+                          bool caseSensitive,
+                          QString& error) override;
+
     QString name() const override {return "Keyword";};
+    QString args() const override {return listName;};
 
 private:
+    QString listName;
     QStringList items;
+    bool caseSensitive;
+    QString deliminators;
 };
 
 

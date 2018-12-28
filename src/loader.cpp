@@ -5,6 +5,7 @@
 
 #include "loader.h"
 
+const QString DEFAULT_DELIMINATOR = " \t.():!+,-<=>%&*/;?[]^{|}~\\";
 
 QList<RulePtr> loadRules(QXmlStreamReader& xmlReader, QString& error);
 
@@ -182,6 +183,17 @@ template<class RuleClass> RuleClass* loadStringRule(const QXmlStreamAttributes& 
     return new RuleClass(params, value, insensitive);
 }
 
+KeywordRule* loadKeywordRule(const QXmlStreamAttributes& attrs,
+                             const AbstractRuleParams& params,
+                             QString& error) {
+    QString listName = getRequiredAttribute(attrs, "String", error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    return new KeywordRule(params, listName);
+}
+
 DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
                                const AbstractRuleParams& params,
                                QString& error) {
@@ -307,7 +319,7 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
 
     AbstractRule* result = nullptr;
     if (name == "keyword") {
-        result = loadStringRule<KeywordRule>(attrs, params, error);
+        result = loadKeywordRule(attrs, params, error);
     } else if (name == "DetectChar") {
         result = loadDetectChar(attrs, params, error);
     } else if (name == "Detect2Chars") {
@@ -554,6 +566,58 @@ QHash<QString, StylePtr> loadStyles(QXmlStreamReader& xmlReader, QString& error)
     return styles;
 }
 
+QSet<QChar> strToSet(const QString& str) {
+    QSet<QChar> res;
+    foreach(QChar chr, str) {
+        res.insert(chr);
+    }
+
+    return res;
+}
+
+QString setToStr(const QSet<QChar>& set) {
+    QString res;
+    foreach(QChar chr, set) {
+        res += chr;
+    }
+
+    return res;
+}
+
+void loadKeywordParams(const QXmlStreamAttributes& attrs,
+                       QString& keywordDeliminators,
+                       bool& keywordsKeySensitive,
+                       QString& error) {
+    if (attrs.hasAttribute("casesensitive")) {
+        keywordsKeySensitive = parseBoolAttribute(getAttribute(attrs, "casesensitive"), error);
+        if ( ! error.isNull()) {
+            return;
+        }
+    }
+
+    QSet<QChar> deliminatorSet = strToSet(keywordDeliminators);
+
+    if (attrs.hasAttribute("weakDeliminator")) {
+        QSet<QChar> weakSet = strToSet(getAttribute(attrs, "weakDeliminator"));
+        deliminatorSet.subtract(weakSet);
+    }
+
+    if (attrs.hasAttribute("additionalDeliminator")) {
+        QSet<QChar> additionalSet = strToSet(getAttribute(attrs, "additionalDeliminator"));
+        deliminatorSet.unite(additionalSet);
+    }
+
+    keywordDeliminators = setToStr(deliminatorSet);
+}
+
+void makeKeywordsLowerCase(QHash<QString, QStringList>& keywordLists) {
+    foreach(QStringList list, keywordLists) {
+        for(int i = 0; i < list.size(); i++) {
+            list[i] = list[i].toLower();
+        }
+    }
+}
+
 Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
@@ -621,8 +685,27 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
+    bool keywordsKeySensitive = true;
+    QString keywordDeliminators = DEFAULT_DELIMINATOR;
+
+    while ( ! xmlReader.atEnd()) {
+        xmlReader.readNextStartElement();
+
+        if (xmlReader.name() == "keywords") {
+            loadKeywordParams(xmlReader.attributes(), keywordDeliminators, keywordsKeySensitive, error);
+            if ( ! error.isNull()) {
+                return nullptr;
+            }
+
+            // Convert all list items to lowercase
+            if ( ! keywordsKeySensitive) {
+                makeKeywordsLowerCase(keywordLists);
+            }
+        }
+    }
+
     foreach(ContextPtr context, contexts) {
-        context->setKeywordLists(keywordLists, error);
+        context->setKeywordParams(keywordLists, keywordDeliminators, keywordsKeySensitive, error);
         if ( ! error.isNull()) {
             return nullptr;
         }

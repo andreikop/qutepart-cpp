@@ -48,7 +48,10 @@ public:
     QString name() const;
 
     void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
-    void setKeywordLists(const QHash<QString, QStringList>& lists, QString& error);
+    void setKeywordParams(const QHash<QString, QStringList>& lists,
+                          const QString& deliminators,
+                          bool caseSensitive,
+                          QString& error);
     void setStyles(const QHash<QString, StylePtr>& styles, QString& error);
 
 protected:
