@@ -102,7 +102,7 @@ ContextSwitcher makeContextSwitcher(QString contextOperation) {
 }
 
 AbstractRuleParams parseAbstractRuleParams(const QXmlStreamAttributes& attrs, QString& error) {
-    QString attribute = getAttribute(attrs, "attribute");
+    QString attribute = getAttribute(attrs, "attribute").toLower();
 
     QString contextText = getAttribute(attrs, "context", "#stay");
     ContextSwitcher context = makeContextSwitcher(contextText);
@@ -511,6 +511,7 @@ QHash<QString, StylePtr> loadStyles(QXmlStreamReader& xmlReader, QString& error)
     }
 
     QHash<QString, StylePtr> styles;
+
     while (xmlReader.readNextStartElement()) {
         if (xmlReader.name() != "itemData") {
             error = QString("Not expected tag when parsing itemDatas <%1>").arg(xmlReader.name().toString());
@@ -545,7 +546,9 @@ QHash<QString, StylePtr> loadStyles(QXmlStreamReader& xmlReader, QString& error)
             }
         }
 
-        styles[name] = StylePtr(new Style(defStyleNum, color, selColor, flags));
+        styles[name.toLower()] = StylePtr(new Style(defStyleNum, color, selColor, flags));
+
+        xmlReader.readNextStartElement();
     }
 
     return styles;
