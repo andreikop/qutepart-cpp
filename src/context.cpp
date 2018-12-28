@@ -111,3 +111,20 @@ void Context::setKeywordLists(const QHash<QString, QStringList>& lists, QString&
         }
     }
 }
+
+void Context::setStyles(const QHash<QString, StylePtr>& styles, QString& error) {
+    if ( ! attribute.isNull()) {
+        if ( ! styles.contains(attribute)) {
+            error = QString("Not found context %1 attribute %2").arg(_name, attribute);
+            return;
+        }
+        style = styles[attribute];
+    }
+
+    foreach(RulePtr rule, rules) {
+        rule->setStyles(styles, error);
+        if ( ! error.isNull()) {
+            break;
+        }
+    }
+}

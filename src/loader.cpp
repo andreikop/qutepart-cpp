@@ -502,31 +502,31 @@ QHash<QString, QStringList> loadKeywordLists(QXmlStreamReader& xmlReader, QStrin
     return lists;
 }
 
-QHash<QString, Style> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
+QHash<QString, StylePtr> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
     xmlReader.readNextStartElement();
 
     if (xmlReader.name() != "itemDatas") {
         error = QString("<itemDatas> tag not found. Found <%1>").arg(xmlReader.name().toString());
-        return QHash<QString, Style>();
+        return QHash<QString, StylePtr>();
     }
 
-    QHash<QString, Style> styles;
+    QHash<QString, StylePtr> styles;
     while (xmlReader.readNextStartElement()) {
         if (xmlReader.name() != "itemData") {
             error = QString("Not expected tag when parsing itemDatas <%1>").arg(xmlReader.name().toString());
-            return QHash<QString, Style>();
+            return QHash<QString, StylePtr>();
         }
 
         QXmlStreamAttributes attrs = xmlReader.attributes();
 
         QString name = getRequiredAttribute(attrs, "name", error);
         if ( ! error.isNull()) {
-            return QHash<QString, Style>();
+            return QHash<QString, StylePtr>();
         }
 
         QString defStyleNum = getRequiredAttribute(attrs, "defStyleNum", error);
         if ( ! error.isNull()) {
-            return QHash<QString, Style>();
+            return QHash<QString, StylePtr>();
         }
 
         QString color = getAttribute(attrs, "color");
@@ -538,14 +538,14 @@ QHash<QString, Style> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
             bool val = parseBoolAttribute(attrsMap.value(flagName, "false"), error);
             if ( ! error.isNull()) {
                 error = QString("Failed to parse 'spellChecking' of itemData: %1").arg(error);
-                return QHash<QString, Style>();
+                return QHash<QString, StylePtr>();
             }
             if (val) {
                 flags << flagName;
             }
         }
 
-        styles[name] = Style(defStyleNum, color, selColor, flags);
+        styles[name] = StylePtr(new Style(defStyleNum, color, selColor, flags));
     }
 
     return styles;
@@ -613,13 +613,18 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    QHash<QString, Style> styles = loadStyles(xmlReader, error);
+    QHash<QString, StylePtr> styles = loadStyles(xmlReader, error);
     if ( ! error.isNull()) {
         return nullptr;
     }
 
     foreach(ContextPtr context, contexts) {
         context->setKeywordLists(keywordLists, error);
+        if ( ! error.isNull()) {
+            return nullptr;
+        }
+
+        context->setStyles(styles, error);
         if ( ! error.isNull()) {
             return nullptr;
         }

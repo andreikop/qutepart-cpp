@@ -4,6 +4,8 @@
 #include <QSharedPointer>
 #include <QHash>
 
+#include "style.h"
+
 
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
@@ -47,6 +49,7 @@ public:
 
     void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
     void setKeywordLists(const QHash<QString, QStringList>& lists, QString& error);
+    void setStyles(const QHash<QString, StylePtr>& styles, QString& error);
 
 protected:
     QString _name;
@@ -56,4 +59,6 @@ protected:
     ContextSwitcher fallthroughContext;
     bool dynamic;
     QList<RulePtr> rules;
+
+    StylePtr style;
 };
