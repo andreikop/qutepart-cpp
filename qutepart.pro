@@ -13,11 +13,13 @@ SOURCES = \
     src/main.cpp \
     src/rules.cpp \
     src/qutepart.cpp \
-    src/syntax_highlighter.cpp
+    src/syntax_highlighter.cpp \
+    src/style.cpp
 
 HEADERS = \
     src/context.h \
     src/language.h \
     src/qutepart.h \
     src/rules.h \
-    src/syntax_highlighter.h
+    src/syntax_highlighter.h \
+    src/style.h

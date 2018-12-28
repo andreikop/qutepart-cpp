@@ -1,10 +1,22 @@
 #include <QDebug>
 
 #include "rules.h"
+#include "style.h"
+
 #include "loader.h"
 
 
 QList<RulePtr> loadRules(QXmlStreamReader& xmlReader, QString& error);
+
+
+QHash<QString, QString> attrsToInsensitiveHashMap(const QXmlStreamAttributes& attrs) {
+    QHash<QString, QString> result;
+    foreach(const QXmlStreamAttribute attr, attrs) {
+        result[attr.name().toString().toLower()] = attr.value().toString();
+    }
+
+    return result;
+}
 
 
 QString getAttribute(QXmlStreamAttributes attrs, QString name,
@@ -490,6 +502,55 @@ QHash<QString, QStringList> loadKeywordLists(QXmlStreamReader& xmlReader, QStrin
     return lists;
 }
 
+QHash<QString, Style> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
+    xmlReader.readNextStartElement();
+
+    if (xmlReader.name() != "itemDatas") {
+        error = QString("<itemDatas> tag not found. Found <%1>").arg(xmlReader.name().toString());
+        return QHash<QString, Style>();
+    }
+
+    QHash<QString, Style> styles;
+    while (xmlReader.readNextStartElement()) {
+        if (xmlReader.name() != "itemData") {
+            error = QString("Not expected tag when parsing itemDatas <%1>").arg(xmlReader.name().toString());
+            return QHash<QString, Style>();
+        }
+
+        QXmlStreamAttributes attrs = xmlReader.attributes();
+
+        QString name = getRequiredAttribute(attrs, "name", error);
+        if ( ! error.isNull()) {
+            return QHash<QString, Style>();
+        }
+
+        QString defStyleNum = getRequiredAttribute(attrs, "defStyleNum", error);
+        if ( ! error.isNull()) {
+            return QHash<QString, Style>();
+        }
+
+        QString color = getAttribute(attrs, "color");
+        QString selColor = getAttribute(attrs, "color");
+
+        QHash<QString, QString> attrsMap = attrsToInsensitiveHashMap(attrs);
+        QStringList flags;
+        foreach(QString flagName, QStringList() << "spellChecking" << "italic" << "bold" << "underline" << "strikeout") {
+            bool val = parseBoolAttribute(attrsMap.value(flagName, "false"), error);
+            if ( ! error.isNull()) {
+                error = QString("Failed to parse 'spellChecking' of itemData: %1").arg(error);
+                return QHash<QString, Style>();
+            }
+            if (val) {
+                flags << flagName;
+            }
+        }
+
+        styles[name] = Style(defStyleNum, color, selColor, flags);
+    }
+
+    return styles;
+}
+
 Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
@@ -548,6 +609,11 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     }
 
     QList<ContextPtr> contexts = loadContexts(xmlReader, error);
+    if ( ! error.isNull()) {
+        return nullptr;
+    }
+
+    QHash<QString, Style> styles = loadStyles(xmlReader, error);
     if ( ! error.isNull()) {
         return nullptr;
     }
