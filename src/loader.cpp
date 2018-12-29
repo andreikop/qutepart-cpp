@@ -571,6 +571,14 @@ QHash<QString, Style> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
         xmlReader.readNextStartElement();
     }
 
+    // HACK not documented, but 'normal' attribute is used by some parsers without declaration
+    if ( ! styles.contains("normal")) {
+        styles["normal"] = makeStyle("dsNormal", QString::null, QString::null, QStringList(), error);
+    }
+    if ( ! styles.contains("string")) {
+        styles["string"] = makeStyle("dsString", QString::null, QString::null, QStringList(), error);
+    }
+
     return styles;
 }
 

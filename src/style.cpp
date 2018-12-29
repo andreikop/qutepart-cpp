@@ -101,7 +101,11 @@ QSharedPointer<QTextCharFormat> makeFormat(
         format.setFontStrikeOut(true);
     }
 
-    return FormatPtr(new QTextCharFormat(format));
+    if (format.isEmpty()) {
+        return FormatPtr();
+    } else {
+        return FormatPtr(new QTextCharFormat(format));
+    }
 }
 
 /* ' ' for code
