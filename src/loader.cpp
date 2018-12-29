@@ -450,7 +450,8 @@ QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {
         return QList<ContextPtr>();
     }
 
-    QHash<QString, ContextPtr> contexts;
+    QList<ContextPtr> contexts; // result
+    QHash<QString, ContextPtr> contextMap;  // to resolve references
     while (xmlReader.readNextStartElement()) {
         if (xmlReader.name() != "context") {
             error = QString("Not expected tag when parsing contexts <%1>").arg(xmlReader.name().toString());
@@ -462,17 +463,19 @@ QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {
             return QList<ContextPtr>();
         }
 
-        contexts[ctx->name()] = ContextPtr(ctx);
+        ContextPtr ctxPtr = ContextPtr(ctx);
+        contexts.append(ctxPtr);
+        contextMap[ctx->name()] = ctxPtr;
     }
 
-    foreach(ContextPtr ctx, contexts.values()) {
-        ctx->resolveContextReferences(contexts, error);
+    foreach(ContextPtr ctx, contexts) {
+        ctx->resolveContextReferences(contextMap, error);
         if ( ! error.isNull()) {
             return QList<ContextPtr>();
         }
     }
 
-    return contexts.values();
+    return contexts;
 }
 
 QStringList loadKeywordList(QXmlStreamReader& xmlReader, QString& error) {
