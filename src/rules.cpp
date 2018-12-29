@@ -23,13 +23,14 @@ void AbstractRule::resolveContextReferences(const QHash<QString, ContextPtr>& co
     context.resolveContextReferences(contexts, error);
 }
 
-void AbstractRule::setStyles(const QHash<QString, StylePtr>& styles, QString& error) {
+void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error) {
     if ( ! attribute.isNull()) {
         if ( ! styles.contains(attribute)) {
             error = QString("Not found rule %1 attribute %2").arg(description(), attribute);
             return;
         }
         style = styles[attribute];
+        style.updateTextType(attribute);
     }
 }
 

@@ -33,7 +33,7 @@ public:
 
     virtual void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
     virtual void setKeywordParams(const QHash<QString, QStringList>&, const QString&, bool, QString&) {};
-    void setStyles(const QHash<QString, StylePtr>& styles, QString& error);
+    void setStyles(const QHash<QString, Style>& styles, QString& error);
 
 protected:
     virtual QString name() const {return "AbstractRule";};
@@ -48,7 +48,7 @@ protected:
     int column;                 // -1 if not set
     bool dynamic;
 
-    StylePtr style;
+    Style style;
 };
 
 // A rule which has 1 string as a parameter

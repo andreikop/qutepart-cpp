@@ -52,7 +52,7 @@ public:
                           const QString& deliminators,
                           bool caseSensitive,
                           QString& error);
-    void setStyles(const QHash<QString, StylePtr>& styles, QString& error);
+    void setStyles(const QHash<QString, Style>& styles, QString& error);
 
 protected:
     QString _name;
@@ -63,5 +63,5 @@ protected:
     bool dynamic;
     QList<RulePtr> rules;
 
-    StylePtr style;
+    Style style;
 };
