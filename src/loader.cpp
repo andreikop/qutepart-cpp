@@ -85,6 +85,9 @@ ContextSwitcher makeContextSwitcher(QString contextOperation) {
     while(rest.startsWith("#pop")){
         popsCount += 1;
         rest = rest.remove(0, 4); // 4 is length of '#pop'
+        if (rest.startsWith("!")) {
+            rest = rest.remove(0, 1); // remove !
+        }
     }
 
     if(rest == "#stay"){

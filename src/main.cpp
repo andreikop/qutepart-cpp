@@ -68,6 +68,6 @@ int main(int argc, char** argv) {
         lang = argv[1];
     }
     // return runEditor(argc, argv);
-    // parseAllFiles();
-    showSyntax(lang + ".xml");
+    parseAllFiles();
+    // showSyntax(lang + ".xml");
 }
