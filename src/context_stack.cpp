@@ -1,5 +1,8 @@
 #include <QDebug>
 
+#include "context_switcher.h"
+#include "context.h"
+
 #include "context_stack.h"
 
 // FIXME avoid data where possible
@@ -19,31 +22,33 @@ ContextStack::ContextStack(const QVector<ContextStackItem>& items):
     items(items)
 {}
 
-
-ContextStack ContextStack::pop(int count) {
-    if (items.size() - 1 < count) {
-        qWarning() << "#pop value is too big " << items.size() << count;
-
-        if (items.size() > 1) {
-            return pop(items.size() - 1);
-        } else {
-            return *this;
-        }
-    }
-
-    return ContextStack(items.mid(0, items.size() - 1));
-}
-
-ContextStack ContextStack::append(const Context* context, void* data) {
-    auto newItems = items;
-    newItems.append(ContextStackItem(context, data));
-    return ContextStack(newItems);
-}
-
 const Context* ContextStack::currentContext() {
     return items.last().context;
 }
 
 const void* ContextStack::currentData() {
     return items.last().data;
+}
+
+ContextStack ContextStack::switchContext(const ContextSwitcher& operation, const void* data) const{
+    auto newItems = items;
+
+    if (operation.popsCount() > 0) {
+        if (newItems.size() - 1 < operation.popsCount()) {
+            qWarning() << "#pop value is too big " << newItems.size() << operation.popsCount();
+
+            if (newItems.size() > 1) {
+                newItems = newItems.mid(0, 1);
+            }        }
+    }
+
+    if ( ! operation.context().isNull() ) {
+        if ( ! operation.context()->dynamic()) {
+            data = nullptr;
+        }
+
+        newItems.append(ContextStackItem(operation.context().data(), data));
+    }
+
+    return ContextStack(newItems);
 }

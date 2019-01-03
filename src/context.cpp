@@ -2,41 +2,6 @@
 #include "rules.h"
 
 
-ContextSwitcher::ContextSwitcher()
-  : popsCount(0)
-{}
-
-ContextSwitcher::ContextSwitcher(int popsCount, const QString& contextName, const QString& contextOperation)
-  : popsCount(popsCount),
-    contextName(contextName),
-    contextOperation(contextOperation)
-{}
-
-QString ContextSwitcher::toString() const {
-    return contextOperation;
-}
-
-bool ContextSwitcher::isNull() const {
-    return contextOperation.isEmpty();
-}
-
-void ContextSwitcher::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
-    if (contextName.isEmpty()) {
-        return;
-    }
-
-    if (contextName.startsWith('#')) {
-        return; //TODO
-    }
-
-    if ( ! contexts.contains(contextName)) {
-        error = QString("Failed to get context '%1'").arg(contextName);
-        return;
-    }
-
-    context = contexts[contextName];
-}
-
 
 Context::Context(const QString& name,
                  const QString& attribute,
@@ -50,7 +15,7 @@ Context::Context(const QString& name,
     lineEndContext(lineEndContext),
     lineBeginContext(lineBeginContext),
     fallthroughContext(fallthroughContext),
-    dynamic(dynamic),
+    _dynamic(dynamic),
     rules(rules)
 {}
 
@@ -66,7 +31,7 @@ void Context::printDescription(QTextStream& out) const {
     if( ! fallthroughContext.isNull()) {
         out << "\t\tfallthroughContext: " << fallthroughContext.toString() << "\n";
     }
-    if(dynamic) {
+    if(_dynamic) {
         out << "\t\tdynamic\n";
     }
 

@@ -3,6 +3,8 @@
 #include <QSyntaxHighlighter>
 #include <QTextDocument>
 
+#include "text_block_user_data.h"
+
 
 class SyntaxHighlighter: public QSyntaxHighlighter {
     Q_OBJECT

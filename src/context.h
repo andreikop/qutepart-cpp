@@ -5,32 +5,15 @@
 #include <QHash>
 
 #include "style.h"
+#include "context_stack.h"
+#include "context_switcher.h"
 
 
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
-class ContextSwitcher;
 
 class AbstractRule;
 typedef QSharedPointer<AbstractRule> RulePtr;
-
-
-class ContextSwitcher {
-public:
-    ContextSwitcher();
-    ContextSwitcher(int popsCount, const QString& contextName, const QString& contextOperation);
-
-    QString toString() const;
-    bool isNull() const;
-
-    void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
-
-protected:
-    int popsCount;
-    QString contextName;
-    ContextPtr context;
-    QString contextOperation;
-};
 
 
 class Context {
@@ -54,13 +37,15 @@ public:
                           QString& error);
     void setStyles(const QHash<QString, Style>& styles, QString& error);
 
+    bool dynamic() const {return _dynamic;};
+
 protected:
     QString _name;
     QString attribute;
     ContextSwitcher lineEndContext;
     ContextSwitcher lineBeginContext;
     ContextSwitcher fallthroughContext;
-    bool dynamic;
+    bool _dynamic;
     QList<RulePtr> rules;
 
     Style style;

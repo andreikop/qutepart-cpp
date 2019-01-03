@@ -1,5 +1,7 @@
 #pragma once
 
+class ContextSwitcher;
+
 
 class Context;
 
@@ -18,11 +20,8 @@ private:
     ContextStack(const QVector<ContextStackItem>& items);
 
 public:
-    // Returns new context stack, which doesn't contain few levels
-    ContextStack pop(int count);
-
-    // Returns new context, which contains current stack and new frame
-    ContextStack append(const Context* context, void* data);
+    // Apply context switch operation and return new context
+    ContextStack switchContext(const ContextSwitcher& operation, const void* data) const;
 
     // Get current context
     const Context* currentContext();
