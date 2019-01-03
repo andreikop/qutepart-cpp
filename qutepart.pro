@@ -14,7 +14,9 @@ SOURCES = \
     src/rules.cpp \
     src/qutepart.cpp \
     src/syntax_highlighter.cpp \
-    src/style.cpp
+    src/style.cpp \
+    src/context_stack.cpp \
+
 
 HEADERS = \
     src/context.h \
@@ -22,4 +24,5 @@ HEADERS = \
     src/qutepart.h \
     src/rules.h \
     src/syntax_highlighter.h \
-    src/style.h
+    src/style.h \
+    src/context_stack.h \
