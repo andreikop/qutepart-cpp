@@ -12,6 +12,7 @@ public:
 
     virtual ~Qutepart();
 
+    void initHighlighter(const QString& path);
 private:
     SyntaxHighlighter* highlighter;
 };

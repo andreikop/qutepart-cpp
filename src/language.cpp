@@ -37,3 +37,11 @@ void Language::printDescription(QTextStream& out) const {
         ctx->printDescription(out);
     }
 }
+
+void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats) {
+    QTextLayout::FormatRange fmt;
+    fmt.start = 8;
+    fmt.length = 4;
+    fmt.format.setForeground(Qt::red);
+    formats.append(fmt);
+}

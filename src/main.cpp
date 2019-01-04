@@ -13,6 +13,7 @@
 int runEditor(int argc, char** argv) {
     QApplication app(argc, argv);
     Qutepart qutepart;
+    qutepart.initHighlighter("../syntax/python.xml");
     qutepart.show();
 
     qWarning() << "exec";
@@ -67,7 +68,7 @@ int main(int argc, char** argv) {
     if (argc > 1) {
         lang = argv[1];
     }
-    // return runEditor(argc, argv);
-    parseAllFiles();
+    return runEditor(argc, argv);
+    // parseAllFiles();
     // showSyntax(lang + ".xml");
 }

@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QList>
 #include <QSharedPointer>
+#include <QTextBlock>
 
 #include "context.h"
 
@@ -19,6 +20,8 @@ public:
              const QList<ContextPtr>& contexts);
 
     void printDescription(QTextStream& out) const;
+
+    void highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats);
 
 protected:
     QString name;
