@@ -19,6 +19,7 @@ SOURCES = \
     src/context_switcher.cpp \
     src/text_block_user_data.cpp \
     src/text_to_match.cpp \
+    src/match_result.cpp \
 
 
 HEADERS = \
@@ -31,3 +32,4 @@ HEADERS = \
     src/context_stack.h \
     src/context_switcher.h \
     src/text_to_match.h \
+    src/match_result.h \

@@ -2,10 +2,10 @@
 
 
 AbstractRule::AbstractRule(const AbstractRuleParams& params):
+    lookAhead(params.lookAhead),
     textType(params.textType),
     attribute(params.attribute),
     context(params.context),
-    lookAhead(params.lookAhead),
     firstNonSpace(params.firstNonSpace),
     column(params.column),
     dynamic(params.dynamic)

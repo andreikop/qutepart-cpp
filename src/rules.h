@@ -35,6 +35,8 @@ public:
     virtual void setKeywordParams(const QHash<QString, QStringList>&, const QString&, bool, QString&) {};
     void setStyles(const QHash<QString, Style>& styles, QString& error);
 
+    bool lookAhead;
+
 protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
@@ -43,7 +45,6 @@ protected:
     char textType;              // may be 0
     QString attribute;          // may be null
     ContextSwitcher context;
-    bool lookAhead;
     bool firstNonSpace;
     int column;                 // -1 if not set
     bool dynamic;
