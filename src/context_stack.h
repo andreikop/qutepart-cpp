@@ -16,6 +16,9 @@ struct ContextStackItem {
 
 
 class ContextStack {
+public:
+    ContextStack(Context* context);
+
 private:
     ContextStack(const QVector<ContextStackItem>& items);
 

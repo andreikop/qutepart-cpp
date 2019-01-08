@@ -638,7 +638,7 @@ void makeKeywordsLowerCase(QHash<QString, QStringList>& keywordLists) {
 }
 
 // Load keyword lists, contexts, attributes
-QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& error) {
+QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywordDeliminators, QString& error) {
     QHash<QString, QStringList> keywordLists = loadKeywordLists(xmlReader, error);
     if ( ! error.isNull()) {
         return QList<ContextPtr>();
@@ -655,7 +655,7 @@ QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& error
     }
 
     bool keywordsKeySensitive = true;
-    QString keywordDeliminators = DEFAULT_DELIMINATOR;
+    keywordDeliminators = DEFAULT_DELIMINATOR;
 
     while ( ! xmlReader.atEnd()) {
         xmlReader.readNextStartElement();
@@ -740,12 +740,14 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    QList<ContextPtr> contexts = loadLanguageSytnax(xmlReader, error);
+    QString keywordDeliminators;
+    QList<ContextPtr> contexts = loadLanguageSytnax(xmlReader, keywordDeliminators, error);
     if ( ! error.isNull()) {
         return nullptr;
     }
 
     Language* language = new Language(name, extensions, mimetypes,
-                                      priority, hidden, indenter, contexts);
+                                      priority, hidden, indenter, contexts,
+                                      keywordDeliminators);
     return language;
 }

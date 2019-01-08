@@ -7,6 +7,7 @@
 #include <QTextBlock>
 
 #include "context.h"
+#include "context_stack.h"
 
 
 class Language {
@@ -17,7 +18,8 @@ public:
              int priority,
              bool hidden,
              const QString& indenter,
-             const QList<ContextPtr>& contexts);
+             const QList<ContextPtr>& contexts,
+             const QString& keywordDeliminators);
 
     void printDescription(QTextStream& out) const;
 
@@ -32,4 +34,6 @@ protected:
     QString indenter;
 
     QList<ContextPtr> contexts;
+    ContextStack defaultContextStack;
+    QString keywordDeliminators;
 };

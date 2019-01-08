@@ -18,6 +18,11 @@ ContextStackItem::ContextStackItem(const Context* context, const void* data):
     data(data)
 {}
 
+ContextStack::ContextStack(Context* context)
+{
+    items.append(ContextStackItem(context, nullptr));
+}
+
 ContextStack::ContextStack(const QVector<ContextStackItem>& items):
     items(items)
 {}
