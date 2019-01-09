@@ -2,6 +2,7 @@
 
 #include "text_block_user_data.h"
 #include "text_to_match.h"
+#include "context_switcher.h"
 
 #include "language.h"
 
@@ -69,37 +70,38 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
 
     TextToMatch textToMatch(block.text(), keywordDeliminators);
 
-    bool lineContinue = false;
     QString textTypeMap(textToMatch.text.length(), ' ');
+
+    bool lineContinue = false;
 
     while ( ! textToMatch.text.isEmpty()) {
         qDebug() << "In context " << contextStack.currentContext()->name();
 
-#if 0
-        length, newContextStack, segments, textTypeMapPart, lineContinue = \
-                    contextStack.currentContext().parseBlock(contextStack, currentColumnIndex, text)
-
-        highlightedSegments += segments
-        contextStack = newContextStack
-        textTypeMap += textTypeMapPart
-        currentColumnIndex += length
-#endif
+        const Context* context = contextStack.currentContext();
+        ContextSwitcher* contextSwitcher = context->parseBlock(textToMatch, formats, textTypeMap, lineContinue);
+        if (contextSwitcher != nullptr) {
+            contextStack = contextStack.switchContext(*contextSwitcher, nullptr);
+        } else if ( ! textToMatch.text.isEmpty()) {
+            qWarning() << "Loop detected in context " << context->name() <<
+                ". parseBlock() returned but context haven't been switched and text is not empty";
+                break;
+        }
     }
 
-#if 0
     if ( ! lineContinue) {
-        while (contextStack.currentContext().lineEndContext != nullptr) {
-            oldStack = contextStack
-            contextStack = contextStack.currentContext().lineEndContext.getNextContextStack(contextStack)
-            if oldStack == contextStack:  # avoid infinite while loop if nothing to switch
-                break
+        while ( ! contextStack.currentContext()->lineEndContext().isNull()) {
+            ContextStack oldStack = contextStack;
+            contextStack = contextStack.switchContext(contextStack.currentContext()->lineEndContext(), nullptr);
+            if (oldStack == contextStack) {  // avoid infinite while loop if nothing to switch
+                break;
+            }
         }
 
         // this code is not tested, because lineBeginContext is not defined by any xml file
-        if (contextStack.currentContext().lineBeginContext != nullptr):
-            contextStack = contextStack.currentContext().lineBeginContext.getNextContextStack(contextStack);
+        if ( ! contextStack.currentContext()->lineBeginContext().isNull()) {
+            contextStack = contextStack.switchContext(contextStack.currentContext()->lineBeginContext(), nullptr);
+        }
     }
-#endif
 
     block.setUserData(new TextBlockUserData(textTypeMap, contextStack));
 }

@@ -1,5 +1,6 @@
 #include "context.h"
 #include "rules.h"
+#include "text_to_match.h"
 
 
 
@@ -12,8 +13,8 @@ Context::Context(const QString& name,
                  const QList<RulePtr>& rules):
     _name(name),
     attribute(attribute),
-    lineEndContext(lineEndContext),
-    lineBeginContext(lineBeginContext),
+    _lineEndContext(lineEndContext),
+    _lineBeginContext(lineBeginContext),
     fallthroughContext(fallthroughContext),
     _dynamic(dynamic),
     rules(rules)
@@ -22,11 +23,11 @@ Context::Context(const QString& name,
 void Context::printDescription(QTextStream& out) const {
     out << "\tContext " << this->_name << "\n";
     out << "\t\tattribute: " << attribute << "\n";
-    if( ! lineEndContext.isNull()) {
-        out << "\t\tlineEndContext: " << lineEndContext.toString() << "\n";
+    if( ! _lineEndContext.isNull()) {
+        out << "\t\tlineEndContext: " << _lineEndContext.toString() << "\n";
     }
-    if( ! lineBeginContext.isNull()) {
-        out << "\t\tlineBeginContext: " << lineBeginContext.toString() << "\n";
+    if( ! _lineBeginContext.isNull()) {
+        out << "\t\tlineBeginContext: " << _lineBeginContext.toString() << "\n";
     }
     if( ! fallthroughContext.isNull()) {
         out << "\t\tfallthroughContext: " << fallthroughContext.toString() << "\n";
@@ -45,12 +46,12 @@ QString Context::name() const {
 }
 
 void Context::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
-    lineEndContext.resolveContextReferences(contexts, error);
+    _lineEndContext.resolveContextReferences(contexts, error);
     if ( ! error.isNull()) {
         return;
     }
 
-    lineBeginContext.resolveContextReferences(contexts, error);
+    _lineBeginContext.resolveContextReferences(contexts, error);
     if ( ! error.isNull()) {
         return;
     }
@@ -96,4 +97,12 @@ void Context::setStyles(const QHash<QString, Style>& styles, QString& error) {
             break;
         }
     }
+}
+
+ContextSwitcher* Context::parseBlock(TextToMatch& textToMatch,
+                                     QVector<QTextLayout::FormatRange>& formats,
+                                     QString& textTypeMap,
+                                     bool& lineContinue) const {
+
+    return nullptr;
 }

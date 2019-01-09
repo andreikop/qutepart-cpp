@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QSharedPointer>
 #include <QHash>
+#include <QTextLayout>
 
 #include "style.h"
 #include "context_stack.h"
@@ -14,6 +15,8 @@ typedef QSharedPointer<Context> ContextPtr;
 
 class AbstractRule;
 typedef QSharedPointer<AbstractRule> RulePtr;
+
+class TextToMatch;
 
 
 class Context {
@@ -38,12 +41,19 @@ public:
     void setStyles(const QHash<QString, Style>& styles, QString& error);
 
     bool dynamic() const {return _dynamic;};
+    ContextSwitcher lineBeginContext() const {return _lineBeginContext;};
+    ContextSwitcher lineEndContext() const {return _lineEndContext;};
+
+    ContextSwitcher* parseBlock(TextToMatch& textToMatch,
+                                QVector<QTextLayout::FormatRange>& formats,
+                                QString& textTypeMap,
+                                bool& lineContinue) const;
 
 protected:
     QString _name;
     QString attribute;
-    ContextSwitcher lineEndContext;
-    ContextSwitcher lineBeginContext;
+    ContextSwitcher _lineEndContext;
+    ContextSwitcher _lineBeginContext;
     ContextSwitcher fallthroughContext;
     bool _dynamic;
     QList<RulePtr> rules;

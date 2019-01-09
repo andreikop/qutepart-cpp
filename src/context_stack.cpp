@@ -18,6 +18,10 @@ ContextStackItem::ContextStackItem(const Context* context, const void* data):
     data(data)
 {}
 
+bool ContextStackItem::operator==(const ContextStackItem& other) const {
+    return context == context && data == data;
+}
+
 ContextStack::ContextStack(Context* context)
 {
     items.append(ContextStackItem(context, nullptr));
@@ -26,6 +30,10 @@ ContextStack::ContextStack(Context* context)
 ContextStack::ContextStack(const QVector<ContextStackItem>& items):
     items(items)
 {}
+
+bool ContextStack::operator==(const ContextStack& other) const{
+    return items == other.items;
+}
 
 const Context* ContextStack::currentContext() {
     return items.last().context;

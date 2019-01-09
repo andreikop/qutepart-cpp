@@ -10,6 +10,8 @@ struct ContextStackItem {
     ContextStackItem();
     ContextStackItem(const Context* context, const void* data);
 
+    bool operator==(const ContextStackItem& other) const;
+
     const Context* context;
     const void* data;
 };
@@ -18,6 +20,8 @@ struct ContextStackItem {
 class ContextStack {
 public:
     ContextStack(Context* context);
+
+    bool operator==(const ContextStack& other) const;
 
 private:
     ContextStack(const QVector<ContextStackItem>& items);
