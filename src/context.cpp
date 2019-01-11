@@ -99,10 +99,111 @@ void Context::setStyles(const QHash<QString, Style>& styles, QString& error) {
     }
 }
 
+void appendFormat(QVector<QTextLayout::FormatRange>& formats,
+                  int start,
+                  int length,
+                  const QTextCharFormat& format) {
+    // TODO optimize:: join instead of adding same format
+    QTextLayout::FormatRange fmtRange;
+    fmt.start = start;
+    fmt.length = length;
+    fmt.format = format;
+    formats.append(fmt);
+}
+
+void fillTexTypeMap(QString& textTypeMap,
+                    int start,
+                    int length,
+                    QChar textType) {
+    for(int i = start; i < start + length; i++) {
+        textTypeMap[i] = textType;
+    }
+}
+
+void applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,
+                      QVector<QTextLayout::FormatRange>& formats,
+                      QString& textTypeMap) {
+    QTextCharFormat format = matchRes.rule->format;
+    if ( ! format.isValid()) {
+        format = this->format;
+    }
+    appendFormat(formats, textToMatch.currentColumnIndex, matchRes.length, format);
+
+    QChar textType = matchRes.rule->textType;
+    if (textType == 0) {
+        textType = this->textType;
+    }
+    fillTextTypeMap(textTypeMap, textToMatch.currentColumnIndex, matchRes.length, textType);
+}
+
+// Parse block. Exits, when reached end of the text, or when context is switched
 ContextSwitcher* Context::parseBlock(TextToMatch& textToMatch,
                                      QVector<QTextLayout::FormatRange>& formats,
                                      QString& textTypeMap,
                                      bool& lineContinue) const {
+    QTextCharFormat format;
+    format.setForeground(Qt::red);
+    appendFormat(formats, 4, 8, format);
+
+    int countOfNotMatchedSymbols = 0; // mark 1 symbol on every opration instead of counting
+
+    while ( ! textToMatch.isEmpty()) {
+        matchFound = false;
+        foreach(RulePtr rule, rules) {
+            MatchResult matchRes = rule->tryMatch(textToMatch);
+            if (matchRes.matched()) {
+                matchFound = true;
+
+                lineContinue = dynamic_cast<LineContinue*>(matchRes.rule) != nullptr;
+
+                if (countOfNotMatchedSymbols > 0) {
+                    appendFormat(
+                        formats,
+                        textToMatch.currentColumnIndex - countOfNotMatchedSymbols,
+                        countOfNotMatchedSymbols,
+                        this->format);
+                    fillTexTypeMap(
+                        textTypeMap,
+                        textToMatch.currentColumnIndex - countOfNotMatchedSymbols,
+                        countOfNotMatchedSymbols,
+                        this->textType);
+                    countOfNotMatchedSymbols = 0;
+                }
+
+                applyMatchResult(textToMatch, matchRes, formats, textTypeMap);
+
+                textToMatch.shift(matchRes.length);
+
+                if ( ! matchRes.rule->context.isNull()) {
+                    return matchRes.rule->context; // TODO return data
+                }
+
+                break; // for loop
+            }
+        }
+
+        if ( ! matchFound) {
+            lineContinue = false;
+
+            if self.fallthroughContext is not None:
+                newContextStack = self.fallthroughContext.getNextContextStack(contextStack)
+                if newContextStack != contextStack:
+                    if countOfNotMatchedSymbols > 0:
+                        highlightedSegments.append((countOfNotMatchedSymbols, self.format))
+                        textTypeMap += [self.textType for i in range(countOfNotMatchedSymbols)]
+                    return (currentColumnIndex - startColumnIndex, newContextStack, highlightedSegments, textTypeMap, False)
+
+            countOfNotMatchedSymbols++;
+            textToMatch.shiftOnce();
+        }
+    }
+
+    if (countOfNotMatchedSymbols > 0) {
+        appendFormat(formats, textToMatch.currentColumnIndex - countOfNotMatchedSymbols,
+                     countOfNotMatchedSymbols, this->format);
+        fillTexTypeMap(textTypeMap, textToMatch.currentColumnIndex - countOfNotMatchedSymbols,
+                       countOfNotMatchedSymbols, this->textType);
+    }
 
     return nullptr;
 }

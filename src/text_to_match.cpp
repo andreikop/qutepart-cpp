@@ -59,3 +59,7 @@ void TextToMatch::shift(int count) {
     textLength -= count;
     shiftWord(count);
 }
+
+bool TextToMatch::isEmpty() const {
+    return text.isEmpty();
+}

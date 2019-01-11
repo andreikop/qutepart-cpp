@@ -13,6 +13,8 @@ public:
     void shiftOnce();
     void shift(int count);
 
+    bool isEmpty() const;
+
     int currentColumnIndex;
     QString wholeLineText;
     QStringRef text;
