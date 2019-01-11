@@ -50,6 +50,9 @@ public:
                                 bool& lineContinue) const;
 
 protected:
+    void applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,
+                          QVector<QTextLayout::FormatRange>& formats,
+                          QString& textTypeMap);
     QString _name;
     QString attribute;
     ContextSwitcher _lineEndContext;
