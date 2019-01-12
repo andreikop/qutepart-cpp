@@ -142,24 +142,6 @@ AbstractRuleParams parseAbstractRuleParams(const QXmlStreamAttributes& attrs, QS
         }
     }
 
-#if 0
-    # attribute
-    if attribute is not None:
-        attribute = attribute.lower()  # not case sensitive
-        try:
-            format = attributeToFormatMap[attribute]
-            textType = format.textType if format is not None else ' '
-            if formatConverterFunction is not None and format is not None:
-                format = formatConverterFunction(format)
-        except KeyError:
-            _logger.warning('Unknown rule attribute %s', attribute)
-            format = parentContext.format
-            textType = parentContext.textType
-    else:
-        format = None
-        textType = None
-#endif
-
     return AbstractRuleParams {
         attribute,
         context, lookAhead,
