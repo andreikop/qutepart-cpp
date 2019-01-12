@@ -9,6 +9,7 @@
 
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
+class TextToMatch;
 
 
 struct AbstractRuleParams {
@@ -37,6 +38,11 @@ public:
 
     bool lookAhead;
 
+    const Style& style() const {return _style;}
+    const ContextSwitcher& context() const {return _context;}
+
+    MatchResult tryMatch(const TextToMatch& textToMatch) const;
+
 protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
@@ -44,12 +50,12 @@ protected:
     QString format;             // may be null
     char textType;              // may be 0
     QString attribute;          // may be null
-    ContextSwitcher context;
+    ContextSwitcher _context;
     bool firstNonSpace;
     int column;                 // -1 if not set
     bool dynamic;
 
-    Style style;
+    Style _style;
 };
 
 // A rule which has 1 string as a parameter

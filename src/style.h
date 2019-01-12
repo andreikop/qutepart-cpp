@@ -4,13 +4,10 @@
 #include <QSharedPointer>
 
 
-typedef QSharedPointer<QTextCharFormat> FormatPtr;
-
-
 class Style {
 public:
     Style();
-    Style(const QString& defStyleName, FormatPtr format);
+    Style(const QString& defStyleName, const QTextCharFormat& format);
 
     /* Called by some clients.
        If the style knows attribute it can better detect textType
@@ -18,10 +15,10 @@ public:
     void updateTextType(const QString& attribute);
 
     inline char textType() const {return _textType;};
-    inline const QTextCharFormat* format() const {return _format.value();}
+    inline const QTextCharFormat& format() const {return _format;}
 
 private:
-    FormatPtr _format;
+    QTextCharFormat _format;
     char _textType;
 
     QString defStyleName;

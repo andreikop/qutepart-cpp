@@ -45,7 +45,7 @@ public:
     ContextSwitcher lineBeginContext() const {return _lineBeginContext;};
     ContextSwitcher lineEndContext() const {return _lineEndContext;};
 
-    const ContextSwitcher* parseBlock(
+    const ContextSwitcher parseBlock(
             TextToMatch& textToMatch,
             QVector<QTextLayout::FormatRange>& formats,
             QString& textTypeMap,
@@ -54,7 +54,7 @@ public:
 protected:
     void applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,
                           QVector<QTextLayout::FormatRange>& formats,
-                          QString& textTypeMap);
+                          QString& textTypeMap) const;
     QString _name;
     QString attribute;
     ContextSwitcher _lineEndContext;

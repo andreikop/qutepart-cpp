@@ -70,7 +70,7 @@ QTextCharFormat defaultFormat(const QString& style, QString& error) {
     return format;
 }
 
-QSharedPointer<QTextCharFormat> makeFormat(
+QTextCharFormat makeFormat(
         const QString& defStyle,
         const QString& color,
         const QString& /*selColor*/,
@@ -78,7 +78,7 @@ QSharedPointer<QTextCharFormat> makeFormat(
         QString& error) {
     QTextCharFormat format = defaultFormat(defStyle, error);
     if ( ! error.isNull()) {
-        return QSharedPointer<QTextCharFormat>();
+        return QTextCharFormat();
     }
 
     if ( ! color.isNull()) {
@@ -101,11 +101,7 @@ QSharedPointer<QTextCharFormat> makeFormat(
         format.setFontStrikeOut(true);
     }
 
-    if (format.isEmpty()) {
-        return FormatPtr();
-    } else {
-        return FormatPtr(new QTextCharFormat(format));
-    }
+    return format;
 }
 
 /* ' ' for code
@@ -143,7 +139,7 @@ Style makeStyle(
         const QString& selColor,
         const QStringList& flags,
         QString& error) {
-    FormatPtr format = makeFormat(defStyleName, color, selColor, flags, error);
+    QTextCharFormat format = makeFormat(defStyleName, color, selColor, flags, error);
     if ( ! error.isNull()) {
         return Style();
     }
@@ -156,8 +152,8 @@ Style::Style():
     _textType(' ')
 {}
 
-Style::Style(const QString& defStyleName, FormatPtr format):
-    format(format),
+Style::Style(const QString& defStyleName, const QTextCharFormat& format):
+    _format(format),
     _textType(detectTextType(QString::null, defStyleName)),
     defStyleName(defStyleName)
 {}

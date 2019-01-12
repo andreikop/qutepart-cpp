@@ -1,6 +1,7 @@
 #include "context.h"
 #include "rules.h"
 #include "text_to_match.h"
+#include "match_result.h"
 
 
 
@@ -110,17 +111,18 @@ void appendFormat(QVector<QTextLayout::FormatRange>& formats,
         formats.last().length += length;
     } else {
         QTextLayout::FormatRange fmtRange;
-        fmt.start = start;
-        fmt.length = length;
-        fmt.format = format;
-        formats.append(fmt);
+        fmtRange.start = start;
+        fmtRange.length = length;
+        fmtRange.format = format;
+        formats.append(fmtRange);
     }
 }
 
-void fillTexTypeMap(QString& textTypeMap,
-                    int start,
-                    int length,
-                    QChar textType) {
+void fillTextTypeMap(
+        QString& textTypeMap,
+        int start,
+        int length,
+        QChar textType) {
     for(int i = start; i < start + length; i++) {
         textTypeMap[i] = textType;
     }
@@ -130,22 +132,22 @@ void fillTexTypeMap(QString& textTypeMap,
 void Context::applyMatchResult(
         TextToMatch& textToMatch, MatchResult& matchRes,
         QVector<QTextLayout::FormatRange>& formats,
-        QString& textTypeMap) {
-    QTextCharFormat format = matchRes.rule->format;
+        QString& textTypeMap) const {
+    QTextCharFormat format = matchRes.rule->style().format();
     if ( ! format.isValid()) {
-        format = this->format;
+        format = this->style.format();
     }
     appendFormat(formats, textToMatch.currentColumnIndex, matchRes.length, format);
 
-    QChar textType = matchRes.rule->textType;
+    QChar textType = matchRes.rule->style().textType();
     if (textType == 0) {
-        textType = this->textType;
+        textType = this->style.textType();
     }
     fillTextTypeMap(textTypeMap, textToMatch.currentColumnIndex, matchRes.length, textType);
 }
 
 // Parse block. Exits, when reached end of the text, or when context is switched
-const ContextSwitcher* Context::parseBlock(
+const ContextSwitcher Context::parseBlock(
         TextToMatch& textToMatch,
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap,
@@ -164,12 +166,12 @@ const ContextSwitcher* Context::parseBlock(
         }
 
         if (matchRes.isMatched()) {
-            lineContinue = dynamic_cast<LineContinue*>(matchRes.rule) != nullptr;
+            lineContinue = dynamic_cast<const LineContinueRule*>(matchRes.rule) != nullptr;
 
             applyMatchResult(textToMatch, matchRes, formats, textTypeMap);
 
-            if ( ! matchRes.rule->context.isNull()) {
-                return matchRes.rule->context; // TODO return data
+            if ( ! matchRes.rule->context().isNull()) {
+                return matchRes.rule->context(); // TODO return data
             }
 
             textToMatch.shift(matchRes.length);
@@ -180,12 +182,12 @@ const ContextSwitcher* Context::parseBlock(
             textTypeMap[textToMatch.currentColumnIndex] = this->style.textType();
 
             if ( ! this->fallthroughContext.isNull()) {
-                return &this->fallthroughContext;
+                return this->fallthroughContext;
             }
 
             textToMatch.shiftOnce();
         }
     }
 
-    return nullptr;
+    return ContextSwitcher();
 }

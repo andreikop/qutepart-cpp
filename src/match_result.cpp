@@ -7,3 +7,9 @@ MatchResult::MatchResult(const AbstractRule* rule, int length, void* data):
     length(rule->lookAhead ? 0 : length),
     data(data)
 {}
+
+MatchResult::MatchResult():
+    rule(nullptr),
+    length(0),
+    data(nullptr)
+{}

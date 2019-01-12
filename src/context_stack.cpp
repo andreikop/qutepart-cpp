@@ -19,7 +19,7 @@ ContextStackItem::ContextStackItem(const Context* context, const void* data):
 {}
 
 bool ContextStackItem::operator==(const ContextStackItem& other) const {
-    return context == context && data == data;
+    return context == other.context && data == other.data;
 }
 
 ContextStack::ContextStack(Context* context)

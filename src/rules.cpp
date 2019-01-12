@@ -1,3 +1,4 @@
+#include "match_result.h"
 #include "rules.h"
 
 
@@ -5,7 +6,7 @@ AbstractRule::AbstractRule(const AbstractRuleParams& params):
     lookAhead(params.lookAhead),
     textType(params.textType),
     attribute(params.attribute),
-    context(params.context),
+    _context(params.context),
     firstNonSpace(params.firstNonSpace),
     column(params.column),
     dynamic(params.dynamic)
@@ -20,7 +21,7 @@ QString AbstractRule::description() const {
 }
 
 void AbstractRule::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
-    context.resolveContextReferences(contexts, error);
+    _context.resolveContextReferences(contexts, error);
 }
 
 void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error) {
@@ -29,11 +30,14 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
             error = QString("Not found rule %1 attribute %2").arg(description(), attribute);
             return;
         }
-        style = styles[attribute];
-        style.updateTextType(attribute);
+        _style = styles[attribute];
+        _style.updateTextType(attribute);
     }
 }
 
+MatchResult AbstractRule::tryMatch(const TextToMatch& textToMatch) const {
+    return MatchResult();
+}
 
 AbstractStringRule::AbstractStringRule(const AbstractRuleParams& params,
                                        const QString& value,

@@ -72,9 +72,9 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
         qDebug() << "In context " << contextStack.currentContext()->name();
 
         const Context* context = contextStack.currentContext();
-        ContextSwitcher* contextSwitcher = context->parseBlock(textToMatch, formats, textTypeMap, lineContinue);
-        if (contextSwitcher != nullptr) {
-            contextStack = contextStack.switchContext(*contextSwitcher, nullptr);
+        const ContextSwitcher contextSwitcher = context->parseBlock(textToMatch, formats, textTypeMap, lineContinue);
+        if ( ! contextSwitcher.isNull()) {
+            contextStack = contextStack.switchContext(contextSwitcher, nullptr);
         } else if ( ! textToMatch.text.isEmpty()) {
             qWarning() << "Loop detected in context " << context->name() <<
                 ". parseBlock() returned but context haven't been switched and text is not empty";
