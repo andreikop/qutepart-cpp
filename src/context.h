@@ -17,6 +17,7 @@ class AbstractRule;
 typedef QSharedPointer<AbstractRule> RulePtr;
 
 class TextToMatch;
+class MatchResult;
 
 
 class Context {
@@ -44,10 +45,11 @@ public:
     ContextSwitcher lineBeginContext() const {return _lineBeginContext;};
     ContextSwitcher lineEndContext() const {return _lineEndContext;};
 
-    ContextSwitcher* parseBlock(TextToMatch& textToMatch,
-                                QVector<QTextLayout::FormatRange>& formats,
-                                QString& textTypeMap,
-                                bool& lineContinue) const;
+    const ContextSwitcher* parseBlock(
+            TextToMatch& textToMatch,
+            QVector<QTextLayout::FormatRange>& formats,
+            QString& textTypeMap,
+            bool& lineContinue) const;
 
 protected:
     void applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,

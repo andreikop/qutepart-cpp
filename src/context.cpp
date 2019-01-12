@@ -127,9 +127,10 @@ void fillTexTypeMap(QString& textTypeMap,
 }
 
 // Helper function for parseBlock()
-void Context::applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,
-                      QVector<QTextLayout::FormatRange>& formats,
-                      QString& textTypeMap) {
+void Context::applyMatchResult(
+        TextToMatch& textToMatch, MatchResult& matchRes,
+        QVector<QTextLayout::FormatRange>& formats,
+        QString& textTypeMap) {
     QTextCharFormat format = matchRes.rule->format;
     if ( ! format.isValid()) {
         format = this->format;
@@ -144,10 +145,11 @@ void Context::applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,
 }
 
 // Parse block. Exits, when reached end of the text, or when context is switched
-ContextSwitcher* Context::parseBlock(TextToMatch& textToMatch,
-                                     QVector<QTextLayout::FormatRange>& formats,
-                                     QString& textTypeMap,
-                                     bool& lineContinue) const {
+const ContextSwitcher* Context::parseBlock(
+        TextToMatch& textToMatch,
+        QVector<QTextLayout::FormatRange>& formats,
+        QString& textTypeMap,
+    bool& lineContinue) const {
     QTextCharFormat format;
     format.setForeground(Qt::red);
     appendFormat(formats, 4, 8, format);
@@ -174,11 +176,11 @@ ContextSwitcher* Context::parseBlock(TextToMatch& textToMatch,
         } else {
             lineContinue = false;
 
-            appendFormat(formats, textToMatch.currentColumnIndex, 1, this->format);
-            textTypeMap[textToMatch.currentColumnIndex] = this->textType;
+            appendFormat(formats, textToMatch.currentColumnIndex, 1, this->style.format());
+            textTypeMap[textToMatch.currentColumnIndex] = this->style.textType();
 
-            if ( ! this->fallthroughContext->isNull()) {
-                return this->fallthroughContext;
+            if ( ! this->fallthroughContext.isNull()) {
+                return &this->fallthroughContext;
             }
 
             textToMatch.shiftOnce();

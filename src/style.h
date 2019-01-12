@@ -16,9 +16,13 @@ public:
        If the style knows attribute it can better detect textType
      */
     void updateTextType(const QString& attribute);
+
+    inline char textType() const {return _textType;};
+    inline const QTextCharFormat* format() const {return _format.value();}
+
 private:
-    FormatPtr format;
-    char textType;
+    FormatPtr _format;
+    char _textType;
 
     QString defStyleName;
 };

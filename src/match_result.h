@@ -7,6 +7,8 @@ class MatchResult {
 public:
     MatchResult(const AbstractRule* rule, int length, void* data);
 
+    bool isMatched() const {return rule != nullptr;};
+
     const AbstractRule* rule;
     int length;
     void* data;

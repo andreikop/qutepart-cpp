@@ -153,15 +153,15 @@ Style makeStyle(
 
 
 Style::Style():
-    textType(' ')
+    _textType(' ')
 {}
 
 Style::Style(const QString& defStyleName, FormatPtr format):
     format(format),
-    textType(detectTextType(QString::null, defStyleName)),
+    _textType(detectTextType(QString::null, defStyleName)),
     defStyleName(defStyleName)
 {}
 
 void Style::updateTextType(const QString& attribute) {
-    textType = detectTextType(attribute, defStyleName);
+    _textType = detectTextType(attribute, defStyleName);
 }
