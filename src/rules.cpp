@@ -4,7 +4,6 @@
 
 AbstractRule::AbstractRule(const AbstractRuleParams& params):
     lookAhead(params.lookAhead),
-    textType(params.textType),
     attribute(params.attribute),
     _context(params.context),
     firstNonSpace(params.firstNonSpace),

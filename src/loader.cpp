@@ -129,8 +129,6 @@ AbstractRuleParams parseAbstractRuleParams(const QXmlStreamAttributes& attrs, QS
         return AbstractRuleParams();
     }
 
-    char textType = 0; // TODO
-
     // TODO beginRegion
     // TODO endRegion
 
@@ -163,7 +161,7 @@ AbstractRuleParams parseAbstractRuleParams(const QXmlStreamAttributes& attrs, QS
 #endif
 
     return AbstractRuleParams {
-        textType, attribute,
+        attribute,
         context, lookAhead,
         firstNonSpace, column,
         dynamic};
