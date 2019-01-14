@@ -1,4 +1,6 @@
 #include "match_result.h"
+#include "text_to_match.h"
+
 #include "rules.h"
 
 
@@ -35,7 +37,15 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
 }
 
 MatchResult AbstractRule::tryMatch(const TextToMatch& textToMatch) const {
-    return MatchResult();
+    if (column != -1 && column != textToMatch.currentColumnIndex) {
+        return MatchResult();
+    }
+
+    if (firstNonSpace && (not textToMatch.firstNonSpace)) {
+        return MatchResult();
+    }
+
+    return tryMatchImpl(textToMatch);
 }
 
 AbstractStringRule::AbstractStringRule(const AbstractRuleParams& params,
@@ -53,6 +63,11 @@ QString AbstractStringRule::args() const {
     }
 
     return result;
+}
+
+
+MatchResult AbstractRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    return MatchResult();
 }
 
 

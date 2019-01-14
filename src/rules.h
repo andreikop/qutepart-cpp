@@ -39,11 +39,15 @@ public:
     const Style& style() const {return _style;}
     const ContextSwitcher& context() const {return _context;}
 
+    // Matching entrypoint. Checks common params and calls tryMatchImpl()
     MatchResult tryMatch(const TextToMatch& textToMatch) const;
 
 protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
+
+    // Rule matching implementation
+    MatchResult tryMatchImpl(const TextToMatch& textToMatch) const;
 
     QString attribute;          // may be null
     ContextSwitcher _context;
