@@ -21,7 +21,7 @@ void TextToMatch::findWord() {
         }
     }
     if (wordEndIndex != 0) {
-        word = text.left(wordEndIndex);
+        word = text.left(wordEndIndex).toString();
     }
 }
 
@@ -29,7 +29,7 @@ void TextToMatch::shiftWord(int count) {
     if(word.length() > count) {
         word = word.right(word.length() - count);
     } else if (word.length() == count) {
-        word = QStringRef();
+        word = QString::null;
     } else {
         findWord(); // TODO do upon request?
     }

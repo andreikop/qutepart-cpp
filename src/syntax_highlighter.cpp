@@ -12,7 +12,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent, Language* language):
     language(language)
 {}
 
-void SyntaxHighlighter::highlightBlock(const QString& text) {
+void SyntaxHighlighter::highlightBlock(const QString&) {
     QVector<QTextLayout::FormatRange> formats;
 
     language->highlightBlock(currentBlock(), formats);

@@ -106,9 +106,9 @@ MatchResult* KeywordRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
     bool matched = false;
     if (this->caseSensitive) {
-        matched = items.contains(textToMatch.word.toString().toLower());
+        matched = items.contains(textToMatch.word.toLower());
     } else {
-        matched = items.contains(textToMatch.word.toString());
+        matched = items.contains(textToMatch.word);
     }
 
     if (matched) {

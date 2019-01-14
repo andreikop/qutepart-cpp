@@ -21,7 +21,7 @@ public:
     int textLength;
     bool firstNonSpace;
     bool isWordStart;
-    QStringRef word;
+    QString word;
 
 private:
     void shiftWord(int count);
