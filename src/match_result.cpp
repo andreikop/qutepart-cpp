@@ -2,10 +2,16 @@
 
 #include "rules.h"
 
-MatchResult::MatchResult(const AbstractRule* rule, int length, void* data):
-    length(rule->lookAhead ? 0 : length),
+MatchResult::MatchResult(int length,
+                         void* data,
+                         bool lineContinue,
+                         const ContextSwitcher& context,
+                         const Style& style):
+    length(length),
     data(data),
-    lineContinue(false)
+    lineContinue(lineContinue),
+    nextContext(context),
+    style(style)
 {}
 
 MatchResult::MatchResult():

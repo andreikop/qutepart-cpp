@@ -45,10 +45,12 @@ protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
 
+    MatchResult* makeMatchResult(int length, bool lineContinue) const;
+
     /* Rule matching implementation
      * Result ownership is passed to caller
      */
-    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+    virtual MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
 
     QString attribute;          // may be null
     ContextSwitcher context;
@@ -87,6 +89,8 @@ public:
     QString args() const override {return listName;};
 
 private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
+
     QString listName;
     QStringList items;
     bool caseSensitive;

@@ -36,6 +36,14 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
     }
 }
 
+MatchResult* AbstractRule::makeMatchResult(int length, bool lineContinue) const {
+    if (lookAhead) {
+        length = 0;
+    }
+
+    return new MatchResult(length, nullptr, lineContinue, context, style);
+}
+
 MatchResult* AbstractRule::tryMatch(const TextToMatch& textToMatch) const {
     if (column != -1 && column != textToMatch.currentColumnIndex) {
         return nullptr;
@@ -91,6 +99,24 @@ void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
     this->deliminators = deliminators;
 }
 
+MatchResult* KeywordRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.word.isEmpty()) {
+        return nullptr;
+    }
+
+    bool matched = false;
+    if (this->caseSensitive) {
+        matched = items.contains(textToMatch.word.toString().toLower());
+    } else {
+        matched = items.contains(textToMatch.word.toString());
+    }
+
+    if (matched) {
+        return makeMatchResult(textToMatch.word.length(), false);
+    } else {
+        return nullptr;
+    }
+}
 
 DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
                                const QString& value,

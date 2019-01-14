@@ -8,7 +8,11 @@ class AbstractRule;
 
 class MatchResult {
 public:
-    MatchResult(const AbstractRule* rule, int length, void* data);
+    MatchResult(int length,
+                void* data,
+                bool lineContinue,
+                const ContextSwitcher& context,
+                const Style& style);
     MatchResult();
 
     int length;

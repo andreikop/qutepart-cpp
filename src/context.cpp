@@ -189,7 +189,6 @@ const ContextSwitcher Context::parseBlock(
     QTextCharFormat format;
     format.setForeground(Qt::red);
     appendFormat(formats, 4, 8, format);
-    qDebug() << "format set";
 
     return ContextSwitcher();
 }
