@@ -1,5 +1,8 @@
 #pragma once
 
+#include "context.h"
+#include "style.h"
+
 class AbstractRule;
 
 
@@ -8,9 +11,9 @@ public:
     MatchResult(const AbstractRule* rule, int length, void* data);
     MatchResult();
 
-    bool isMatched() const {return rule != nullptr;};
-
-    const AbstractRule* rule;
     int length;
     void* data;
+    bool lineContinue;
+    ContextSwitcher nextContext;
+    Style style;
 };

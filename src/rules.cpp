@@ -7,7 +7,7 @@
 AbstractRule::AbstractRule(const AbstractRuleParams& params):
     lookAhead(params.lookAhead),
     attribute(params.attribute),
-    _context(params.context),
+    context(params.context),
     firstNonSpace(params.firstNonSpace),
     column(params.column),
     dynamic(params.dynamic)
@@ -22,7 +22,7 @@ QString AbstractRule::description() const {
 }
 
 void AbstractRule::resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) {
-    _context.resolveContextReferences(contexts, error);
+    context.resolveContextReferences(contexts, error);
 }
 
 void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error) {
@@ -31,18 +31,18 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
             error = QString("Not found rule %1 attribute %2").arg(description(), attribute);
             return;
         }
-        _style = styles[attribute];
-        _style.updateTextType(attribute);
+        style = styles[attribute];
+        style.updateTextType(attribute);
     }
 }
 
-MatchResult AbstractRule::tryMatch(const TextToMatch& textToMatch) const {
+MatchResult* AbstractRule::tryMatch(const TextToMatch& textToMatch) const {
     if (column != -1 && column != textToMatch.currentColumnIndex) {
-        return MatchResult();
+        return nullptr;
     }
 
     if (firstNonSpace && (not textToMatch.firstNonSpace)) {
-        return MatchResult();
+        return nullptr;
     }
 
     return tryMatchImpl(textToMatch);
@@ -66,8 +66,8 @@ QString AbstractStringRule::args() const {
 }
 
 
-MatchResult AbstractRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    return MatchResult();
+MatchResult* AbstractRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    return nullptr;
 }
 
 

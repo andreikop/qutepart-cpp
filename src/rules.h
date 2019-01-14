@@ -36,26 +36,27 @@ public:
 
     bool lookAhead;
 
-    const Style& style() const {return _style;}
-    const ContextSwitcher& context() const {return _context;}
-
-    // Matching entrypoint. Checks common params and calls tryMatchImpl()
-    MatchResult tryMatch(const TextToMatch& textToMatch) const;
+    /* Matching entrypoint. Checks common params and calls tryMatchImpl()
+     * Result ownership is passed to caller
+     */
+    MatchResult* tryMatch(const TextToMatch& textToMatch) const;
 
 protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
 
-    // Rule matching implementation
-    MatchResult tryMatchImpl(const TextToMatch& textToMatch) const;
+    /* Rule matching implementation
+     * Result ownership is passed to caller
+     */
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
 
     QString attribute;          // may be null
-    ContextSwitcher _context;
+    ContextSwitcher context;
     bool firstNonSpace;
     int column;                 // -1 if not set
     bool dynamic;
 
-    Style _style;
+    Style style;
 };
 
 // A rule which has 1 string as a parameter

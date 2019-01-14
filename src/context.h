@@ -52,7 +52,8 @@ public:
             bool& lineContinue) const;
 
 protected:
-    void applyMatchResult(TextToMatch& textToMatch, MatchResult& matchRes,
+    void applyMatchResult(const TextToMatch& textToMatch,
+                          const MatchResult* matchRes,
                           QVector<QTextLayout::FormatRange>& formats,
                           QString& textTypeMap) const;
     QString _name;
