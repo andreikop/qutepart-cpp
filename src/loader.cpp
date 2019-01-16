@@ -180,28 +180,30 @@ KeywordRule* loadKeywordRule(const QXmlStreamAttributes& attrs,
 DetectCharRule* loadDetectChar(const QXmlStreamAttributes& attrs,
                                const AbstractRuleParams& params,
                                QString& error) {
-    QString value = getRequiredAttribute(attrs, "char", error);
+    QString strValue = getRequiredAttribute(attrs, "char", error);
     if ( ! error.isNull()) {
         return nullptr;
     }
 
-    value = processEscapeSequences(value);
+    strValue = processEscapeSequences(strValue);
+    QChar value = '\0';
 
     int index = 0;
 
     if (params.dynamic) {
         bool ok = false;
-        index = value.toInt(&ok);
+        index = strValue.toInt(&ok);
         if ( ! ok) {
-            error = QString("Bad integer value: %1").arg(value);
+            error = QString("Bad integer value: %1").arg(strValue);
             return nullptr;
         }
 
         if (index < 0) {
-            error = QString("Bad integer value: %1").arg(value);
+            error = QString("Bad integer value: %1").arg(strValue);
             return nullptr;
         }
-        value = QString::null;
+    } else {
+        value = strValue[0];
     }
 
     return new DetectCharRule(params, value, index);

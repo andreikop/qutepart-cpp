@@ -119,7 +119,7 @@ MatchResult* KeywordRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 }
 
 DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
-                               const QString& value,
+                               QChar value,
                                int index):
     AbstractRule(params),
     value(value),
@@ -127,13 +127,22 @@ DetectCharRule::DetectCharRule(const AbstractRuleParams& params,
 {}
 
 QString DetectCharRule::args() const {
-    if (value.isNull()) {
+    if (value == '\0') {
         return QString("index: %1").arg(index);
     } else {
         return value;
     }
 }
 
+MatchResult* DetectCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    // TODO support dynamic
+
+    if (textToMatch.text[0] == value) {
+        return makeMatchResult(1, false);
+    } else {
+        return nullptr;
+    }
+}
 
 RegExpRule::RegExpRule(const AbstractRuleParams& params,
                        const QString& value, bool insensitive,

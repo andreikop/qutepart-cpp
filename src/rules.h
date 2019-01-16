@@ -101,14 +101,16 @@ private:
 class DetectCharRule: public AbstractRule {
 public:
     DetectCharRule(const AbstractRuleParams& params,
-                   const QString& value,
+                   QChar value,
                    int index);
 
     QString name() const override {return "DetectChar";};
     QString args() const override;
 
 private:
-    QString value;
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+
+    QChar value;
     int index;
 };
 
