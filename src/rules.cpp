@@ -220,3 +220,7 @@ void IncludeRulesRule::resolveContextReferences(const QHash<QString, ContextPtr>
 
     context = contexts[contextName];
 }
+
+MatchResult* IncludeRulesRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    return context->tryMatch(textToMatch);
+}

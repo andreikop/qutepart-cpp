@@ -155,13 +155,7 @@ const ContextSwitcher Context::parseBlock(
     bool& lineContinue) const {
 
     while ( ! textToMatch.isEmpty()) {
-        MatchResult* matchRes = nullptr;
-        foreach(RulePtr rule, rules) {
-            matchRes = rule->tryMatch(textToMatch);
-            if (matchRes != nullptr) {
-                break;
-            }
-        }
+        MatchResult* matchRes = tryMatch(textToMatch);
 
         if (matchRes != nullptr) {
             lineContinue = matchRes->lineContinue;
@@ -187,4 +181,15 @@ const ContextSwitcher Context::parseBlock(
     }
 
     return ContextSwitcher();
+}
+
+MatchResult* Context::tryMatch(const TextToMatch& textToMatch) const {
+    foreach(RulePtr rule, rules) {
+        MatchResult* matchRes = rule->tryMatch(textToMatch);
+        if (matchRes != nullptr) {
+            return matchRes;
+        }
+    }
+
+    return nullptr;
 }

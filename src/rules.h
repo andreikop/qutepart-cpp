@@ -244,6 +244,8 @@ public:
     void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) override;
 
 private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+
     QString contextName;
     ContextPtr context;
 };

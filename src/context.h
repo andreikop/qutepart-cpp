@@ -51,6 +51,9 @@ public:
             QString& textTypeMap,
             bool& lineContinue) const;
 
+    // Try to match textToMatch with nested rules
+    MatchResult* tryMatch(const TextToMatch& textToMatch) const;
+
 protected:
     void applyMatchResult(const TextToMatch& textToMatch,
                           const MatchResult* matchRes,
