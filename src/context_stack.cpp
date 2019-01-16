@@ -52,7 +52,9 @@ ContextStack ContextStack::switchContext(const ContextSwitcher& operation, const
 
             if (newItems.size() > 1) {
                 newItems = newItems.mid(0, 1);
-            }        }
+            }
+        }
+        newItems = newItems.mid(0, newItems.size() - operation.popsCount());
     }
 
     if ( ! operation.context().isNull() ) {

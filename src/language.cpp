@@ -68,7 +68,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
 
     bool lineContinue = false;
 
-    while ( ! textToMatch.text.isEmpty()) {
+    while ( ! textToMatch.isEmpty()) {
         qDebug() << "In context " << contextStack.currentContext()->name();
 
         const Context* context = contextStack.currentContext();
