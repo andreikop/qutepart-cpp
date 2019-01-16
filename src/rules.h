@@ -45,7 +45,7 @@ protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
 
-    MatchResult* makeMatchResult(int length, bool lineContinue) const;
+    MatchResult* makeMatchResult(int length, bool lineContinue=false) const;
 
     /* Rule matching implementation
      * Result ownership is passed to caller
@@ -128,6 +128,9 @@ class AnyCharRule: public AbstractStringRule {
 public:
 
     QString name() const override {return "AnyChar";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
 };
 
 

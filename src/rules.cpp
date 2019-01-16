@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "match_result.h"
 #include "text_to_match.h"
 
@@ -37,6 +39,7 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
 }
 
 MatchResult* AbstractRule::makeMatchResult(int length, bool lineContinue) const {
+    qDebug() << "\trule matched" << description() << length;
     if (lookAhead) {
         length = 0;
     }
@@ -142,6 +145,14 @@ MatchResult* DetectCharRule::tryMatchImpl(const TextToMatch& textToMatch) const 
     } else {
         return nullptr;
     }
+}
+
+MatchResult* AnyCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (value.contains(textToMatch.text[0])) {
+        return makeMatchResult(1);
+    }
+
+    return nullptr;
 }
 
 RegExpRule::RegExpRule(const AbstractRuleParams& params,
