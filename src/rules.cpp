@@ -325,6 +325,34 @@ int FloatRule::tryMatchText(const QStringRef& text) const {
 }
 
 
+static const QString OCTAL_CHARS = "01234567";
+
+MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.text.at(0) != '0') {
+        return nullptr;
+    }
+
+    int index = 1;
+    while (index < textToMatch.text.length() &&
+           OCTAL_CHARS.contains(textToMatch.text.at(index))) {
+        index ++;
+    }
+
+    if (index == 1){
+        return nullptr;
+    }
+
+    if(index < textToMatch.text.length()) {
+        QChar nextChar = textToMatch.text.at(index);
+        if (nextChar == 'L' || nextChar == 'U') {
+            index++;
+        }
+    }
+
+    return makeMatchResult(index);
+}
+
+
 RangeDetectRule::RangeDetectRule(const AbstractRuleParams& params, const QString& char0, const QString& char1):
     AbstractRule(params),
     char0(char0),

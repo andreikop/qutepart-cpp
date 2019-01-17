@@ -211,6 +211,9 @@ class HlCOctRule: public AbstractRule {
 
 public:
     QString name() const override {return "HlCOct";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
 };
 
 
