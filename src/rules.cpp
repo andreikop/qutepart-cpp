@@ -206,7 +206,7 @@ MatchResult* AbstractNumberRule::tryMatchImpl(const TextToMatch& textToMatch) co
 
     int matchedLength = tryMatchText(textToMatch.text);
 
-    if (matchedLength == -1) {
+    if (matchedLength <= 0) {
         return nullptr;
     }
 
@@ -238,6 +238,11 @@ int AbstractNumberRule::countDigits(const QStringRef& text) const {
         }
     }
     return index;
+}
+
+
+int IntRule::tryMatchText(const QStringRef& text) const {
+    return countDigits(text);
 }
 
 

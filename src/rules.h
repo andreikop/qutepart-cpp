@@ -173,7 +173,7 @@ public:
     void printDescription(QTextStream& out) const override;
 protected:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
-    virtual int tryMatchText(const QStringRef& text) const {return -1;}; // FIXME make =0
+    virtual int tryMatchText(const QStringRef& text) const = 0;
     int countDigits(const QStringRef& text) const;
 
     QList<RulePtr> childRules;
@@ -184,6 +184,9 @@ class IntRule: public AbstractNumberRule {
 
 public:
     QString name() const override {return "Int";};
+
+private:
+    int tryMatchText(const QStringRef& text) const override;
 };
 
 class FloatRule: public AbstractNumberRule {
