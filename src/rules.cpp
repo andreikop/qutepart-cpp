@@ -325,7 +325,17 @@ int FloatRule::tryMatchText(const QStringRef& text) const {
 }
 
 
-const QString HlCOctRule::OCTAL_CHARS = "01234567";
+// For HlCOctRule and HlCHexRule
+static bool isNumberLengthSpecifier(QChar ch) {
+    return ch == 'l' ||
+           ch == 'L' ||
+           ch == 'u' ||
+           ch == 'U';
+}
+
+bool HlCOctRule::isOctal(QChar ch) {
+    return ch >= '0' && ch <= '7';
+}
 
 MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (textToMatch.text.at(0) != '0') {
@@ -334,7 +344,7 @@ MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
     int index = 1;
     while (index < textToMatch.text.length() &&
-           OCTAL_CHARS.contains(textToMatch.text.at(index))) {
+           isOctal(textToMatch.text.at(index))) {
         index ++;
     }
 
@@ -342,11 +352,44 @@ MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
         return nullptr;
     }
 
-    if(index < textToMatch.text.length()) {
-        QChar nextChar = textToMatch.text.at(index);
-        if (nextChar == 'L' || nextChar == 'U') {
-            index++;
-        }
+    if(index < textToMatch.text.length() &&
+       isNumberLengthSpecifier(textToMatch.text.at(index))) {
+        index++;
+    }
+
+    return makeMatchResult(index);
+}
+
+
+bool HlCHexRule::isHex(QChar ch) {
+    return (ch >= '0' && ch <= '9') ||
+           (ch >= 'a' && ch <= 'f') ||
+           (ch >= 'A' && ch <= 'F');
+}
+
+MatchResult* HlCHexRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.text.length() < 3) {
+        return nullptr;
+    }
+
+    if (textToMatch.text.at(0) != '0' ||
+        textToMatch.text.at(1).toUpper() != 'X') {
+        return nullptr;
+    }
+
+    int index = 2;
+    while (index < textToMatch.text.length() &&
+           isHex(textToMatch.text.at(index))) {
+        index++;
+    }
+
+    if (index == 2) {
+        return nullptr;
+    }
+
+    if(index < textToMatch.text.length() &&
+       isNumberLengthSpecifier(textToMatch.text.at(index))) {
+        index++;
     }
 
     return makeMatchResult(index);
