@@ -61,6 +61,7 @@ protected:
     Style style;
 };
 
+
 // A rule which has 1 string as a parameter
 class AbstractStringRule: public AbstractRule {
 public:
@@ -137,8 +138,10 @@ private:
 class StringDetectRule: public AbstractStringRule {
     using AbstractStringRule::AbstractStringRule;
 public:
-
     QString name() const override {return "StringDetect";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
 };
 
 
@@ -147,6 +150,7 @@ class WordDetectRule: public AbstractStringRule {
 public:
     QString name() const override {return "WordDetect";};
 };
+
 
 class RegExpRule: public AbstractRule {
 public:
@@ -179,6 +183,7 @@ protected:
     QList<RulePtr> childRules;
 };
 
+
 class IntRule: public AbstractNumberRule {
     using AbstractNumberRule::AbstractNumberRule;
 
@@ -188,6 +193,7 @@ public:
 private:
     int tryMatchText(const QStringRef& text) const override;
 };
+
 
 class FloatRule: public AbstractNumberRule {
     using AbstractNumberRule::AbstractNumberRule;
@@ -199,6 +205,7 @@ private:
     int tryMatchText(const QStringRef& text) const override;
 };
 
+
 class HlCOctRule: public AbstractRule {
     using AbstractRule::AbstractRule;
 
@@ -206,12 +213,14 @@ public:
     QString name() const override {return "HlCOct";};
 };
 
+
 class HlCHexRule: public AbstractRule {
     using AbstractRule::AbstractRule;
 
 public:
     QString name() const override {return "HlCHex";};
 };
+
 
 class HlCStringCharRule: public AbstractRule {
     using AbstractRule::AbstractRule;
@@ -228,6 +237,7 @@ public:
     QString name() const override {return "HlCChar";};
 };
 
+
 class RangeDetectRule: public AbstractRule {
 public:
     RangeDetectRule(const AbstractRuleParams& params, const QString& char0, const QString& char1);
@@ -238,6 +248,7 @@ private:
     const QString char0;
     const QString char1;
 };
+
 
 class LineContinueRule: public AbstractRule {
     using AbstractRule::AbstractRule;

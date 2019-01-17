@@ -77,6 +77,27 @@ QString AbstractStringRule::args() const {
 }
 
 
+MatchResult* StringDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+
+    if (value.isEmpty()) {
+        return nullptr;
+    }
+
+#if 0 // TODO dynamic
+    if self.dynamic:
+        string = self._makeDynamicSubsctitutions(self.string, textToMatchObject.contextData)
+    else:
+        string = self.string
+#endif
+
+    if (textToMatch.text.startsWith(value)) {
+        return makeMatchResult(value.length());
+    }
+
+    return nullptr;
+}
+
+
 MatchResult* AbstractRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     return nullptr;
 }
@@ -210,22 +231,20 @@ MatchResult* AbstractNumberRule::tryMatchImpl(const TextToMatch& textToMatch) co
         return nullptr;
     }
 
-#if 0
-    if (textToMatch.currentColumnIndex + matchedLength < textToMatchObject.wholeLineText.length()){
+    if (matchedLength < textToMatch.text.length()){
         TextToMatch textToMatchCopy = textToMatch;
         textToMatchCopy.shift(matchedLength);
 
-        foreach(rule, childRules) {
-            MatchResult matchRes = rule->tryMatch(textToMatchCopy);
+        foreach(RulePtr rule, childRules) {
+            MatchResult* matchRes = rule->tryMatch(textToMatchCopy);
             if (matchRes != nullptr) {
-                matchedLength += matchRes.length;
+                matchedLength += matchRes->length;
                 delete matchRes;
                 break;
             }
             // child rule context and attribute ignored
         }
     }
-#endif
 
     return makeMatchResult(matchedLength);
 }
