@@ -108,7 +108,7 @@ public:
     QString args() const override;
 
 private:
-    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 
     QChar value;
     int index;
@@ -172,6 +172,10 @@ public:
 
     void printDescription(QTextStream& out) const override;
 protected:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
+    virtual int tryMatchText(const QStringRef& text) const {return -1;}; // FIXME make =0
+    int countDigits(const QStringRef& text) const;
+
     QList<RulePtr> childRules;
 };
 
@@ -187,6 +191,9 @@ class FloatRule: public AbstractNumberRule {
 
 public:
     QString name() const override {return "Float";};
+
+private:
+    int tryMatchText(const QStringRef& text) const override;
 };
 
 class HlCOctRule: public AbstractRule {
@@ -247,7 +254,7 @@ public:
     void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error) override;
 
 private:
-    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 
     QString contextName;
     ContextPtr context;

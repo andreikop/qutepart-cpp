@@ -140,7 +140,7 @@ QString DetectCharRule::args() const {
 MatchResult* DetectCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     // TODO support dynamic
 
-    if (textToMatch.text[0] == value) {
+    if (textToMatch.text.at(0) == value) {
         return makeMatchResult(1, false);
     } else {
         return nullptr;
@@ -148,7 +148,7 @@ MatchResult* DetectCharRule::tryMatchImpl(const TextToMatch& textToMatch) const 
 }
 
 MatchResult* AnyCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    if (value.contains(textToMatch.text[0])) {
+    if (value.contains(textToMatch.text.at(0))) {
         return makeMatchResult(1);
     }
 
@@ -195,6 +195,108 @@ void AbstractNumberRule::printDescription(QTextStream& out) const {
 
     foreach(RulePtr rule, childRules) {
         out << "\t\t\t" << rule->description() << "\n";
+    }
+}
+
+MatchResult* AbstractNumberRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    // andreikop: This condition is not described in kate docs, and I haven't found it in the code
+    if ( ! textToMatch.isWordStart) {
+        return nullptr;
+    }
+
+    int matchedLength = tryMatchText(textToMatch.text);
+
+    if (matchedLength == -1) {
+        return nullptr;
+    }
+
+#if 0
+    if (textToMatch.currentColumnIndex + matchedLength < textToMatchObject.wholeLineText.length()){
+        TextToMatch textToMatchCopy = textToMatch;
+        textToMatchCopy.shift(matchedLength);
+
+        foreach(rule, childRules) {
+            MatchResult matchRes = rule->tryMatch(textToMatchCopy);
+            if (matchRes != nullptr) {
+                matchedLength += matchRes.length;
+                delete matchRes;
+                break;
+            }
+            // child rule context and attribute ignored
+        }
+    }
+#endif
+
+    return makeMatchResult(matchedLength);
+}
+
+int AbstractNumberRule::countDigits(const QStringRef& text) const {
+    int index = 0;
+    for(index = 0; index < text.length(); index++) {
+        if ( ! text.at(index).isDigit()) {
+            break;
+        }
+    }
+    return index;
+}
+
+
+int FloatRule::tryMatchText(const QStringRef& text) const {
+    bool haveDigit = false;
+    bool havePoint = false;
+
+    int matchedLength = 0;
+
+    int digitCount = countDigits(text);
+
+    if (digitCount > 0) {
+        haveDigit = true;
+        matchedLength += digitCount;
+    }
+
+    if (text.length() > matchedLength && text.at(matchedLength) == '.') {
+        havePoint = true;
+        matchedLength++;
+    }
+
+    digitCount = countDigits(text.mid(matchedLength));
+    if (digitCount > 0) {
+        haveDigit = true;
+        matchedLength += digitCount;
+    }
+
+    if (text.length() > matchedLength && text.at(matchedLength).toLower() == 'e') {
+        matchedLength++;
+
+        if (text.length() > matchedLength &&
+            (text.at(matchedLength) == '+' ||
+             text.at(matchedLength) == '-')) {
+            matchedLength++;
+        }
+
+        bool haveDigitInExponent = false;
+
+        digitCount = countDigits(text.mid(matchedLength));
+        if (digitCount > 0) {
+            haveDigitInExponent = true;
+            matchedLength += digitCount;
+        }
+
+        if ( ! haveDigitInExponent) {
+            return -1;
+        }
+
+        return matchedLength;
+    } else {
+        if ( ! havePoint) {
+            return -1;
+        }
+    }
+
+    if (matchedLength > 0 && haveDigit) {
+        return matchedLength;
+    } else {
+        return -1;
     }
 }
 
