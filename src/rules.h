@@ -214,6 +214,7 @@ public:
 
 private:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+    static const QString OCTAL_CHARS;
 };
 
 

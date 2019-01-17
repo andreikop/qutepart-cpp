@@ -325,7 +325,7 @@ int FloatRule::tryMatchText(const QStringRef& text) const {
 }
 
 
-static const QString OCTAL_CHARS = "01234567";
+const QString HlCOctRule::OCTAL_CHARS = "01234567";
 
 MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (textToMatch.text.at(0) != '0') {
