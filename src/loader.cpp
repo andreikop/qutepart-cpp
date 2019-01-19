@@ -246,8 +246,22 @@ RegExpRule* loadRegExp(const QXmlStreamAttributes& attrs,
         return nullptr;
     }
 
-    bool wordStart = false; // TODO
-    bool lineStart = false; // TODO
+    bool wordStart = false;
+    bool lineStart = false;
+
+    if ( ! value.isEmpty()) {
+        // string = _processCraracterCodes(string) TODO
+        QStringRef strippedValue = value.midRef(0);
+        while (strippedValue.startsWith('(')) {
+            strippedValue = strippedValue.mid(1);
+        }
+
+        if ( ! (strippedValue.length() > 1 &&
+                strippedValue.at(1) == '|')) {  // ^|blabla   This condition is not ideal but will cover majority of cases
+            wordStart = strippedValue.startsWith("\\b");
+            lineStart = strippedValue.startsWith("^");
+        }
+    }
 
     return new RegExpRule(params, value, insensitive, minimal, wordStart, lineStart);
 }
