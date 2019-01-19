@@ -3,6 +3,7 @@
 #include <QString>
 #include <QSharedPointer>
 #include <QTextStream>
+#include <QRegularExpression>
 
 
 #include "context.h"
@@ -158,14 +159,19 @@ public:
                const QString& value, bool insensitive,
                bool minimal, bool wordStart, bool lineStart);
 
+private:
     QString name() const override {return "RegExpr";};
     QString args() const override;
-private:
+
+    QRegularExpression compileRegExp(const QString& pattern) const;
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
+
     QString value;
     bool insensitive;
     bool minimal;
     bool wordStart;
     bool lineStart;
+    QRegularExpression regExp;
 };
 
 

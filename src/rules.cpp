@@ -185,7 +185,11 @@ RegExpRule::RegExpRule(const AbstractRuleParams& params,
     minimal(minimal),
     wordStart(wordStart),
     lineStart(lineStart)
-{}
+{
+    if ( ! dynamic) {
+        regExp = compileRegExp(value);
+    }
+}
 
 QString RegExpRule::args() const {
     QString result = value;
@@ -203,6 +207,61 @@ QString RegExpRule::args() const {
     }
 
     return result;
+}
+
+QRegularExpression RegExpRule::compileRegExp(const QString& pattern) const {
+   QRegularExpression::PatternOptions flags = QRegularExpression::NoPatternOption;
+
+    if (insensitive) {
+        flags |= QRegularExpression::CaseInsensitiveOption;
+    }
+
+    if (minimal) {
+        /* NOTE
+         * There are support for minimal flag in Qt5 reg exps.
+         * InvertedGreedinessOption would work only if reg exps are
+         * written as non-greedy in the syntax files
+         */
+        flags |= QRegularExpression::InvertedGreedinessOption;
+    }
+
+    QRegularExpression result(pattern, flags);
+    if ( ! result.isValid()) {
+        qWarning() << "Invalid regular expression pattern" << pattern;
+    }
+
+    return result;
+}
+
+MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    // Special case. if pattern starts with \b, we have to check it manually,
+    // because string is passed to .match(..) without beginning
+    if (wordStart && ( ! textToMatch.isWordStart)) {
+        return nullptr;
+    }
+
+    //Special case. If pattern starts with ^ - check column number manually
+    if (lineStart && textToMatch.currentColumnIndex > 0) {
+        return nullptr;
+    }
+
+
+    QRegularExpressionMatch match;
+    if (dynamic) {
+#if 0 // TODO dynamic
+        QString pattern = makeDynamicSubsctitutions(textToMatchObject.contextData)
+        QRegularExpression dynamicRegExp = compileRegExp(pattern)
+        match = dynamicRegExp.match(text);
+#endif
+    } else {
+        match = regExp.match(textToMatch.text);
+    }
+
+    if (match.hasMatch()) {
+        return makeMatchResult(match.capturedLength()); // TODO dynamic data
+    } else {
+        return nullptr;
+    }
 }
 
 AbstractNumberRule::AbstractNumberRule(const AbstractRuleParams& params,
