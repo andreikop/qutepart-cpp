@@ -85,7 +85,7 @@ MatchResult* StringDetectRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 
 #if 0 // TODO dynamic
     if self.dynamic:
-        string = self._makeDynamicSubsctitutions(self.string, textToMatchObject.contextData)
+        string = self._makeDynamicSubsctitutions(self.string, textToMatch.contextData)
     else:
         string = self.string
 #endif
@@ -176,6 +176,25 @@ MatchResult* AnyCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     return nullptr;
 }
 
+
+MatchResult* WordDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.word.isEmpty()) {
+        return nullptr;
+    }
+
+    QString wordToCheck = textToMatch.word;
+    if (insensitive) {
+        wordToCheck = wordToCheck.toLower();
+    }
+
+    if (wordToCheck == value){
+        return makeMatchResult(wordToCheck.length());
+    } else {
+        return nullptr;
+    }
+}
+
+
 RegExpRule::RegExpRule(const AbstractRuleParams& params,
                        const QString& value, bool insensitive,
                        bool minimal, bool wordStart, bool lineStart):
@@ -249,7 +268,7 @@ MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     QRegularExpressionMatch match;
     if (dynamic) {
 #if 0 // TODO dynamic
-        QString pattern = makeDynamicSubsctitutions(textToMatchObject.contextData)
+        QString pattern = makeDynamicSubsctitutions(textToMatch.contextData)
         QRegularExpression dynamicRegExp = compileRegExp(pattern)
         match = dynamicRegExp.match(text);
 #endif

@@ -150,6 +150,9 @@ class WordDetectRule: public AbstractStringRule {
     using AbstractStringRule::AbstractStringRule;
 public:
     QString name() const override {return "WordDetect";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
 };
 
 

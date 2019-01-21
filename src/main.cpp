@@ -13,7 +13,7 @@
 int runEditor(int argc, char** argv) {
     QApplication app(argc, argv);
     Qutepart qutepart;
-    qutepart.initHighlighter("../syntax/c.xml");
+    qutepart.initHighlighter("../syntax/lua.xml");
     qutepart.show();
 
     qWarning() << "exec";
