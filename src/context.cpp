@@ -152,7 +152,7 @@ const ContextSwitcher Context::parseBlock(
         TextToMatch& textToMatch,
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap,
-    bool& lineContinue) const {
+        bool& lineContinue) const {
 
     while ( ! textToMatch.isEmpty()) {
         MatchResult* matchRes = tryMatch(textToMatch);

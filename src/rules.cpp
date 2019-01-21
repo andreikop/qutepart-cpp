@@ -257,7 +257,7 @@ MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
         match = regExp.match(textToMatch.text);
     }
 
-    if (match.hasMatch()) {
+    if (match.hasMatch() && match.capturedStart() == 0) {
         return makeMatchResult(match.capturedLength()); // TODO dynamic data
     } else {
         return nullptr;
