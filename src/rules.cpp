@@ -496,3 +496,23 @@ MatchResult* IncludeRulesRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 
     return context->tryMatch(textToMatch);
 }
+
+
+MatchResult* DetectIdentifierRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.text[0].isLetter()) {
+        int count = 1;
+        while(count < textToMatch.text.length()) {
+            QChar ch = textToMatch.text.at(count);
+            if (ch.isLetterOrNumber() || ch == '_') {
+                count ++;
+            } else {
+                break;
+            }
+        }
+
+        return makeMatchResult(count);
+    }
+    else {
+        return nullptr;
+    }
+}

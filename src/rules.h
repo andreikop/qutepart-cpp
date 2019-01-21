@@ -301,4 +301,7 @@ class DetectIdentifierRule: public AbstractRule {
 
 public:
     QString name() const override {return "DetectIdentifier";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
