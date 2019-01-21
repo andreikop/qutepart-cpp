@@ -489,6 +489,16 @@ MatchResult* HlCHexRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 }
 
 
+MatchResult* HlCStringCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    int res = checkEscapedChar(textToMatch.text);
+    if (res != -1) {
+        return makeMatchResult(res);
+    } else {
+        return nullptr;
+    }
+}
+
+
 MatchResult* HlCCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if(textToMatch.text.length() > 2 &&
        textToMatch.text.at(0) == "'" &&

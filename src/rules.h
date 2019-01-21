@@ -239,6 +239,9 @@ class HlCStringCharRule: public AbstractRule {
 
 public:
     QString name() const override {return "HlCStringChar";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
 
 
