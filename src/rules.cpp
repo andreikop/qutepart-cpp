@@ -384,16 +384,56 @@ int FloatRule::tryMatchText(const QStringRef& text) const {
 }
 
 
-// For HlCOctRule and HlCHexRule
-static bool isNumberLengthSpecifier(QChar ch) {
-    return ch == 'l' ||
-           ch == 'L' ||
-           ch == 'u' ||
-           ch == 'U';
-}
+namespace { // HlC helpers
 
-bool HlCOctRule::isOctal(QChar ch) {
-    return ch >= '0' && ch <= '7';
+    // For HlCOctRule and HlCHexRule
+    bool isNumberLengthSpecifier(QChar ch) {
+        return ch == 'l' ||
+               ch == 'L' ||
+               ch == 'u' ||
+               ch == 'U';
+    }
+
+    bool isOctal(QChar ch) {
+        return ch >= '0' && ch <= '7';
+    }
+
+    bool isHex(QChar ch) {
+        return (ch >= '0' && ch <= '9') ||
+               (ch >= 'a' && ch <= 'f') ||
+               (ch >= 'A' && ch <= 'F');
+    }
+
+    const QString escapeChars = "abefnrtv'\"?\\";
+
+    int checkEscapedChar(QStringRef text) {
+        int index = 0;
+        if(text.length() > 1 && text.at(0) == '\\') {
+            index = 1;
+
+            if (escapeChars.contains(text.at(index))) {
+                index++;
+            } else if (text.at(index) == 'x') {  // if it's like \xff, eat the x
+                index ++;
+                while (index < text.length() && isHex(text.at(index))) {
+                    index ++;
+                }
+                if (index == 2) {  // no hex digits
+                    return -1;
+                }
+            } else if (isOctal(text.at(index))) {
+                while (index < 4 && index < text.length() && isOctal(text.at(index))) {
+                    index ++;
+                }
+            } else {
+                return -1;
+            }
+
+            return index;
+        }
+
+        return -1;
+    }
 }
 
 MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
@@ -419,12 +459,6 @@ MatchResult* HlCOctRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     return makeMatchResult(index);
 }
 
-
-bool HlCHexRule::isHex(QChar ch) {
-    return (ch >= '0' && ch <= '9') ||
-           (ch >= 'a' && ch <= 'f') ||
-           (ch >= 'A' && ch <= 'F');
-}
 
 MatchResult* HlCHexRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (textToMatch.text.length() < 3) {
@@ -452,6 +486,28 @@ MatchResult* HlCHexRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     }
 
     return makeMatchResult(index);
+}
+
+
+MatchResult* HlCCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if(textToMatch.text.length() > 2 &&
+       textToMatch.text.at(0) == "'" &&
+       textToMatch.text.at(1) != "'") {
+        int index = 0;
+        int result = checkEscapedChar(textToMatch.text.mid(1));
+        if(result != -1){
+            index = 1 + result;
+        } else {  // 1 not escaped character
+            index = 1 + 1;
+        }
+
+        if(index < textToMatch.text.length() &&
+           textToMatch.text.at(index) == "'") {
+            return makeMatchResult(index + 1);
+        }
+    }
+
+    return nullptr;
 }
 
 

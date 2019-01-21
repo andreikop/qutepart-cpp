@@ -220,7 +220,6 @@ public:
 
 private:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
-    static bool isOctal(QChar ch);
 };
 
 
@@ -232,7 +231,6 @@ public:
 
 private:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
-    static bool isHex(QChar ch);
 };
 
 
@@ -249,6 +247,9 @@ class HlCCharRule: public AbstractRule {
 
 public:
     QString name() const override {return "HlCChar";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
 
 
