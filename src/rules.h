@@ -301,6 +301,9 @@ class DetectSpacesRule: public AbstractRule {
 
 public:
     QString name() const override {return "DetectSpaces";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
 
 class DetectIdentifierRule: public AbstractRule {

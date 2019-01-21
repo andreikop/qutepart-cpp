@@ -583,6 +583,20 @@ MatchResult* IncludeRulesRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 }
 
 
+MatchResult* DetectSpacesRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    int index = 0;
+    while (index < textToMatch.text.length() && textToMatch.text.at(index).isSpace()) {
+        index ++;
+    }
+
+    if (index > 0) {
+        return makeMatchResult(index);
+    } else {
+        return nullptr;
+    }
+}
+
+
 MatchResult* DetectIdentifierRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (textToMatch.text[0].isLetter()) {
         int count = 1;
