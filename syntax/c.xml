@@ -169,7 +169,7 @@
         <RegExpr attribute="Preprocessor" context="Preprocessor" String="#\s*if(?:def|ndef)?(?=\s+\S)" insensitive="true" beginRegion="PP" firstNonSpace="true" />
         <RegExpr attribute="Preprocessor" context="Preprocessor" String="#\s*endif" insensitive="true" endRegion="PP" firstNonSpace="true" />
         <RegExpr attribute="Preprocessor" context="Define" String="#\s*define.*((?=\\))" insensitive="true" firstNonSpace="true" />
-        
+
         <!-- folding for apple style #pragma mark - label -->
         <RegExpr attribute="Preprocessor" context="Preprocessor" String="#\s*pragma\s+mark\s+-\s*$" insensitive="true" firstNonSpace="true" endRegion="pragma_mark" />
         <RegExpr attribute="Preprocessor" context="Preprocessor" String="#\s*pragma\s+mark" insensitive="true" firstNonSpace="true" endRegion="pragma_mark" beginRegion="pragma_mark" />

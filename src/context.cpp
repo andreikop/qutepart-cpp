@@ -161,12 +161,16 @@ const ContextSwitcher Context::parseBlock(
             lineContinue = matchRes->lineContinue;
             applyMatchResult(textToMatch, matchRes, formats, textTypeMap);
 
+            textToMatch.shift(matchRes->length);
+
             if ( ! matchRes->nextContext.isNull()) {
-                return matchRes->nextContext; // TODO return data
+                ContextSwitcher result = matchRes->nextContext; // TODO return data
+                delete matchRes;
+                return result;
+            } else {
+                delete matchRes;
             }
 
-            textToMatch.shift(matchRes->length);
-            delete matchRes;
         } else {
             lineContinue = false;
             appendFormat(formats, textToMatch.currentColumnIndex, 1, this->style.format());

@@ -39,7 +39,7 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
 }
 
 MatchResult* AbstractRule::makeMatchResult(int length, bool lineContinue) const {
-    qDebug() << "\trule matched" << description() << length;
+    qDebug() << "\trule matched" << description() << length << "lookAhead" << lookAhead;
     if (lookAhead) {
         length = 0;
     }
@@ -489,5 +489,10 @@ void IncludeRulesRule::resolveContextReferences(const QHash<QString, ContextPtr>
 }
 
 MatchResult* IncludeRulesRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (context == nullptr) {
+        qWarning() << "IncludeRules called for null context" << description();
+        return nullptr;
+    }
+
     return context->tryMatch(textToMatch);
 }
