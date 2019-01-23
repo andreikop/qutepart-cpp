@@ -98,11 +98,6 @@ MatchResult* StringDetectRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 }
 
 
-MatchResult* AbstractRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    return nullptr;
-}
-
-
 KeywordRule::KeywordRule(const AbstractRuleParams& params,
                          const QString& listName):
     AbstractRule(params),
@@ -167,6 +162,16 @@ MatchResult* DetectCharRule::tryMatchImpl(const TextToMatch& textToMatch) const 
         return nullptr;
     }
 }
+
+
+MatchResult* Detect2CharsRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.text.startsWith(value)) {
+        return makeMatchResult(2);
+    }
+
+    return nullptr;
+}
+
 
 MatchResult* AnyCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (value.contains(textToMatch.text.at(0))) {
@@ -549,6 +554,18 @@ RangeDetectRule::RangeDetectRule(const AbstractRuleParams& params, const QString
 QString RangeDetectRule::args() const {
     return QString("%1 - %2").arg(char0, char1);
 }
+
+MatchResult* RangeDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.text.startsWith(char0)) {
+        int end = textToMatch.text.indexOf(char1);
+        if (end > 0) {
+            return makeMatchResult(end + 1);
+        }
+    }
+
+    return nullptr;
+}
+
 
 IncludeRulesRule::IncludeRulesRule(const AbstractRuleParams& params, const QString& contextName):
     AbstractRule(params),

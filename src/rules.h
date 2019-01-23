@@ -51,7 +51,7 @@ protected:
     /* Rule matching implementation
      * Result ownership is passed to caller
      */
-    virtual MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+    virtual MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const = 0;
 
     QString attribute;          // may be null
     ContextSwitcher context;
@@ -122,6 +122,9 @@ class Detect2CharsRule: public AbstractStringRule {
 public:
 
     QString name() const override {return "Detect2Chars";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
 
 
@@ -266,6 +269,8 @@ public:
     QString args() const override;
 
 private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
+
     const QString char0;
     const QString char1;
 };

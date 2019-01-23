@@ -354,7 +354,8 @@ AbstractRule* loadRule(QXmlStreamReader& xmlReader, QString& error) {
     } else if (name == "DetectIdentifier") {
         result = new DetectIdentifierRule(params);
     } else {
-        result = new AbstractRule(/*parentContext,*/ params);
+        error = QString("Unknown rule %1").arg(name.toString());
+        return nullptr;
     }
 
     if ( ! error.isNull()) {
