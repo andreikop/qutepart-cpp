@@ -49,10 +49,15 @@ void Language::printDescription(QTextStream& out) const {
 }
 
 void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats) {
-    QTextBlockUserData* qtData = block.userData();
+    qDebug() << "Highlighting: " << block.text();
     TextBlockUserData* data = nullptr;
-    if (qtData != nullptr) {
-        data = dynamic_cast<TextBlockUserData*>(qtData);
+
+    QTextBlock prevBlock = block.previous();
+    if (prevBlock.isValid()) {
+        QTextBlockUserData* qtData = prevBlock.userData();
+        if (qtData != nullptr) {
+            data = dynamic_cast<TextBlockUserData*>(qtData);
+        }
     }
 
     ContextStack contextStack = nullptr;
@@ -66,10 +71,11 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
 
     QString textTypeMap(textToMatch.text.length(), ' ');
 
+
     bool lineContinue = false;
 
     while ( ! textToMatch.isEmpty()) {
-        qDebug() << "In context " << contextStack.currentContext()->name();
+        qDebug() << "\tIn context " << contextStack.currentContext()->name();
 
         const Context* context = contextStack.currentContext();
         const ContextSwitcher contextSwitcher = context->parseBlock(textToMatch, formats, textTypeMap, lineContinue);

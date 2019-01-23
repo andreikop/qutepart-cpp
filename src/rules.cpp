@@ -39,7 +39,7 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
 }
 
 MatchResult* AbstractRule::makeMatchResult(int length, bool lineContinue) const {
-    qDebug() << "\trule matched" << description() << length << "lookAhead" << lookAhead;
+    qDebug() << "\t\trule matched" << description() << length << "lookAhead" << lookAhead;
     if (lookAhead) {
         length = 0;
     }
