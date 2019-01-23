@@ -583,6 +583,15 @@ MatchResult* IncludeRulesRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 }
 
 
+MatchResult* LineContinueRule::tryMatchImpl(const TextToMatch& textToMatch) const {
+    if (textToMatch.text == '\\') {
+        return makeMatchResult(1, true);
+    }
+
+    return nullptr;
+}
+
+
 MatchResult* DetectSpacesRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     int index = 0;
     while (index < textToMatch.text.length() && textToMatch.text.at(index).isSpace()) {

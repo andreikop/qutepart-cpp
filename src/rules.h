@@ -276,6 +276,9 @@ class LineContinueRule: public AbstractRule {
 
 public:
     QString name() const override {return "LineContinue";};
+
+private:
+    MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
 
 
