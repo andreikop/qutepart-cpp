@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QStringList>
+
+
 class ContextSwitcher;
 
 
@@ -8,12 +11,12 @@ class Context;
 
 struct ContextStackItem {
     ContextStackItem();
-    ContextStackItem(const Context* context, const void* data);
+    ContextStackItem(const Context* context, const QStringList& data=QStringList());
 
     bool operator==(const ContextStackItem& other) const;
 
     const Context* context;
-    const void* data;
+    QStringList data;
 };
 
 
@@ -28,13 +31,15 @@ private:
 
 public:
     // Apply context switch operation and return new context
-    ContextStack switchContext(const ContextSwitcher& operation, const void* data) const;
+    ContextStack switchContext(
+        const ContextSwitcher& operation,
+        const QStringList& data=QStringList()) const;
 
     // Get current context
     const Context* currentContext();
 
     // Get current data
-    const void* currentData();
+    const QStringList& currentData();
 
 private:
     QVector<ContextStackItem> items;

@@ -9,11 +9,10 @@
 
 
 ContextStackItem::ContextStackItem():
-    context(nullptr),
-    data(nullptr)
+    context(nullptr)
 {}
 
-ContextStackItem::ContextStackItem(const Context* context, const void* data):
+ContextStackItem::ContextStackItem(const Context* context, const QStringList& data):
     context(context),
     data(data)
 {}
@@ -24,7 +23,7 @@ bool ContextStackItem::operator==(const ContextStackItem& other) const {
 
 ContextStack::ContextStack(Context* context)
 {
-    items.append(ContextStackItem(context, nullptr));
+    items.append(ContextStackItem(context));
 }
 
 ContextStack::ContextStack(const QVector<ContextStackItem>& items):
@@ -39,11 +38,13 @@ const Context* ContextStack::currentContext() {
     return items.last().context;
 }
 
-const void* ContextStack::currentData() {
+const QStringList& ContextStack::currentData() {
     return items.last().data;
 }
 
-ContextStack ContextStack::switchContext(const ContextSwitcher& operation, const void* data) const{
+ContextStack ContextStack::switchContext(
+        const ContextSwitcher& operation,
+        const QStringList& data) const{
     auto newItems = items;
 
     if (operation.popsCount() > 0) {
@@ -58,8 +59,10 @@ ContextStack ContextStack::switchContext(const ContextSwitcher& operation, const
     }
 
     if ( ! operation.context().isNull() ) {
-        if ( ! operation.context()->dynamic()) {
-            data = nullptr;
+        QStringList dataToSave;
+
+        if (operation.context()->dynamic()) {
+            dataToSave = data;
         }
 
         newItems.append(ContextStackItem(operation.context().data(), data));

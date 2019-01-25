@@ -152,8 +152,8 @@ const ContextSwitcher Context::parseBlock(
         TextToMatch& textToMatch,
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap,
-        bool& lineContinue) const {
-
+        bool& lineContinue,
+        QStringList& data) const {
     while ( ! textToMatch.isEmpty()) {
         MatchResult* matchRes = tryMatch(textToMatch);
 
@@ -164,7 +164,8 @@ const ContextSwitcher Context::parseBlock(
             textToMatch.shift(matchRes->length);
 
             if ( ! matchRes->nextContext.isNull()) {
-                ContextSwitcher result = matchRes->nextContext; // TODO return data
+                ContextSwitcher result = matchRes->nextContext;
+                data = matchRes->data;
                 delete matchRes;
                 return result;
             } else {

@@ -38,13 +38,16 @@ void AbstractRule::setStyles(const QHash<QString, Style>& styles, QString& error
     }
 }
 
-MatchResult* AbstractRule::makeMatchResult(int length, bool lineContinue) const {
+MatchResult* AbstractRule::makeMatchResult(
+        int length,
+        bool lineContinue,
+        const QStringList& data) const {
     qDebug() << "\t\trule matched" << description() << length << "lookAhead" << lookAhead;
     if (lookAhead) {
         length = 0;
     }
 
-    return new MatchResult(length, nullptr, lineContinue, context, style);
+    return new MatchResult(length, data, lineContinue, context, style);
 }
 
 MatchResult* AbstractRule::tryMatch(const TextToMatch& textToMatch) const {
@@ -76,6 +79,16 @@ QString AbstractStringRule::args() const {
     return result;
 }
 
+
+namespace {
+    QString makeDynamicSubsctitutions(QString pattern, const QStringList& data) {
+        return pattern.replace("%0", data.value(0))\
+                      .replace("%1", data.value(1))\
+                      .replace("%2", data.value(2))\
+                      .replace("%3", data.value(3))\
+                      .replace("%4", data.value(4));
+    }
+}
 
 MatchResult* StringDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
@@ -272,17 +285,16 @@ MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
     QRegularExpressionMatch match;
     if (dynamic) {
-#if 0 // TODO dynamic
-        QString pattern = makeDynamicSubsctitutions(textToMatch.contextData)
-        QRegularExpression dynamicRegExp = compileRegExp(pattern)
-        match = dynamicRegExp.match(text);
-#endif
+
+        QString pattern = makeDynamicSubsctitutions(value, *textToMatch.contextData);
+        QRegularExpression dynamicRegExp = compileRegExp(pattern);
+        match = dynamicRegExp.match(textToMatch.text);
     } else {
         match = regExp.match(textToMatch.text);
     }
 
     if (match.hasMatch() && match.capturedStart() == 0) {
-        return makeMatchResult(match.capturedLength()); // TODO dynamic data
+        return makeMatchResult(match.capturedLength(), false, match.capturedTexts());
     } else {
         return nullptr;
     }

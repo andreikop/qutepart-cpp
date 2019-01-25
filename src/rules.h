@@ -46,7 +46,10 @@ protected:
     virtual QString name() const {return "AbstractRule";};
     virtual QString args() const {return QString::null;};
 
-    MatchResult* makeMatchResult(int length, bool lineContinue=false) const;
+    MatchResult* makeMatchResult(
+        int length,
+        bool lineContinue=false,
+        const QStringList& data=QStringList()) const;
 
     /* Rule matching implementation
      * Result ownership is passed to caller

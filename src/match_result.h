@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QStringList>
+
 #include "context.h"
 #include "style.h"
 
@@ -9,14 +11,14 @@ class AbstractRule;
 class MatchResult {
 public:
     MatchResult(int length,
-                void* data,
+                const QStringList& data,
                 bool lineContinue,
                 const ContextSwitcher& context,
                 const Style& style);
     MatchResult();
 
     int length;
-    void* data;
+    QStringList data;
     bool lineContinue;
     ContextSwitcher nextContext;
     Style style;

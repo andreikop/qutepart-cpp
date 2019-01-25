@@ -49,7 +49,8 @@ public:
             TextToMatch& textToMatch,
             QVector<QTextLayout::FormatRange>& formats,
             QString& textTypeMap,
-            bool& lineContinue) const;
+            bool& lineContinue,
+            QStringList& data) const;
 
     // Try to match textToMatch with nested rules
     MatchResult* tryMatch(const TextToMatch& textToMatch) const;

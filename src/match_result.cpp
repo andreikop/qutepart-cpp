@@ -3,7 +3,7 @@
 #include "rules.h"
 
 MatchResult::MatchResult(int length,
-                         void* data,
+                         const QStringList& data,
                          bool lineContinue,
                          const ContextSwitcher& context,
                          const Style& style):
@@ -16,6 +16,5 @@ MatchResult::MatchResult(int length,
 
 MatchResult::MatchResult():
     length(0),
-    data(nullptr),
     lineContinue(false)
 {}

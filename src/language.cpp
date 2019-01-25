@@ -67,7 +67,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
         contextStack = defaultContextStack;
     }
 
-    TextToMatch textToMatch(block.text(), keywordDeliminators);
+    TextToMatch textToMatch(block.text(), keywordDeliminators, contextStack.currentData());
 
     QString textTypeMap(textToMatch.text.length(), ' ');
 
@@ -78,9 +78,12 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
         qDebug() << "\tIn context " << contextStack.currentContext()->name();
 
         const Context* context = contextStack.currentContext();
-        const ContextSwitcher contextSwitcher = context->parseBlock(textToMatch, formats, textTypeMap, lineContinue);
+
+        QStringList data;
+        const ContextSwitcher contextSwitcher = context->parseBlock(textToMatch, formats, textTypeMap, lineContinue, data);
         if ( ! contextSwitcher.isNull()) {
-            contextStack = contextStack.switchContext(contextSwitcher, nullptr);
+            contextStack = contextStack.switchContext(contextSwitcher, data);
+            textToMatch.contextData = &contextStack.currentData();
         } else if ( ! textToMatch.text.isEmpty()) {
             qWarning() << "Loop detected in context " << context->name() <<
                 ". parseBlock() returned but context haven't been switched and text is not empty";
@@ -91,7 +94,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
     if ( ! lineContinue) {
         while ( ! contextStack.currentContext()->lineEndContext().isNull()) {
             ContextStack oldStack = contextStack;
-            contextStack = contextStack.switchContext(contextStack.currentContext()->lineEndContext(), nullptr);
+            contextStack = contextStack.switchContext(contextStack.currentContext()->lineEndContext());
             if (oldStack == contextStack) {  // avoid infinite while loop if nothing to switch
                 break;
             }
@@ -99,7 +102,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
 
         // this code is not tested, because lineBeginContext is not defined by any xml file
         if ( ! contextStack.currentContext()->lineBeginContext().isNull()) {
-            contextStack = contextStack.switchContext(contextStack.currentContext()->lineBeginContext(), nullptr);
+            contextStack = contextStack.switchContext(contextStack.currentContext()->lineBeginContext());
         }
     }
 

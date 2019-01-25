@@ -1,13 +1,17 @@
 #include "text_to_match.h"
 
 
-TextToMatch::TextToMatch(const QString& text, const QString& deliminatorSet):
+TextToMatch::TextToMatch(
+        const QString& text,
+        const QString& deliminatorSet,
+        const QStringList& contextData):
     currentColumnIndex(0),
     wholeLineText(text),
     text(wholeLineText.leftRef(wholeLineText.length())),
     textLength(text.length()),
     firstNonSpace(true), // copy-paste from Py code
     isWordStart(true), // copy-paste from Py code
+    contextData(&contextData),
     deliminatorSet(deliminatorSet)
 {
     findWord();

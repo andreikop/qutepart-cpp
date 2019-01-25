@@ -8,7 +8,7 @@
  */
 class TextToMatch {
 public:
-    TextToMatch(const QString& text, const QString& deliminatorSet);
+    TextToMatch(const QString& text, const QString& deliminatorSet, const QStringList& contextData);
 
     void shiftOnce();
     void shift(int count);
@@ -22,6 +22,7 @@ public:
     bool firstNonSpace;
     bool isWordStart;
     QString word;
+    const QStringList* contextData;
 
 private:
     void shiftWord(int count);
