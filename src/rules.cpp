@@ -96,12 +96,10 @@ MatchResult* StringDetectRule::tryMatchImpl(const TextToMatch& textToMatch) cons
         return nullptr;
     }
 
-#if 0 // TODO dynamic
-    if self.dynamic:
-        string = self._makeDynamicSubsctitutions(self.string, textToMatch.contextData)
-    else:
-        string = self.string
-#endif
+    QString pattern = value;
+    if (dynamic) {
+        pattern = makeDynamicSubsctitutions(value, *textToMatch.contextData);
+    }
 
     if (textToMatch.text.startsWith(value)) {
         return makeMatchResult(value.length());
@@ -167,9 +165,28 @@ QString DetectCharRule::args() const {
 }
 
 MatchResult* DetectCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    // TODO support dynamic
+    QChar pattern = value;
 
-    if (textToMatch.text.at(0) == value) {
+    if (dynamic) {
+        int index = this->index - 1;
+        if (textToMatch.contextData == nullptr) {
+            qWarning() << "Dynamic DetectCharRule but no data";
+        }
+
+        if (index >= textToMatch.contextData->length()) {
+            qWarning() << "Invalid DetectChar index" << index;
+            return nullptr;
+        }
+
+        if (textToMatch.contextData->at(index).length() != 1) {
+            qWarning() << "Too long DetectChar string " << *textToMatch.contextData;
+            return nullptr;
+        }
+
+        pattern = textToMatch.contextData->at(index)[0];
+    }
+
+    if (textToMatch.text.at(0) == pattern) {
         return makeMatchResult(1, false);
     } else {
         return nullptr;
@@ -285,7 +302,6 @@ MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
     QRegularExpressionMatch match;
     if (dynamic) {
-
         QString pattern = makeDynamicSubsctitutions(value, *textToMatch.contextData);
         QRegularExpression dynamicRegExp = compileRegExp(pattern);
         match = dynamicRegExp.match(textToMatch.text);
