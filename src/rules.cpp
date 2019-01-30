@@ -304,12 +304,14 @@ MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (dynamic) {
         QString pattern = makeDynamicSubsctitutions(value, *textToMatch.contextData);
         QRegularExpression dynamicRegExp = compileRegExp(pattern);
-        match = dynamicRegExp.match(textToMatch.text);
+        match = dynamicRegExp.match(textToMatch.text,
+            0, QRegularExpression::NormalMatch, QRegularExpression::AnchoredMatchOption);
     } else {
-        match = regExp.match(textToMatch.text);
+        match = regExp.match(textToMatch.text,
+            0, QRegularExpression::NormalMatch, QRegularExpression::AnchoredMatchOption);
     }
 
-    if (match.hasMatch() && match.capturedStart() == 0) {
+    if (match.hasMatch()) {
         return makeMatchResult(match.capturedLength(), false, match.capturedTexts());
     } else {
         return nullptr;
