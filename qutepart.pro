@@ -20,6 +20,8 @@ SOURCES = \
     src/text_block_user_data.cpp \
     src/text_to_match.cpp \
     src/match_result.cpp \
+    src/language_db_generated.cpp \
+    src/language_db.cpp
 
 
 HEADERS = \
@@ -33,3 +35,4 @@ HEADERS = \
     src/context_switcher.h \
     src/text_to_match.h \
     src/match_result.h \
+    src/language_db.h

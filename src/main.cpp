@@ -13,7 +13,14 @@
 int runEditor(int argc, char** argv) {
     QApplication app(argc, argv);
     Qutepart qutepart;
-    qutepart.initHighlighter("../syntax/perl.xml");
+
+    QString filePath;
+    if (argc > 1) {
+        filePath = argv[1];
+    }
+
+    qutepart.initHighlighter(filePath);
+
     qutepart.show();
 
     qWarning() << "exec";
