@@ -27,25 +27,6 @@ int runEditor(int argc, char** argv) {
     return app.exec();
 }
 
-Language* loadLanguage(const QString& filePath) {
-    QFile syntaxFile(filePath);
-    if (! syntaxFile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        qCritical() << "Failed to open syntax file " << filePath;
-        return nullptr;
-    }
-
-    QXmlStreamReader xmlReader(&syntaxFile);
-
-    QString error;
-    Language* language = loadLanguage(xmlReader, error);
-    if (language == nullptr) {
-        qCritical() << "Failed to parse XML file '" << filePath << "': " << error;
-        return nullptr;
-    }
-
-    return language;
-}
-
 
 void parseAllFiles() {
     QDir syntaxFiles("../syntax");

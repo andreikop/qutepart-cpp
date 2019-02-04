@@ -1,5 +1,6 @@
 #include "qutepart.h"
 #include "language_db.h"
+#include "loader.h"
 
 
 Qutepart::Qutepart(QWidget *parent):
@@ -20,9 +21,6 @@ Qutepart::~Qutepart() {
     }
 }
 
-// FIXME replace this func with better loader
-Language* loadLanguage(const QString& filePath);
-
 void Qutepart::initHighlighter(const QString& filePath) {
     const QString& xmlFileName = chooseLanguage(QString::null, QString::null, filePath, QString::null);
 
@@ -30,8 +28,7 @@ void Qutepart::initHighlighter(const QString& filePath) {
         return;
     }
 
-    QString xmlFilePath = ":/qutepart/syntax/" + xmlFileName;
-    Language* language = loadLanguage(xmlFilePath);
+    Language* language = loadLanguage(xmlFileName);
     if (language != nullptr) {
         if (highlighter != nullptr) {
             delete highlighter;

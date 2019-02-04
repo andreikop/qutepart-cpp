@@ -685,7 +685,7 @@ QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywo
     return contexts;
 }
 
-Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
+Language* parseXmlFile(QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
         return nullptr;
@@ -746,5 +746,27 @@ Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error) {
     Language* language = new Language(name, extensions, mimetypes,
                                       priority, hidden, indenter, contexts,
                                       keywordDeliminators);
+    return language;
+}
+
+
+Language* loadLanguage(const QString& xmlFileName) {
+    QString xmlFilePath = ":/qutepart/syntax/" + xmlFileName;
+
+    QFile syntaxFile(xmlFilePath);
+    if (! syntaxFile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        qCritical() << "Failed to open syntax file " << xmlFilePath;
+        return nullptr;
+    }
+
+    QXmlStreamReader xmlReader(&syntaxFile);
+
+    QString error;
+    Language* language = parseXmlFile(xmlReader, error);
+    if (language == nullptr) {
+        qCritical() << "Failed to parse XML file '" << xmlFilePath << "': " << error;
+        return nullptr;
+    }
+
     return language;
 }

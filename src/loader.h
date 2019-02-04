@@ -4,4 +4,4 @@
 
 #include "language.h"
 
-Language* loadLanguage(QXmlStreamReader& xmlReader, QString& error);
+Language* loadLanguage(const QString& xmlFileName);
