@@ -30,7 +30,7 @@ void Qutepart::initHighlighter(const QString& filePath) {
         return;
     }
 
-    QString xmlFilePath = "../syntax/" + xmlFileName;
+    QString xmlFilePath = ":/qutepart/syntax/" + xmlFileName;
     Language* language = loadLanguage(xmlFilePath);
     if (language != nullptr) {
         if (highlighter != nullptr) {

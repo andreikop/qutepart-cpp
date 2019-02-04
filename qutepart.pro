@@ -36,3 +36,6 @@ HEADERS = \
     src/text_to_match.h \
     src/match_result.h \
     src/language_db.h
+
+
+RESOURCES = syntax-files.qrc
