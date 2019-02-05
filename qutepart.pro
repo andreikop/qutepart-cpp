@@ -6,36 +6,38 @@ CONFIG += c++11
 CONFIG += qt
 QT += widgets
 
+INCLUDEPATH += include
+
 SOURCES = \
-    src/context.cpp \
-    src/language.cpp \
-    src/loader.cpp \
-    src/main.cpp \
-    src/rules.cpp \
+    editor.cpp \
     src/qutepart.cpp \
-    src/syntax_highlighter.cpp \
-    src/style.cpp \
-    src/context_stack.cpp \
-    src/context_switcher.cpp \
-    src/text_block_user_data.cpp \
-    src/text_to_match.cpp \
-    src/match_result.cpp \
-    src/language_db_generated.cpp \
-    src/language_db.cpp
+    src/hl/context.cpp \
+    src/hl/language.cpp \
+    src/hl/loader.cpp \
+    src/hl/rules.cpp \
+    src/hl/syntax_highlighter.cpp \
+    src/hl/style.cpp \
+    src/hl/context_stack.cpp \
+    src/hl/context_switcher.cpp \
+    src/hl/text_block_user_data.cpp \
+    src/hl/text_to_match.cpp \
+    src/hl/match_result.cpp \
+    src/hl/language_db_generated.cpp \
+    src/hl/language_db.cpp
 
 
 HEADERS = \
-    src/context.h \
-    src/language.h \
-    src/qutepart.h \
-    src/rules.h \
-    src/syntax_highlighter.h \
-    src/style.h \
-    src/context_stack.h \
-    src/context_switcher.h \
-    src/text_to_match.h \
-    src/match_result.h \
-    src/language_db.h
+    include/qutepart.h \
+    src/hl/context.h \
+    src/hl/language.h \
+    src/hl/rules.h \
+    src/hl/syntax_highlighter.h \
+    src/hl/style.h \
+    src/hl/context_stack.h \
+    src/hl/context_switcher.h \
+    src/hl/text_to_match.h \
+    src/hl/match_result.h \
+    src/hl/language_db.h
 
 
 RESOURCES = syntax-files.qrc

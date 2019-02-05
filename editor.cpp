@@ -7,7 +7,6 @@
 #include <QDir>
 
 #include "qutepart.h"
-#include "loader.h"
 
 
 int runEditor(int argc, char** argv) {

@@ -1,7 +1,7 @@
 #include "qutepart.h"
-#include "language_db.h"
-#include "loader.h"
-#include "syntax_highlighter.h"
+#include "hl/language_db.h"
+#include "hl/loader.h"
+#include "hl/syntax_highlighter.h"
 
 
 namespace Qutepart {

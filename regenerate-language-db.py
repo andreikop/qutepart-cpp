@@ -150,7 +150,7 @@ def write_syntax_db(out_file_path, syntax_db):
 def parse_args():
     parser = argparse.ArgumentParser(description='Regenerate syntax db .cpp file')
     parser.add_argument('--xml_path', default='./syntax')
-    parser.add_argument('--out_file', default='src/language_db_generated.cpp')
+    parser.add_argument('--out_file', default='src/hl/language_db_generated.cpp')
     return parser.parse_args()
 
 
