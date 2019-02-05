@@ -2,6 +2,8 @@
 
 #include "match_result.h"
 #include "text_to_match.h"
+#include "language_db.h"
+#include "loader.h"
 
 #include "rules.h"
 
@@ -129,6 +131,12 @@ void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
     items = lists[listName];
     this->caseSensitive = caseSensitive;
     this->deliminators = deliminators;
+
+    if ( ! this->caseSensitive) {
+        for (auto it = items.begin(); it != items.end(); it++) {
+            *it = (*it).toLower();
+        }
+    }
 }
 
 MatchResult* KeywordRule::tryMatchImpl(const TextToMatch& textToMatch) const {
@@ -138,9 +146,9 @@ MatchResult* KeywordRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
     bool matched = false;
     if (this->caseSensitive) {
-        matched = items.contains(textToMatch.word.toLower());
-    } else {
         matched = items.contains(textToMatch.word);
+    } else {
+        matched = items.contains(textToMatch.word.toLower());
     }
 
     if (matched) {
@@ -610,8 +618,16 @@ void IncludeRulesRule::resolveContextReferences(const QHash<QString, ContextPtr>
         return;
     }
 
-    if (contextName.startsWith('#')) {
-        return; //TODO
+    if (contextName.startsWith("##")) {
+        QString langName = contextName.mid(2);
+        QString xmlFileName = chooseLanguage(QString::null, langName);
+        Language* language = loadLanguage(xmlFileName);
+        if (language != nullptr) {
+            context = language->defaultContext();
+            delete language;
+        } else {
+        }
+        return;
     }
 
     if ( ! contexts.contains(contextName)) {

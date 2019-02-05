@@ -253,7 +253,6 @@ RegExpRule* loadRegExp(const QXmlStreamAttributes& attrs,
     bool lineStart = false;
 
     if ( ! value.isEmpty()) {
-        // string = _processCraracterCodes(string) TODO
         QStringRef strippedValue = value.midRef(0);
         while (strippedValue.startsWith('(')) {
             strippedValue = strippedValue.mid(1);
@@ -400,24 +399,10 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    // TODO
-    // if attribute != '<not set>':  // there are no attributes for internal contexts, used by rules. See perl.xml
-    //     try:
-    //         format = attributeToFormatMap[attribute]
-    //     except KeyError:
-    //         _logger.warning('Unknown context attribute %s', attribute)
-    //         format = TextFormat()
-    // else:
-    //     format = None
-
-    // textType = format.textType if format is not None else ' '
-    // if formatConverterFunction is not None and format is not None:
-    //     format = formatConverterFunction(format)
-
     QString lineEndContextText = getAttribute(attrs, "lineEndContext", "#stay");
-    ContextSwitcher lineEndContext = makeContextSwitcher(lineEndContextText/*,  context.parser, formatConverterFunction*/);
+    ContextSwitcher lineEndContext = makeContextSwitcher(lineEndContextText);
     QString lineBeginContextText = getAttribute(attrs, "lineEndContext", "#stay");
-    ContextSwitcher lineBeginContext = makeContextSwitcher(lineBeginContextText/*, context.parser, formatConverterFunction*/);
+    ContextSwitcher lineBeginContext = makeContextSwitcher(lineBeginContextText);
 
     bool fallthrough = parseBoolAttribute(getAttribute(attrs, "fallthrough", "false"), error);
     if ( ! error.isNull()) {
@@ -429,7 +414,7 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
 
     if(fallthrough) {
         QString fallthroughContextText = getAttribute(attrs, "fallthroughContext", "#stay", true);
-        fallthroughContext = makeContextSwitcher(fallthroughContextText/*, context.parser, formatConverterFunction*/);
+        fallthroughContext = makeContextSwitcher(fallthroughContextText);
     }
 
     bool dynamic = parseBoolAttribute(getAttribute(attrs, "dynamic", "false"), error);
@@ -443,7 +428,6 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    // TODO add format, textType
     return new Context(name, attribute, lineEndContext, lineBeginContext, fallthroughContext, dynamic, rules);
 }
 
