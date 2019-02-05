@@ -12,7 +12,7 @@
 
 int runEditor(int argc, char** argv) {
     QApplication app(argc, argv);
-    Qutepart qutepart;
+    Qutepart::Qutepart qutepart;
 
     QString filePath;
     if (argc > 1) {
@@ -28,6 +28,7 @@ int runEditor(int argc, char** argv) {
 }
 
 
+#if 0
 void parseAllFiles() {
     QDir syntaxFiles("../syntax");
     foreach (QString filePath, syntaxFiles.entryList(QDir::Files)) {
@@ -50,6 +51,7 @@ void showSyntax(const QString& fileName) {
     language->printDescription(out);
     delete language;
 }
+#endif
 
 int main(int argc, char** argv) {
     QString lang = "zsh";

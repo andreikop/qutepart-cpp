@@ -4,4 +4,8 @@
 
 #include "language.h"
 
+namespace Qutepart {
+
 Language* loadLanguage(const QString& xmlFileName);
+
+}

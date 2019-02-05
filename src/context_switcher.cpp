@@ -1,6 +1,8 @@
 #include "context_switcher.h"
 
 
+namespace Qutepart {
+
 ContextSwitcher::ContextSwitcher()
   : _popsCount(0)
 {}
@@ -35,3 +37,5 @@ void ContextSwitcher::resolveContextReferences(const QHash<QString, ContextPtr>&
 
     _context = contexts[contextName];
 }
+
+};

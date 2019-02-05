@@ -4,6 +4,8 @@
 #include <QSharedPointer>
 
 
+namespace Qutepart {
+
 class Style {
 public:
     Style();
@@ -30,3 +32,5 @@ Style makeStyle(
         const QString& /*selColor*/,
         const QStringList& flags,
         QString& error);
+
+};

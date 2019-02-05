@@ -2,8 +2,10 @@
 
 #include <QPlainTextEdit>
 
-#include "syntax_highlighter.h"
 
+namespace Qutepart {
+
+class SyntaxHighlighter;
 
 class Qutepart: public QPlainTextEdit {
 public:
@@ -12,7 +14,9 @@ public:
 
     virtual ~Qutepart();
 
-    void initHighlighter(const QString& path);
+    void initHighlighter(const QString& filePath);
 private:
     SyntaxHighlighter* highlighter;
+};
+
 };

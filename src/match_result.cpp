@@ -2,6 +2,9 @@
 
 #include "rules.h"
 
+
+namespace Qutepart {
+
 MatchResult::MatchResult(int length,
                          const QStringList& data,
                          bool lineContinue,
@@ -18,3 +21,5 @@ MatchResult::MatchResult():
     length(0),
     lineContinue(false)
 {}
+
+};

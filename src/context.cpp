@@ -4,6 +4,7 @@
 #include "match_result.h"
 
 
+namespace Qutepart {
 
 Context::Context(const QString& name,
                  const QString& attribute,
@@ -198,3 +199,5 @@ MatchResult* Context::tryMatch(const TextToMatch& textToMatch) const {
 
     return nullptr;
 }
+
+};

@@ -6,6 +6,8 @@
 #include "rules.h"
 
 
+namespace Qutepart {
+
 AbstractRule::AbstractRule(const AbstractRuleParams& params):
     lookAhead(params.lookAhead),
     attribute(params.attribute),
@@ -671,3 +673,5 @@ MatchResult* DetectIdentifierRule::tryMatchImpl(const TextToMatch& textToMatch) 
         return nullptr;
     }
 }
+
+};

@@ -5,6 +5,9 @@
 #include "context.h"
 #include "style.h"
 
+
+namespace Qutepart {
+
 class AbstractRule;
 
 
@@ -22,4 +25,6 @@ public:
     bool lineContinue;
     ContextSwitcher nextContext;
     Style style;
+};
+
 };

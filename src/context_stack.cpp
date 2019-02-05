@@ -5,6 +5,8 @@
 
 #include "context_stack.h"
 
+
+namespace Qutepart {
 // FIXME avoid data where possible
 
 
@@ -70,3 +72,5 @@ ContextStack ContextStack::switchContext(
 
     return ContextStack(newItems);
 }
+
+};

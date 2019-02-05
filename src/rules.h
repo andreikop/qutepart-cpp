@@ -8,6 +8,8 @@
 
 #include "context.h"
 
+namespace Qutepart {
+
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
 class TextToMatch;
@@ -325,4 +327,6 @@ public:
 
 private:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
+};
+
 };

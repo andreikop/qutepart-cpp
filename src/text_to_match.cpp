@@ -1,6 +1,8 @@
 #include "text_to_match.h"
 
 
+namespace Qutepart {
+
 TextToMatch::TextToMatch(
         const QString& text,
         const QString& deliminatorSet,
@@ -67,3 +69,5 @@ void TextToMatch::shift(int count) {
 bool TextToMatch::isEmpty() const {
     return text.isEmpty();
 }
+
+};

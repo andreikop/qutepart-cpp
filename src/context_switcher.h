@@ -5,6 +5,8 @@
 #include <QSharedPointer>
 
 
+namespace Qutepart {
+
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
 
@@ -27,4 +29,6 @@ protected:
     QString contextName;
     ContextPtr _context;
     QString contextOperation;
+};
+
 };

@@ -5,6 +5,8 @@
 
 #include "text_block_user_data.h"
 
+namespace Qutepart {
+
 class Language;
 
 
@@ -18,3 +20,5 @@ protected:
     void  highlightBlock(const QString &text) override;
     Language* language;
 };
+
+}

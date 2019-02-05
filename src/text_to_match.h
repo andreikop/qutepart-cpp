@@ -3,6 +3,9 @@
 
 #include <QString>
 
+
+namespace Qutepart {
+
 /* Peace of text, which shall be matched.
  * Contains pre-calculated and pre-checked data for performance optimization
  */
@@ -28,4 +31,6 @@ private:
     void shiftWord(int count);
     void findWord(); // find word by scanning `text` char by char
     const QString& deliminatorSet;
+};
+
 };

@@ -1,7 +1,10 @@
 #include "qutepart.h"
 #include "language_db.h"
 #include "loader.h"
+#include "syntax_highlighter.h"
 
+
+namespace Qutepart {
 
 Qutepart::Qutepart(QWidget *parent):
     QPlainTextEdit(parent),
@@ -36,4 +39,6 @@ void Qutepart::initHighlighter(const QString& filePath) {
 
         highlighter = new SyntaxHighlighter(this->document(), language);
     }
+}
+
 }

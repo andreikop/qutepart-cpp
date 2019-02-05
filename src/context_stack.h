@@ -3,6 +3,8 @@
 #include <QStringList>
 
 
+namespace Qutepart {
+
 class ContextSwitcher;
 
 
@@ -43,4 +45,6 @@ public:
 
 private:
     QVector<ContextStackItem> items;
+};
+
 };

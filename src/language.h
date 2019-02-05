@@ -9,6 +9,7 @@
 #include "context.h"
 #include "context_stack.h"
 
+namespace Qutepart {
 
 class Language {
 public:
@@ -36,4 +37,6 @@ protected:
     QList<ContextPtr> contexts;
     ContextStack defaultContextStack;
     QString keywordDeliminators;
+};
+
 };

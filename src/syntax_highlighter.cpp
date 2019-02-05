@@ -7,6 +7,8 @@
 #include "syntax_highlighter.h"
 
 
+namespace Qutepart {
+
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent, Language* language):
     QSyntaxHighlighter(parent),
     language(language)
@@ -20,4 +22,6 @@ void SyntaxHighlighter::highlightBlock(const QString&) {
     foreach(QTextLayout::FormatRange range, formats) {
         setFormat(range.start, range.length, range.format);
     }
+}
+
 }

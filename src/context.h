@@ -10,6 +10,8 @@
 #include "context_switcher.h"
 
 
+namespace Qutepart {
+
 class Context;
 typedef QSharedPointer<Context> ContextPtr;
 
@@ -69,4 +71,6 @@ protected:
     QList<RulePtr> rules;
 
     Style style;
+};
+
 };

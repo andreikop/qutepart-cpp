@@ -1,6 +1,8 @@
 #include "style.h"
 
 
+namespace Qutepart {
+
 QTextCharFormat defaultFormat(const QString& style, QString& error) {
     QTextCharFormat format;
 
@@ -161,3 +163,5 @@ Style::Style(const QString& defStyleName, const QTextCharFormat& format):
 void Style::updateTextType(const QString& attribute) {
     _textType = detectTextType(attribute, defStyleName);
 }
+
+};

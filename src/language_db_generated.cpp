@@ -4,6 +4,8 @@
 #include <QMap>
 #include <QString>
 
+namespace Qutepart {
+
 QMap<QString,QString> create_languageNameToXmlFileName() {
 	QMap<QString,QString> languageNameToXmlFileName; 
 	languageNameToXmlFileName["R Markdown"] = "rmarkdown.xml";
@@ -1120,3 +1122,4 @@ QMap<QString,QString> create_firstLineToXmlFileName() {
 	 return firstLineToXmlFileName;
 }
 QMap<QString,QString> firstLineToXmlFileName = create_firstLineToXmlFileName();
+}; // namespace Qutepart

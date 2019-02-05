@@ -7,6 +7,8 @@
 #include "language.h"
 
 
+namespace Qutepart {
+
 Language::Language(const QString& name,
                    const QStringList& extensions,
                    const QStringList& mimetypes,
@@ -108,3 +110,5 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
 
     block.setUserData(new TextBlockUserData(textTypeMap, contextStack));
 }
+
+};

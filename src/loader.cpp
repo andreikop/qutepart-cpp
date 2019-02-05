@@ -5,6 +5,9 @@
 
 #include "loader.h"
 
+
+namespace Qutepart {
+
 const QString DEFAULT_DELIMINATOR = " \t.():!+,-<=>%&*/;?[]^{|}~\\";
 
 QList<RulePtr> loadRules(QXmlStreamReader& xmlReader, QString& error);
@@ -770,3 +773,5 @@ Language* loadLanguage(const QString& xmlFileName) {
 
     return language;
 }
+
+};

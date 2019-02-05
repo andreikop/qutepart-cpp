@@ -3,6 +3,8 @@
 #include <QRegExp>
 
 
+namespace Qutepart {
+
 extern QMap<QString, QString> mimeTypeToXmlFileName;
 extern QMap<QString, QString> languageNameToXmlFileName;
 extern QMap<QString, QString> extensionToXmlFileName;
@@ -60,3 +62,5 @@ QString chooseLanguage(const QString& mimeType = QString::null,
 
     return QString::null;
 }
+
+};
