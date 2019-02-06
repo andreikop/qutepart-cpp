@@ -27,6 +27,7 @@ public:
     void highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats);
 
     ContextPtr defaultContext() const {return contexts.first();};
+    ContextPtr getContext(const QString& name) const;
 
 protected:
     QString name;

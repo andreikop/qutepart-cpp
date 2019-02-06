@@ -2,6 +2,7 @@
 
 #include "rules.h"
 #include "style.h"
+#include "language_db.h"
 
 #include "loader.h"
 
@@ -756,6 +757,44 @@ std::unique_ptr<Language> loadLanguage(const QString& xmlFileName) {
     }
 
     return std::unique_ptr<Language>(language);
+}
+
+ContextPtr loadExternalContext(const QString& externalCtxName) {
+    QString langName, contextName;
+
+    if (externalCtxName.startsWith("##")) {
+        langName = externalCtxName.mid(2);
+    } else {
+        QStringList parts = externalCtxName.split("##");
+        if (parts.length() != 2) {
+            qWarning() << "Invalid external context" << externalCtxName;
+            return ContextPtr();
+        }
+        langName = parts[1];
+        contextName = parts[0];
+    }
+
+    QString xmlFileName = chooseLanguage(QString::null, langName);
+    if (xmlFileName.isEmpty()) {
+        qWarning() << "Unknown language" << langName;
+        return ContextPtr();
+    }
+
+    std::unique_ptr<Language> language = loadLanguage(xmlFileName);
+    if ( ! language) {
+        qWarning() << "Failed to load context" << externalCtxName;
+        return ContextPtr();
+    }
+
+    if (contextName.isEmpty()) {
+        return language->defaultContext();
+    } else {
+        ContextPtr ctx = language->getContext(contextName);
+        if (ctx.isNull()) {
+            qWarning() << "Language" << langName << "doesn't have context" << contextName;
+        }
+        return ctx;
+    }
 }
 
 };

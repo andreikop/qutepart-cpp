@@ -4,7 +4,6 @@
 
 #include "match_result.h"
 #include "text_to_match.h"
-#include "language_db.h"
 #include "loader.h"
 
 #include "rules.h"
@@ -620,14 +619,11 @@ void IncludeRulesRule::resolveContextReferences(const QHash<QString, ContextPtr>
         return;
     }
 
-    if (contextName.startsWith("##")) {
-        QString langName = contextName.mid(2);
-        QString xmlFileName = chooseLanguage(QString::null, langName);
-        std::unique_ptr<Language> language = loadLanguage(xmlFileName);
-        if (language) {
-            context = language->defaultContext();
-        } else {
-            qWarning() << "Failed to load context" << contextName;
+    if (contextName.contains("#")) {
+        context = loadExternalContext(contextName);
+        if (context.isNull()) {
+            error = QString("Failed to include rules from external context '%1'").arg(contextName);
+            return;
         }
         return;
     }

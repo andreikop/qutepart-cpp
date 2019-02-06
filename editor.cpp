@@ -25,7 +25,6 @@ int runEditor(int argc, char** argv) {
 
     qutepart.show();
 
-    qWarning() << "exec";
     return app.exec();
 }
 

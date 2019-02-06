@@ -10,4 +10,6 @@ namespace Qutepart {
 
 std::unique_ptr<Language> loadLanguage(const QString& xmlFileName);
 
+ContextPtr loadExternalContext(const QString& contextName);
+
 }

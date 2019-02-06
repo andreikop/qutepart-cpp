@@ -1,3 +1,5 @@
+#include "loader.h"
+
 #include "context_switcher.h"
 
 
@@ -26,8 +28,9 @@ void ContextSwitcher::resolveContextReferences(const QHash<QString, ContextPtr>&
         return;
     }
 
-    if (contextName.startsWith('#')) {
-        return; //TODO
+    if (contextName.contains('#')) {
+        _context = loadExternalContext(contextName);
+        return;
     }
 
     if ( ! contexts.contains(contextName)) {

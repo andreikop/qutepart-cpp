@@ -111,4 +111,14 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
     block.setUserData(new TextBlockUserData(textTypeMap, contextStack));
 }
 
+ContextPtr Language::getContext(const QString& name) const {
+    foreach(ContextPtr ctx, contexts) {
+        if (ctx->name() == name) {
+            return ctx;
+        }
+    }
+
+    return ContextPtr();
+}
+
 };
