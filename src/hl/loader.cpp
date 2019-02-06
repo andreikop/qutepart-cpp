@@ -737,7 +737,7 @@ Language* parseXmlFile(QXmlStreamReader& xmlReader, QString& error) {
 }
 
 
-Language* loadLanguage(const QString& xmlFileName) {
+std::unique_ptr<Language> loadLanguage(const QString& xmlFileName) {
     QString xmlFilePath = ":/qutepart/syntax/" + xmlFileName;
 
     QFile syntaxFile(xmlFilePath);
@@ -755,7 +755,7 @@ Language* loadLanguage(const QString& xmlFileName) {
         return nullptr;
     }
 
-    return language;
+    return std::unique_ptr<Language>(language);
 }
 
 };

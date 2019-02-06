@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <QDebug>
 
 #include "match_result.h"
@@ -621,11 +623,11 @@ void IncludeRulesRule::resolveContextReferences(const QHash<QString, ContextPtr>
     if (contextName.startsWith("##")) {
         QString langName = contextName.mid(2);
         QString xmlFileName = chooseLanguage(QString::null, langName);
-        Language* language = loadLanguage(xmlFileName);
-        if (language != nullptr) {
+        std::unique_ptr<Language> language = loadLanguage(xmlFileName);
+        if (language) {
             context = language->defaultContext();
-            delete language;
         } else {
+            qWarning() << "Failed to load context" << contextName;
         }
         return;
     }

@@ -19,6 +19,9 @@ int runEditor(int argc, char** argv) {
     }
 
     qutepart.initHighlighter(filePath);
+    QFont font = qutepart.font();
+    font.setPointSize(18);
+    qutepart.setFont(font);
 
     qutepart.show();
 

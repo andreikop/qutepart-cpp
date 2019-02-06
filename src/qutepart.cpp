@@ -31,7 +31,7 @@ void Qutepart::initHighlighter(const QString& filePath) {
         return;
     }
 
-    Language* language = loadLanguage(xmlFileName);
+    std::unique_ptr<Language> language = loadLanguage(xmlFileName);
     if (language != nullptr) {
         if (highlighter != nullptr) {
             delete highlighter;
