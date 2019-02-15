@@ -136,7 +136,7 @@ void Context::applyMatchResult(
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap) const {
     QTextCharFormat format = matchRes->style.format();
-    if ( ! format.isValid()) {
+    if (format == QTextCharFormat()) {
         format = this->style.format();
     }
     appendFormat(formats, textToMatch.currentColumnIndex, matchRes->length, format);
