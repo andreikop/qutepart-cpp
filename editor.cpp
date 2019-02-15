@@ -5,6 +5,9 @@
 #include <QFile>
 #include <QDebug>
 #include <QDir>
+#include <QString>
+#include <QByteArray>
+#include <QTextCodec>
 
 #include "qutepart.h"
 
@@ -13,15 +16,29 @@ int runEditor(int argc, char** argv) {
     QApplication app(argc, argv);
     Qutepart::Qutepart qutepart;
 
-    QString filePath;
+    QFont font = qutepart.font();
+    font.setPointSize(14);
+    font.setFamily("Monospace");
+    qutepart.setFont(font);
+
+    qutepart.resize(800, 600);
+
     if (argc > 1) {
-        filePath = argv[1];
+        QString filePath = argv[1];
+        QFile file(filePath);
+        if (file.exists()) {
+            qutepart.initHighlighter(filePath);
+
+            file.open(QIODevice::ReadOnly);
+            QByteArray data = file.readAll();
+            QString text = QTextCodec::codecForUtfText(data)->toUnicode(data);
+            qutepart.setPlainText(text);
+        } else {
+            qWarning() << "File does not exist" << filePath;
+            return -1;
+        }
     }
 
-    qutepart.initHighlighter(filePath);
-    QFont font = qutepart.font();
-    font.setPointSize(18);
-    qutepart.setFont(font);
 
     qutepart.show();
 
