@@ -17,7 +17,7 @@ int runEditor(int argc, char** argv) {
     Qutepart::Qutepart qutepart;
 
     QFont font = qutepart.font();
-    font.setPointSize(14);
+    font.setPointSize(12);
     font.setFamily("Monospace");
     qutepart.setFont(font);
 
