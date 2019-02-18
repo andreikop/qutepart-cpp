@@ -30,7 +30,7 @@ Style makeStyle(
         const QString& defStyleName,
         const QString& color,
         const QString& /*selColor*/,
-        const QStringList& flags,
+        const QHash<QString, bool>& flags,
         QString& error);
 
 };

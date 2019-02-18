@@ -534,18 +534,18 @@ QHash<QString, Style> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
         }
 
         QString color = getAttribute(attrs, "color");
-        QString selColor = getAttribute(attrs, "color");
+        QString selColor = getAttribute(attrs, "selColor");
 
         QHash<QString, QString> attrsMap = attrsToInsensitiveHashMap(attrs);
-        QStringList flags;
+        QHash<QString, bool> flags;
         foreach(QString flagName, QStringList() << "spellChecking" << "italic" << "bold" << "underline" << "strikeout") {
-            bool val = parseBoolAttribute(attrsMap.value(flagName, "false"), error);
-            if ( ! error.isNull()) {
-                error = QString("Failed to parse 'spellChecking' of itemData: %1").arg(error);
-                return QHash<QString, Style>();
-            }
-            if (val) {
-                flags << flagName;
+            if (attrsMap.contains(flagName)) {
+                bool val = parseBoolAttribute(attrsMap.value(flagName, "false"), error);
+                if ( ! error.isNull()) {
+                    error = QString("Failed to parse 'spellChecking' of itemData: %1").arg(error);
+                    return QHash<QString, Style>();
+                }
+                flags[flagName] = val;
             }
         }
 
@@ -561,10 +561,10 @@ QHash<QString, Style> loadStyles(QXmlStreamReader& xmlReader, QString& error) {
 
     // HACK not documented, but 'normal' attribute is used by some parsers without declaration
     if ( ! styles.contains("normal")) {
-        styles["normal"] = makeStyle("dsNormal", QString::null, QString::null, QStringList(), error);
+        styles["normal"] = makeStyle("dsNormal", QString::null, QString::null, QHash<QString, bool>(), error);
     }
     if ( ! styles.contains("string")) {
-        styles["string"] = makeStyle("dsString", QString::null, QString::null, QStringList(), error);
+        styles["string"] = makeStyle("dsString", QString::null, QString::null, QHash<QString, bool>(), error);
     }
 
     return styles;

@@ -76,7 +76,7 @@ QTextCharFormat makeFormat(
         const QString& defStyle,
         const QString& color,
         const QString& /*selColor*/,
-        const QStringList& flags,
+        const QHash<QString, bool>& flags,
         QString& error) {
     QTextCharFormat format = defaultFormat(defStyle, error);
     if ( ! error.isNull()) {
@@ -88,19 +88,23 @@ QTextCharFormat makeFormat(
     }
 
     if (flags.contains("italic")) {
-        format.setFontItalic(true);
+        format.setFontItalic(flags["italic"]);
     }
 
     if (flags.contains("bold")) {
-        format.setFontWeight(QFont::Bold);
+        if (flags["bold"]) {
+            format.setFontWeight(QFont::Bold);
+        } else {
+            format.setFontWeight(QFont::Normal);
+        }
     }
 
     if (flags.contains("underline")) {
-        format.setFontUnderline(true);
+        format.setFontUnderline(flags["underline"]);
     }
 
     if (flags.contains("strikeOut")) {
-        format.setFontStrikeOut(true);
+        format.setFontStrikeOut(flags["strikeOut"]);
     }
 
     return format;
@@ -139,7 +143,7 @@ Style makeStyle(
         const QString& defStyleName,
         const QString& color,
         const QString& selColor,
-        const QStringList& flags,
+        const QHash<QString, bool>& flags,
         QString& error) {
     QTextCharFormat format = makeFormat(defStyleName, color, selColor, flags, error);
     if ( ! error.isNull()) {
