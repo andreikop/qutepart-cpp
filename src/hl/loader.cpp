@@ -225,7 +225,7 @@ Detect2CharsRule* loadDetect2Chars(const QXmlStreamAttributes& attrs,
         return nullptr;
     }
 
-    QString value = processEscapeSequences(char0 + char1);
+    QString value = processEscapeSequences(char0) + processEscapeSequences(char1);
 
     return new Detect2CharsRule(params, value, false);
 }
