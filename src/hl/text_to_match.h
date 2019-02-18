@@ -28,7 +28,6 @@ public:
     const QStringList* contextData;
 
 private:
-    void shiftWord(int count);
     void findWord(); // find word by scanning `text` char by char
     const QString& deliminatorSet;
 };

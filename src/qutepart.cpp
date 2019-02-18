@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "qutepart.h"
 #include "hl/language_db.h"
 #include "hl/loader.h"
@@ -27,6 +29,7 @@ Qutepart::~Qutepart() {
 void Qutepart::initHighlighter(const QString& filePath) {
     const QString& xmlFileName = chooseLanguage(QString::null, QString::null, filePath, QString::null);
 
+    qDebug() << "highlighter" << xmlFileName;
     if (xmlFileName.isNull()) {
         return;
     }

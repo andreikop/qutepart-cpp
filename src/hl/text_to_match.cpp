@@ -20,6 +20,14 @@ TextToMatch::TextToMatch(
 }
 
 void TextToMatch::findWord() {
+    if (currentColumnIndex > 0) {
+        QChar prevChar = wholeLineText[currentColumnIndex - 1];
+        if ( ! deliminatorSet.contains(prevChar)) {
+            word = QString::null;
+            return;
+        }
+    }
+
     int wordEndIndex = 0;
     for(; wordEndIndex < text.length(); wordEndIndex++) {
         if (deliminatorSet.contains(text.at(wordEndIndex))) {
@@ -28,16 +36,6 @@ void TextToMatch::findWord() {
     }
     if (wordEndIndex != 0) {
         word = text.left(wordEndIndex).toString();
-    }
-}
-
-void TextToMatch::shiftWord(int count) {
-    if(word.length() > count) {
-        word = word.right(word.length() - count);
-    } else if (word.length() == count) {
-        word = QString::null;
-    } else {
-        findWord(); // TODO do upon request?
     }
 }
 
@@ -50,7 +48,7 @@ void TextToMatch::shiftOnce() {
     text = text.right(text.length() - 1);
     textLength--;
 
-    shiftWord(1);
+    findWord();
 }
 
 void TextToMatch::shift(int count) {
@@ -63,7 +61,7 @@ void TextToMatch::shift(int count) {
     currentColumnIndex += count;
     text = text.right(text.length() - count);
     textLength -= count;
-    shiftWord(count);
+    findWord();
 }
 
 bool TextToMatch::isEmpty() const {
