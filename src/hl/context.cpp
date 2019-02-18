@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "context.h"
 #include "rules.h"
 #include "text_to_match.h"

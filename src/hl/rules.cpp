@@ -322,7 +322,7 @@ MatchResult* RegExpRule::tryMatchImpl(const TextToMatch& textToMatch) const {
             0, QRegularExpression::NormalMatch, QRegularExpression::AnchoredMatchOption);
     }
 
-    if (match.hasMatch()) {
+    if (match.hasMatch() && match.capturedLength() > 0) {
         return makeMatchResult(match.capturedLength(), false, match.capturedTexts());
     } else {
         return nullptr;
