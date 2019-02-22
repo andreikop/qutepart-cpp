@@ -14,7 +14,7 @@ TextToMatch::TextToMatch(
     firstNonSpace(true), // copy-paste from Py code
     isWordStart(true), // copy-paste from Py code
     contextData(&contextData),
-    deliminatorSet(deliminatorSet)
+    mDeliminatorSet(deliminatorSet)
 {
     findWord();
 }
@@ -22,7 +22,7 @@ TextToMatch::TextToMatch(
 void TextToMatch::findWord() {
     if (currentColumnIndex > 0) {
         QChar prevChar = wholeLineText[currentColumnIndex - 1];
-        if ( ! deliminatorSet.contains(prevChar)) {
+        if ( ! mDeliminatorSet.contains(prevChar)) {
             word = QString::null;
             return;
         }
@@ -30,7 +30,7 @@ void TextToMatch::findWord() {
 
     int wordEndIndex = 0;
     for(; wordEndIndex < text.length(); wordEndIndex++) {
-        if (deliminatorSet.contains(text.at(wordEndIndex))) {
+        if (mDeliminatorSet.contains(text.at(wordEndIndex))) {
             break;
         }
     }
@@ -42,7 +42,7 @@ void TextToMatch::findWord() {
 void TextToMatch::shiftOnce() {
     QChar prevChar = text.at(0);
     firstNonSpace = firstNonSpace && prevChar.isSpace();
-    isWordStart = prevChar.isSpace() || deliminatorSet.contains(prevChar);
+    isWordStart = prevChar.isSpace() || mDeliminatorSet.contains(prevChar);
 
     currentColumnIndex++;
     text = text.right(text.length() - 1);
@@ -55,7 +55,7 @@ void TextToMatch::shift(int count) {
     for(int i = 0; i < count; i++) {
         QChar prevChar = text.at(i);
         firstNonSpace = firstNonSpace && prevChar.isSpace();
-        isWordStart = prevChar.isSpace() || deliminatorSet.contains(prevChar);
+        isWordStart = prevChar.isSpace() || mDeliminatorSet.contains(prevChar);
     }
 
     currentColumnIndex += count;
@@ -66,6 +66,18 @@ void TextToMatch::shift(int count) {
 
 bool TextToMatch::isEmpty() const {
     return text.isEmpty();
+}
+
+void TextToMatch::setCurrentContextKeywordDeliminators(const QString& deliminatorSet) {
+    /*
+        Keyword deliminators are language specific.
+        When one language is included to other, it is necessary to re-find word
+        with new deliminators
+     */
+    if (deliminatorSet != mDeliminatorSet) {
+        mDeliminatorSet = deliminatorSet;
+        findWord();
+    }
 }
 
 };

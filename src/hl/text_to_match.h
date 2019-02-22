@@ -16,6 +16,8 @@ public:
     void shiftOnce();
     void shift(int count);
 
+    void setCurrentContextKeywordDeliminators(const QString& deliminatorSet);
+
     bool isEmpty() const;
 
     int currentColumnIndex;
@@ -29,7 +31,7 @@ public:
 
 private:
     void findWord(); // find word by scanning `text` char by char
-    const QString& deliminatorSet;
+    QString mDeliminatorSet;
 };
 
 };

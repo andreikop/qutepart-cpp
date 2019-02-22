@@ -34,7 +34,7 @@ public:
     virtual QString description() const;
 
     virtual void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
-    virtual void setKeywordParams(const QHash<QString, QStringList>&, const QString&, bool, QString&) {};
+    virtual void setKeywordParams(const QHash<QString, QStringList>&, bool, QString&) {};
     void setStyles(const QHash<QString, Style>& styles, QString& error);
 
     bool lookAhead;
@@ -88,7 +88,6 @@ public:
                 const QString& listName);
 
     void setKeywordParams(const QHash<QString, QStringList>& lists,
-                          const QString& deliminators,
                           bool caseSensitive,
                           QString& error) override;
 
@@ -101,7 +100,6 @@ private:
     QString listName;
     QStringList items;
     bool caseSensitive;
-    QString deliminators;
 };
 
 

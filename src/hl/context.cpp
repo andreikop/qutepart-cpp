@@ -77,8 +77,9 @@ void Context::setKeywordParams(const QHash<QString, QStringList>& lists,
                                const QString& deliminators,
                                bool caseSensitive,
                                QString& error) {
+    keywordDeliminators = deliminators;
     foreach(RulePtr rule, rules) {
-        rule->setKeywordParams(lists, deliminators, caseSensitive, error);
+        rule->setKeywordParams(lists, caseSensitive, error);
         if ( ! error.isNull()) {
             break;
         }
@@ -157,6 +158,9 @@ const ContextSwitcher Context::parseBlock(
         QString& textTypeMap,
         bool& lineContinue,
         QStringList& data) const {
+
+    textToMatch.setCurrentContextKeywordDeliminators(keywordDeliminators);
+
     while ( ! textToMatch.isEmpty()) {
         MatchResult* matchRes = tryMatch(textToMatch);
 

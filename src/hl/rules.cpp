@@ -121,7 +121,6 @@ KeywordRule::KeywordRule(const AbstractRuleParams& params,
 {}
 
 void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
-                                   const QString& deliminators,
                                    bool caseSensitive,
                                    QString& error) {
     if ( ! lists.contains(listName)) {
@@ -130,7 +129,6 @@ void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
     }
     items = lists[listName];
     this->caseSensitive = caseSensitive;
-    this->deliminators = deliminators;
 
     if ( ! this->caseSensitive) {
         for (auto it = items.begin(); it != items.end(); it++) {
