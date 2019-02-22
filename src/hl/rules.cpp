@@ -96,18 +96,17 @@ namespace {
 }
 
 MatchResult* StringDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-
-    if (value.isEmpty()) {
-        return nullptr;
-    }
-
     QString pattern = value;
     if (dynamic) {
         pattern = makeDynamicSubsctitutions(value, *textToMatch.contextData);
     }
 
-    if (textToMatch.text.startsWith(value)) {
-        return makeMatchResult(value.length());
+    if (pattern.isEmpty()) {
+        return nullptr;
+    }
+
+    if (textToMatch.text.startsWith(pattern)) {
+        return makeMatchResult(pattern.length());
     }
 
     return nullptr;
