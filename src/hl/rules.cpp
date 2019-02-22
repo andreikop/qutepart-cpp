@@ -595,7 +595,7 @@ QString RangeDetectRule::args() const {
 
 MatchResult* RangeDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if (textToMatch.text.startsWith(char0)) {
-        int end = textToMatch.text.indexOf(char1);
+        int end = textToMatch.text.indexOf(char1, 1);
         if (end > 0) {
             return makeMatchResult(end + 1);
         }
