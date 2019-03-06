@@ -103,8 +103,8 @@ QTextCharFormat makeFormat(
         format.setFontUnderline(flags["underline"]);
     }
 
-    if (flags.contains("strikeOut")) {
-        format.setFontStrikeOut(flags["strikeOut"]);
+    if (flags.contains("strikeout")) {
+        format.setFontStrikeOut(flags["strikeout"]);
     }
 
     return format;

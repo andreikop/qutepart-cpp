@@ -795,7 +795,6 @@ QSharedPointer<Language> loadLanguage(const QString& xmlFileName) {
 }
 
 ContextPtr loadExternalContext(const QString& externalCtxName) {
-    qDebug() << " load external context" << externalCtxName;
     QString langName, contextName;
 
     if (externalCtxName.startsWith("##")) {
