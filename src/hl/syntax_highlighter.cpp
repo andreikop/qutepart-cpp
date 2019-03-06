@@ -9,7 +9,7 @@
 
 namespace Qutepart {
 
-SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent, std::unique_ptr<Language>& language):
+SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent, QSharedPointer<Language> language):
     QSyntaxHighlighter(parent),
     language(std::move(language))
 {}

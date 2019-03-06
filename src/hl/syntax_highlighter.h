@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QSyntaxHighlighter>
 #include <QTextDocument>
 
@@ -15,11 +13,11 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
     Q_OBJECT
 
 public:
-    SyntaxHighlighter(QTextDocument *parent, std::unique_ptr<Language>& language);
+    SyntaxHighlighter(QTextDocument *parent, QSharedPointer<Language> language);
 
 protected:
     void  highlightBlock(const QString &text) override;
-    std::unique_ptr<Language> language;
+    QSharedPointer<Language> language;
 };
 
 }

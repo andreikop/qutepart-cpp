@@ -3,7 +3,6 @@
 
 #include <QTextStream>
 #include <QList>
-#include <QSharedPointer>
 #include <QTextBlock>
 
 #include "context.h"

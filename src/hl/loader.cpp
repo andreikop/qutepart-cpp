@@ -1,4 +1,7 @@
 #include <QDebug>
+#include <QSharedPointer>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "rules.h"
 #include "style.h"
@@ -10,6 +13,11 @@
 namespace Qutepart {
 
 const QString DEFAULT_DELIMINATOR = " \t.():!+,-<=>%&*/;?[]^{|}~\\";
+
+
+QMap<QString, QSharedPointer<Language>> loadedLanguageCache;
+QMutex loadedLanguageCacheLock;
+
 
 QList<RulePtr> loadRules(QXmlStreamReader& xmlReader, QString& error);
 
@@ -439,7 +447,6 @@ QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {
     }
 
     QList<ContextPtr> contexts; // result
-    QHash<QString, ContextPtr> contextMap;  // to resolve references
     while (xmlReader.readNextStartElement()) {
         if (xmlReader.name() != "context") {
             error = QString("Not expected tag when parsing contexts <%1>").arg(xmlReader.name().toString());
@@ -453,14 +460,6 @@ QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {
 
         ContextPtr ctxPtr = ContextPtr(ctx);
         contexts.append(ctxPtr);
-        contextMap[ctx->name()] = ctxPtr;
-    }
-
-    foreach(ContextPtr ctx, contexts) {
-        ctx->resolveContextReferences(contextMap, error);
-        if ( ! error.isNull()) {
-            return QList<ContextPtr>();
-        }
     }
 
     return contexts;
@@ -673,7 +672,7 @@ QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywo
     return contexts;
 }
 
-Language* parseXmlFile(QXmlStreamReader& xmlReader, QString& error) {
+QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
         return nullptr;
@@ -734,11 +733,47 @@ Language* parseXmlFile(QXmlStreamReader& xmlReader, QString& error) {
     Language* language = new Language(name, extensions, mimetypes,
                                       priority, hidden, indenter, contexts,
                                       keywordDeliminators);
-    return language;
+
+    QSharedPointer<Language> languagePtr(language);
+
+    {
+        QMutexLocker locker(&loadedLanguageCacheLock);
+        loadedLanguageCache[xmlFileName] = languagePtr;
+    }
+
+
+    /* resolve context references only after language has been added to the map
+     * to support recursive references
+     */
+    QHash<QString, ContextPtr> contextMap;  // to resolve references
+    foreach(ContextPtr ctxPtr, contexts) {
+        contextMap[ctxPtr->name()] = ctxPtr;
+    }
+
+    foreach(ContextPtr ctx, contexts) {
+        ctx->resolveContextReferences(contextMap, error);
+        if ( ! error.isNull()) {
+            {
+                QMutexLocker locker(&loadedLanguageCacheLock);
+                loadedLanguageCache.remove(xmlFileName);
+            }
+            return nullptr;
+        }
+    }
+
+
+    return languagePtr;
 }
 
 
-std::unique_ptr<Language> loadLanguage(const QString& xmlFileName) {
+QSharedPointer<Language> loadLanguage(const QString& xmlFileName) {
+    {
+        QMutexLocker locker(&loadedLanguageCacheLock);
+        if (loadedLanguageCache.contains(xmlFileName)) {
+            return loadedLanguageCache[xmlFileName];
+        }
+    }
+
     QString xmlFilePath = ":/qutepart/syntax/" + xmlFileName;
 
     QFile syntaxFile(xmlFilePath);
@@ -750,16 +785,17 @@ std::unique_ptr<Language> loadLanguage(const QString& xmlFileName) {
     QXmlStreamReader xmlReader(&syntaxFile);
 
     QString error;
-    Language* language = parseXmlFile(xmlReader, error);
-    if (language == nullptr) {
+    QSharedPointer<Language> language = parseXmlFile(xmlFileName, xmlReader, error);
+    if (language.isNull()) {
         qCritical() << "Failed to parse XML file '" << xmlFilePath << "': " << error;
         return nullptr;
     }
 
-    return std::unique_ptr<Language>(language);
+    return language;
 }
 
 ContextPtr loadExternalContext(const QString& externalCtxName) {
+    qDebug() << " load external context" << externalCtxName;
     QString langName, contextName;
 
     if (externalCtxName.startsWith("##")) {
@@ -780,8 +816,8 @@ ContextPtr loadExternalContext(const QString& externalCtxName) {
         return ContextPtr();
     }
 
-    std::unique_ptr<Language> language = loadLanguage(xmlFileName);
-    if ( ! language) {
+    QSharedPointer<Language> language = loadLanguage(xmlFileName);
+    if (language.isNull()) {
         qWarning() << "Failed to load context" << externalCtxName;
         return ContextPtr();
     }
