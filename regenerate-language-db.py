@@ -39,19 +39,28 @@ def safeGetRequiredAttribute(xmlElement, name, default):
         return default
 
 
+def fixExtension(extension):
+    if '*' not in extension:
+        extension = '*' + extension
+
+    return extension
+
+
 def loadLanguage(filePath):
     with open(filePath, 'r', encoding='utf-8') as definitionFile:
         try:
             root = xml.etree.ElementTree.parse(definitionFile).getroot()
         except Exception as ex:
-            print('When opening %s:' % filePath, file=sys.stderr)
             raise ex
 
     highlightingElement = root.find('highlighting')
 
+    extensions = parseSemicolonSeparatedList(safeGetRequiredAttribute(root, 'extensions', ''))
+    extensions = [fixExtension(ex) for ex in extensions]
+
     return Syntax(
         name=safeGetRequiredAttribute(root, 'name', 'Error: .parser name is not set!!!'),
-        extensions=parseSemicolonSeparatedList(safeGetRequiredAttribute(root, 'extensions', '')),
+        extensions=extensions,
         firstLineGlobs=parseSemicolonSeparatedList(root.attrib.get('firstLineGlobs', '')),
         mimetype=parseSemicolonSeparatedList(root.attrib.get('mimetype', '')),
         priority=int(root.attrib.get('priority', '0')),
