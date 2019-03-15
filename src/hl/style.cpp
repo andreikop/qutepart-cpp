@@ -6,8 +6,8 @@ namespace Qutepart {
 QTextCharFormat defaultFormat(const QString& style, QString& error) {
     QTextCharFormat format;
 
-    bool bold;
-    bool underline;
+    bool bold = false;
+    bool underline = false;
     QString colorName;
     QString bgColorName;
 

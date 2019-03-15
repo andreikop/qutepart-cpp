@@ -675,24 +675,24 @@ QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywo
 QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamReader& xmlReader, QString& error) {
     if (! xmlReader.readNextStartElement()) {
         error = "Failed to read start element";
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     if (xmlReader.name() != "language") {
         error = "'name' attribute not found in <language>";
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     QXmlStreamAttributes attrs = xmlReader.attributes();
 
     QString name = getRequiredAttribute(attrs, "name", error);
     if ( ! error.isNull()) {
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     QString extensionsStr = getRequiredAttribute(attrs, "extensions", error);
     if ( ! error.isNull()) {
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     QString mimetypesStr = getAttribute(attrs, "mimetypes", QString::null);
@@ -705,14 +705,14 @@ QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamRead
         priority = parseIntAttribute(priorityStr, error);
         if ( ! error.isNull()) {
             error = QString("Bad integer priority value: %1").arg(error);
-            return nullptr;
+            return QSharedPointer<Language>();
         }
     }
 
     bool hidden = parseBoolAttribute(hiddenStr, error);
     if ( ! error.isNull()) {
         error = QString("Failed to parse 'hidden' attribute: %1").arg(error);
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     QStringList extensions = extensionsStr.split(';', QString::SkipEmptyParts);
@@ -721,13 +721,13 @@ QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamRead
     if ( ! xmlReader.readNextStartElement() ||
          xmlReader.name() != "highlighting") {
         error = "<highlighting> tag not found";
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     QString keywordDeliminators;
     QList<ContextPtr> contexts = loadLanguageSytnax(xmlReader, keywordDeliminators, error);
     if ( ! error.isNull()) {
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     Language* language = new Language(name, extensions, mimetypes,
@@ -757,7 +757,7 @@ QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamRead
                 QMutexLocker locker(&loadedLanguageCacheLock);
                 loadedLanguageCache.remove(xmlFileName);
             }
-            return nullptr;
+            return QSharedPointer<Language>();
         }
     }
 
@@ -779,7 +779,7 @@ QSharedPointer<Language> loadLanguage(const QString& xmlFileName) {
     QFile syntaxFile(xmlFilePath);
     if (! syntaxFile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         qCritical() << "Failed to open syntax file " << xmlFilePath;
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     QXmlStreamReader xmlReader(&syntaxFile);
@@ -788,7 +788,7 @@ QSharedPointer<Language> loadLanguage(const QString& xmlFileName) {
     QSharedPointer<Language> language = parseXmlFile(xmlFileName, xmlReader, error);
     if (language.isNull()) {
         qCritical() << "Failed to parse XML file '" << xmlFilePath << "': " << error;
-        return nullptr;
+        return QSharedPointer<Language>();
     }
 
     return language;

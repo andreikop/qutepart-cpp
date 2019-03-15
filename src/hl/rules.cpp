@@ -563,8 +563,8 @@ MatchResult* HlCStringCharRule::tryMatchImpl(const TextToMatch& textToMatch) con
 
 MatchResult* HlCCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
     if(textToMatch.text.length() > 2 &&
-       textToMatch.text.at(0) == "'" &&
-       textToMatch.text.at(1) != "'") {
+       textToMatch.text.at(0) == '\'' &&
+       textToMatch.text.at(1) != '\'') {
         int index = 0;
         int result = checkEscapedChar(textToMatch.text.mid(1));
         if(result != -1){
@@ -574,7 +574,7 @@ MatchResult* HlCCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
         }
 
         if(index < textToMatch.text.length() &&
-           textToMatch.text.at(index) == "'") {
+           textToMatch.text.at(index) == '\'') {
             return makeMatchResult(index + 1);
         }
     }
@@ -644,7 +644,7 @@ MatchResult* IncludeRulesRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 
 
 MatchResult* LineContinueRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    if (textToMatch.text == '\\') {
+    if (textToMatch.text == "\\") {
         return makeMatchResult(1, true);
     }
 
@@ -667,7 +667,7 @@ MatchResult* DetectSpacesRule::tryMatchImpl(const TextToMatch& textToMatch) cons
 
 
 MatchResult* DetectIdentifierRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    if (textToMatch.text[0].isLetter()) {
+    if (textToMatch.text.at(0).isLetter()) {
         int count = 1;
         while(count < textToMatch.text.length()) {
             QChar ch = textToMatch.text.at(count);
