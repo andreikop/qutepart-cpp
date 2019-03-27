@@ -87,11 +87,11 @@ QString AbstractStringRule::args() const {
 
 namespace {
     QString makeDynamicSubsctitutions(QString pattern, const QStringList& data) {
-        return pattern.replace("%0", data.value(0))\
-                      .replace("%1", data.value(1))\
-                      .replace("%2", data.value(2))\
-                      .replace("%3", data.value(3))\
-                      .replace("%4", data.value(4));
+        return pattern.replace("%0", QRegExp::escape(data.value(0)))\
+                      .replace("%1", QRegExp::escape(data.value(1)))\
+                      .replace("%2", QRegExp::escape(data.value(2)))\
+                      .replace("%3", QRegExp::escape(data.value(3)))\
+                      .replace("%4", QRegExp::escape(data.value(4)));
     }
 }
 
