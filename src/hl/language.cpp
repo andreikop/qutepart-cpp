@@ -76,7 +76,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
 
     bool lineContinue = false;
 
-    while ( ! textToMatch.isEmpty()) {
+    do {
         qDebug() << "\tIn context " << contextStack.currentContext()->name();
 
         const Context* context = contextStack.currentContext();
@@ -91,7 +91,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
                 ". parseBlock() returned but context haven't been switched and text is not empty";
                 break;
         }
-    }
+    } while ( ! textToMatch.isEmpty());
 
     if ( ! lineContinue) {
         while ( ! contextStack.currentContext()->lineEndContext().isNull()) {

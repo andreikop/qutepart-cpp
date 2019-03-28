@@ -12,6 +12,7 @@ Context::Context(const QString& name,
                  const QString& attribute,
                  const ContextSwitcher& lineEndContext,
                  const ContextSwitcher& lineBeginContext,
+                 const ContextSwitcher& lineEmptyContext,
                  const ContextSwitcher& fallthroughContext,
                  bool dynamic,
                  const QList<RulePtr>& rules):
@@ -19,6 +20,7 @@ Context::Context(const QString& name,
     attribute(attribute),
     _lineEndContext(lineEndContext),
     _lineBeginContext(lineBeginContext),
+    _lineEmptyContext(lineEmptyContext),
     fallthroughContext(fallthroughContext),
     _dynamic(dynamic),
     rules(rules)
@@ -32,6 +34,9 @@ void Context::printDescription(QTextStream& out) const {
     }
     if( ! _lineBeginContext.isNull()) {
         out << "\t\tlineBeginContext: " << _lineBeginContext.toString() << "\n";
+    }
+    if( ! _lineEmptyContext.isNull()) {
+        out << "\t\tlineEmptyContext: " << _lineEmptyContext.toString() << "\n";
     }
     if( ! fallthroughContext.isNull()) {
         out << "\t\tfallthroughContext: " << fallthroughContext.toString() << "\n";
@@ -56,6 +61,11 @@ void Context::resolveContextReferences(const QHash<QString, ContextPtr>& context
     }
 
     _lineBeginContext.resolveContextReferences(contexts, error);
+    if ( ! error.isNull()) {
+        return;
+    }
+
+    _lineEmptyContext.resolveContextReferences(contexts, error);
     if ( ! error.isNull()) {
         return;
     }
@@ -160,6 +170,10 @@ const ContextSwitcher Context::parseBlock(
         QStringList& data) const {
 
     textToMatch.setCurrentContextKeywordDeliminators(keywordDeliminators);
+
+    if (textToMatch.isEmpty() && ( ! _lineEmptyContext.isNull())) {
+        return _lineEmptyContext;
+    }
 
     while ( ! textToMatch.isEmpty()) {
         MatchResult* matchRes = tryMatch(textToMatch);

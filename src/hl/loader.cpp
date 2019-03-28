@@ -412,6 +412,8 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
     ContextSwitcher lineEndContext = makeContextSwitcher(lineEndContextText);
     QString lineBeginContextText = getAttribute(attrs, "lineEndContext", "#stay");
     ContextSwitcher lineBeginContext = makeContextSwitcher(lineBeginContextText);
+    QString lineEmptyContextText = getAttribute(attrs, "lineEmptyContext", "#stay");
+    ContextSwitcher lineEmptyContext = makeContextSwitcher(lineEmptyContextText);
 
     bool fallthrough = parseBoolAttribute(getAttribute(attrs, "fallthrough", "false"), error);
     if ( ! error.isNull()) {
@@ -437,7 +439,11 @@ Context* loadContext(QXmlStreamReader& xmlReader, QString& error) {
         return nullptr;
     }
 
-    return new Context(name, attribute, lineEndContext, lineBeginContext, fallthroughContext, dynamic, rules);
+    return new Context(name, attribute,
+                       lineEndContext, lineBeginContext,
+                       lineEmptyContext,
+                       fallthroughContext,
+                       dynamic, rules);
 }
 
 QList<ContextPtr> loadContexts(QXmlStreamReader& xmlReader, QString& error) {

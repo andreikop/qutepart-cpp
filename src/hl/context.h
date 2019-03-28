@@ -28,6 +28,7 @@ public:
             const QString& attribute,
             const ContextSwitcher& lineEndContext,
             const ContextSwitcher& lineBeginContext,
+            const ContextSwitcher& lineEmptyContext,
             const ContextSwitcher& fallthroughContext,
             bool dynamic,
             const QList<RulePtr>& rules);
@@ -66,6 +67,7 @@ protected:
     QString attribute;
     ContextSwitcher _lineEndContext;
     ContextSwitcher _lineBeginContext;
+    ContextSwitcher _lineEmptyContext;
     ContextSwitcher fallthroughContext;
     bool _dynamic;
 
