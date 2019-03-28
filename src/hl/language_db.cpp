@@ -1,6 +1,7 @@
 #include <QString>
 #include <QMap>
 #include <QRegExp>
+#include <QFileInfo>
 
 
 namespace Qutepart {
@@ -47,7 +48,8 @@ QString chooseLanguage(const QString& mimeType = QString::null,
     }
 
     if ( ! sourceFilePath.isNull()) {
-        QString xmlName = searchInGlobMap(extensionToXmlFileName, sourceFilePath);
+        QString fileName = QFileInfo(sourceFilePath).fileName();
+        QString xmlName = searchInGlobMap(extensionToXmlFileName, fileName);
         if ( ! xmlName.isNull()) {
             return xmlName;
         }
