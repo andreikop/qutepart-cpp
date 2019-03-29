@@ -1,0 +1,157 @@
+# Sample AppArmor Profile.
+# License: Public Domain
+# Last change: January 25, 2018
+
+include <tunables/global>
+
+# Variable assignment
+@{FOO_LIB}=/usr/lib{,32,64}/foo
+@{USER_DIR} = @{HOME}/Public @{HOME}/Desktop
+@{USER_DIR} += @{HOME}/Hello
+
+# Profile for /usr/bin/foo
+/usr/bin/foo (attach_disconnected, enforce) {
+	include <abstractions/base>
+	include <abstractions/dbus>
+
+	#include <abstractions/ubuntu-helpers>
+	#include<abstractions/wayland>
+	#include"/etc/apparmor.d/abstractions/ubuntu-konsole"
+	include "/etc/apparmor.d/abstractions/openssl"
+
+	/{,**/} r,# Read only directories
+
+	owner /{home,media,mnt,srv,net}/** r,
+	owner @{USER_DIR}/** rw,
+	audit deny owner /**/* mx,
+	/**.[tT][xX][tT] r,  # txt
+	
+	owner file @{HOME}/.local/share/foo/{,**} rwkl,
+	owner @{HOME}/.config/foo/{,**}           rwk,
+	owner @{HOME}/.config/*                   rw,
+	owner @{HOME}/.config/*.[a-zA-Z0-9]*      rwk,
+	owner @{HOME}/.cache/foo/{,**}            rwk,
+
+	"/usr/share/**" r,
+	"/var/lib/flatpak/exports/share/**" r,
+	"/var/lib/flatpak/app/**/export/share/applications/*.desktop" r,
+
+	allow file /etc/nsswitch.conf           r,
+	allow /etc/fstab                        r,
+	/etc/udev/udev.conf                     r,
+	/etc/xdg/**                             r,
+	/etc/xdg/Trolltech.conf                 k,
+	deny /etc/xdg/{autostart,systemd}/**    r,
+	deny /boot/**                           rwlkmx,
+	
+	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	/sys/devices/**/uevent r,
+
+	/usr/bin/foo         ixr,
+	/usr/bin/dolphin     PUx,
+	/usr/bin/*           Pixr,
+	/usr/bin/khelpcenter Cx  -> sanitized_helper,
+	/usr/bin/helloworld  Cxr ->
+			hello_world,
+	
+	/usr/lib{,32,64}/{,@{multiarch}/}qt5/plugins/{,**/}*.so m,
+	@{FOO_LIB}/{,**} mr,
+	
+	audit deny /dev/{audio,video}* rwlkmx,
+
+	# Dbus rules
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.DBus.Introspectable
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.NetworkManager
+		member={Introspect,state}
+		peer=(name=(org.freedesktop.NetworkManager|org.freedesktop.DBus)),
+	dbus (send)
+		bus=session
+		path=/org/gnome/GConf/Database/*
+		member={AddMatch,AddNotify,AllEntries,LookupExtended,RemoveNotify},
+	dbus (bind)
+		bus=system
+		name=org.bluez,
+
+	# Signal rules
+	signal (send) set=(term) peer=unconfined,
+	signal (send, receive) set=(int exists rtmin+8) peer=/usr/lib/hello/world//foo-helper,
+
+	# Child profile
+	profile hello_world {
+		# File rules (three different ways)
+		file /usr/lib{,32,64}/helloworld/**.so mr,
+		/usr/lib{,32,64}/helloworld/** r,
+		rk /usr/lib{,32,64}/helloworld/hello,file,
+
+		# Link rules (two ways)
+		l /foo1 -> /bar,
+		link /foo2 -> bar,
+		link /foo3 to bar,
+		link subset /link* -> /**,
+
+		# Network rules
+		network inet6 tcp, #Allow access to tcp only for inet6 addresses
+		network netlink dgram,
+		network bluetooth,
+		network unspec dgram,
+
+		# Capability rules
+		capability dac_override,
+		capability sys_admin,
+		capability sys_chroot,
+
+		# Mount rules
+		mount options=(rw bind remount nodev noexec) vfstype=ecryptfs /home/*/.helloworld/ -> /home/*/helloworld/,
+		mount options in (rw, bind) / -> /run/hellowordd/*.mnt,
+		mount option=read-only fstype=btrfs /dev/sd[a-z][1-9]* -> /media/*/*,
+		umount /home/*/helloworld/,
+
+		# Pivot Root rules
+		pivot_root oldroot=/mnt/root/old/ /mnt/root/,
+		pivot_root /mnt/root/,
+
+		# Ptrace rules
+		ptrace (trace) peer=unconfined,
+		ptrace (read, trace, tracedby) peer=/usr/lib/hello/helloword,
+
+		# Unix rules
+		unix (connect receive send) type=(stream) peer=(label=unconfined addr=@/tmp/ibus/dbus-*),
+		unix (send,receive) type=(stream) protocol=0 peer=(addr=none),
+		unix peer=(label=@{profile_name},addr=@helloworld),
+
+		# Rlimit rule
+		set rlimit data  <= 100M,
+		set rlimit nproc <= 10,
+		set rlimit memlock <= 2GB,
+		set rlimit rss <= infinity,
+
+		# Change Profile rules
+		change_profile unsafe /** -> [^u/]**,
+		change_profile unsafe /** -> {u,un,unc,unco,uncon,unconf,unconfi,unconfin,unconfine},
+		change_profile /bin/bash  -> 
+			new_profile,
+
+		# Alias
+		alias /usr/ -> /mnt/usr/,
+	}
+
+	# Hat
+	^foo-helper {
+		network unix stream,
+		unix stream,
+
+		/usr/hi\"esc\x23esc\032esc\*es\{esc\ rw r, # Escape expressions
+
+		# Text after a variable is highlighted as path
+		file /my/path r,
+		@{FOO_LIB}file r,
+		@{FOO_LIB}#my/path r, #Comment
+	}
+}
