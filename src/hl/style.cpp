@@ -3,8 +3,8 @@
 
 namespace Qutepart {
 
-QTextCharFormat defaultFormat(const QString& style, QString& error) {
-    QTextCharFormat format;
+QSharedPointer<QTextCharFormat> defaultFormat(const QString& style, QString& error) {
+    QSharedPointer<QTextCharFormat> format(new QTextCharFormat());
 
     bool bold = false;
     bool underline = false;
@@ -54,57 +54,57 @@ QTextCharFormat defaultFormat(const QString& style, QString& error) {
     }
 
     if (bold) {
-        format.setFontWeight(QFont::Bold);
+        format->setFontWeight(QFont::Bold);
     }
 
     if (underline) {
-        format.setFontUnderline(true);
+        format->setFontUnderline(true);
     }
 
     if ( ! colorName.isNull()) {
-        format.setForeground(QColor(colorName));
+        format->setForeground(QColor(colorName));
     }
 
     if ( ! bgColorName.isNull()) {
-        format.setBackground(QColor(bgColorName));
+        format->setBackground(QColor(bgColorName));
     }
 
     return format;
 }
 
-QTextCharFormat makeFormat(
+QSharedPointer<QTextCharFormat> makeFormat(
         const QString& defStyle,
         const QString& color,
         const QString& /*selColor*/,
         const QHash<QString, bool>& flags,
         QString& error) {
-    QTextCharFormat format = defaultFormat(defStyle, error);
+    QSharedPointer<QTextCharFormat> format = defaultFormat(defStyle, error);
     if ( ! error.isNull()) {
-        return QTextCharFormat();
+        return QSharedPointer<QTextCharFormat>();
     }
 
     if ( ! color.isNull()) {
-        format.setForeground(QColor(color));
+        format->setForeground(QColor(color));
     }
 
     if (flags.contains("italic")) {
-        format.setFontItalic(flags["italic"]);
+        format->setFontItalic(flags["italic"]);
     }
 
     if (flags.contains("bold")) {
         if (flags["bold"]) {
-            format.setFontWeight(QFont::Bold);
+            format->setFontWeight(QFont::Bold);
         } else {
-            format.setFontWeight(QFont::Normal);
+            format->setFontWeight(QFont::Normal);
         }
     }
 
     if (flags.contains("underline")) {
-        format.setFontUnderline(flags["underline"]);
+        format->setFontUnderline(flags["underline"]);
     }
 
     if (flags.contains("strikeout")) {
-        format.setFontStrikeOut(flags["strikeout"]);
+        format->setFontStrikeOut(flags["strikeout"]);
     }
 
     return format;
@@ -145,7 +145,7 @@ Style makeStyle(
         const QString& selColor,
         const QHash<QString, bool>& flags,
         QString& error) {
-    QTextCharFormat format = makeFormat(defStyleName, color, selColor, flags, error);
+    QSharedPointer<QTextCharFormat> format = makeFormat(defStyleName, color, selColor, flags, error);
     if ( ! error.isNull()) {
         return Style();
     }
@@ -158,7 +158,7 @@ Style::Style():
     _textType(' ')
 {}
 
-Style::Style(const QString& defStyleName, const QTextCharFormat& format):
+Style::Style(const QString& defStyleName, QSharedPointer<QTextCharFormat> format):
     _format(format),
     _textType(detectTextType(QString::null, defStyleName)),
     defStyleName(defStyleName)

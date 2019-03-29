@@ -9,7 +9,7 @@ namespace Qutepart {
 class Style {
 public:
     Style();
-    Style(const QString& defStyleName, const QTextCharFormat& format);
+    Style(const QString& defStyleName, QSharedPointer<QTextCharFormat> format);
 
     /* Called by some clients.
        If the style knows attribute it can better detect textType
@@ -17,10 +17,10 @@ public:
     void updateTextType(const QString& attribute);
 
     inline char textType() const {return _textType;};
-    inline const QTextCharFormat& format() const {return _format;}
+    inline const QSharedPointer<QTextCharFormat> format() const {return _format;}
 
 private:
-    QTextCharFormat _format;
+    QSharedPointer<QTextCharFormat> _format;
     char _textType;
 
     QString defStyleName;

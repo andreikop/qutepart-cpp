@@ -148,11 +148,14 @@ void Context::applyMatchResult(
         const MatchResult* matchRes,
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap) const {
-    QTextCharFormat format = matchRes->style.format();
-    if (format == QTextCharFormat()) {
+    QSharedPointer<QTextCharFormat> format = matchRes->style.format();
+    if (format.isNull()) {
         format = this->style.format();
     }
-    appendFormat(formats, textToMatch.currentColumnIndex, matchRes->length, format);
+
+    if ( ! format.isNull()) {
+        appendFormat(formats, textToMatch.currentColumnIndex, matchRes->length, *format);
+    }
 
     QChar textType = matchRes->style.textType();
     if (textType == 0) {
@@ -195,7 +198,10 @@ const ContextSwitcher Context::parseBlock(
 
         } else {
             lineContinue = false;
-            appendFormat(formats, textToMatch.currentColumnIndex, 1, this->style.format());
+            if ( ! this->style.format().isNull()) {
+                appendFormat(formats, textToMatch.currentColumnIndex, 1, *(this->style.format()));
+            }
+
             textTypeMap[textToMatch.currentColumnIndex] = this->style.textType();
 
             if ( ! this->fallthroughContext.isNull()) {
