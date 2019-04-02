@@ -38,10 +38,10 @@ public:
         const QStringList& data=QStringList()) const;
 
     // Get current context
-    const Context* currentContext();
+    const Context* currentContext() const;
 
     // Get current data
-    const QStringList& currentData();
+    const QStringList& currentData() const;
 
 private:
     QVector<ContextStackItem> items;

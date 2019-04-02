@@ -36,11 +36,11 @@ bool ContextStack::operator==(const ContextStack& other) const{
     return items == other.items;
 }
 
-const Context* ContextStack::currentContext() {
+const Context* ContextStack::currentContext() const {
     return items.last().context;
 }
 
-const QStringList& ContextStack::currentData() {
+const QStringList& ContextStack::currentData() const {
     return items.last().data;
 }
 

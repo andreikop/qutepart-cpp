@@ -147,11 +147,12 @@ void fillTextTypeMap(
 void Context::applyMatchResult(
         const TextToMatch& textToMatch,
         const MatchResult* matchRes,
+        const Context* context,
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap) const {
     QSharedPointer<QTextCharFormat> format = matchRes->style.format();
     if (format.isNull()) {
-        format = this->style.format();
+        format = context->style.format();
     }
 
     if ( ! format.isNull()) {
@@ -160,7 +161,7 @@ void Context::applyMatchResult(
 
     QChar textType = matchRes->style.textType();
     if (textType == 0) {
-        textType = this->style.textType();
+        textType = context->style.textType();
     }
     fillTextTypeMap(textTypeMap, textToMatch.currentColumnIndex, matchRes->length, textType);
 }
@@ -173,6 +174,7 @@ const ContextStack Context::parseBlock(
         QString& textTypeMap,
         bool& lineContinue) const {
 
+    textToMatch.contextData = &contextStack.currentData();
     textToMatch.setCurrentContextKeywordDeliminators(keywordDeliminators);
 
     if (textToMatch.isEmpty() && ( ! _lineEmptyContext.isNull())) {
@@ -184,12 +186,17 @@ const ContextStack Context::parseBlock(
 
         if ( ! matchRes.isNull()) {
             lineContinue = matchRes->lineContinue;
-            applyMatchResult(textToMatch, matchRes.data(), formats, textTypeMap);
 
-            textToMatch.shift(matchRes->length);
+            if (matchRes->nextContext.isNull()) {
+                applyMatchResult(textToMatch, matchRes.data(), this, formats, textTypeMap);
+                textToMatch.shift(matchRes->length);
+            } else {
+                ContextStack newContextStack = contextStack.switchContext(matchRes->nextContext, matchRes->data);
 
-            if ( ! matchRes->nextContext.isNull()) {
-                return contextStack.switchContext(matchRes->nextContext, matchRes->data);
+                applyMatchResult(textToMatch, matchRes.data(), newContextStack.currentContext(), formats, textTypeMap);
+                textToMatch.shift(matchRes->length);
+
+                return newContextStack;
             }
         } else {
             lineContinue = false;
@@ -206,6 +213,7 @@ const ContextStack Context::parseBlock(
             textToMatch.shiftOnce();
         }
     }
+
 
     return contextStack;
 }

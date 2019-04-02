@@ -61,6 +61,7 @@ public:
 protected:
     void applyMatchResult(const TextToMatch& textToMatch,
                           const MatchResult* matchRes,
+                          const Context* context,
                           QVector<QTextLayout::FormatRange>& formats,
                           QString& textTypeMap) const;
 
