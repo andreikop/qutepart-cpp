@@ -52,27 +52,11 @@ void Language::printDescription(QTextStream& out) const {
 
 void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats) {
     qDebug() << "Highlighting: " << block.text();
-    TextBlockUserData* data = nullptr;
-
-    QTextBlock prevBlock = block.previous();
-    if (prevBlock.isValid()) {
-        QTextBlockUserData* qtData = prevBlock.userData();
-        if (qtData != nullptr) {
-            data = dynamic_cast<TextBlockUserData*>(qtData);
-        }
-    }
-
-    ContextStack contextStack = nullptr;
-    if (data != nullptr) {
-        contextStack = data->contexts();
-    } else {
-        contextStack = defaultContextStack;
-    }
+    ContextStack contextStack = getContextStack(block);
 
     TextToMatch textToMatch(block.text(), keywordDeliminators, contextStack.currentData());
 
     QString textTypeMap(textToMatch.text.length(), ' ');
-
 
     bool lineContinue = false;
 
@@ -94,18 +78,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
     } while ( ! textToMatch.isEmpty());
 
     if ( ! lineContinue) {
-        while ( ! contextStack.currentContext()->lineEndContext().isNull()) {
-            ContextStack oldStack = contextStack;
-            contextStack = contextStack.switchContext(contextStack.currentContext()->lineEndContext());
-            if (oldStack == contextStack) {  // avoid infinite while loop if nothing to switch
-                break;
-            }
-        }
-
-        // this code is not tested, because lineBeginContext is not defined by any xml file
-        if ( ! contextStack.currentContext()->lineBeginContext().isNull()) {
-            contextStack = contextStack.switchContext(contextStack.currentContext()->lineBeginContext());
-        }
+        contextStack = switchAtEndOfLine(contextStack);
     }
 
     block.setUserData(new TextBlockUserData(textTypeMap, contextStack));
@@ -119,6 +92,41 @@ ContextPtr Language::getContext(const QString& name) const {
     }
 
     return ContextPtr();
+}
+
+ContextStack Language::getContextStack(QTextBlock block) {
+    TextBlockUserData* data = nullptr;
+
+    QTextBlock prevBlock = block.previous();
+    if (prevBlock.isValid()) {
+        QTextBlockUserData* qtData = prevBlock.userData();
+        if (qtData != nullptr) {
+            data = dynamic_cast<TextBlockUserData*>(qtData);
+        }
+    }
+
+    if (data != nullptr) {
+        return data->contexts();
+    } else {
+        return defaultContextStack;
+    }
+}
+
+ContextStack Language::switchAtEndOfLine(ContextStack contextStack) {
+    while ( ! contextStack.currentContext()->lineEndContext().isNull()) {
+        ContextStack oldStack = contextStack;
+        contextStack = contextStack.switchContext(contextStack.currentContext()->lineEndContext());
+        if (oldStack == contextStack) {  // avoid infinite while loop if nothing to switch
+            break;
+        }
+    }
+
+    // this code is not tested, because lineBeginContext is not defined by any xml file
+    if ( ! contextStack.currentContext()->lineBeginContext().isNull()) {
+        contextStack = contextStack.switchContext(contextStack.currentContext()->lineBeginContext());
+    }
+
+    return contextStack;
 }
 
 };

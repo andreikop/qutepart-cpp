@@ -39,6 +39,9 @@ protected:
     QList<ContextPtr> contexts;
     ContextStack defaultContextStack;
     QString keywordDeliminators;
+
+    ContextStack getContextStack(QTextBlock block);
+    ContextStack switchAtEndOfLine(ContextStack contextStack);
 };
 
 };
