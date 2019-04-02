@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QScopedPointer>
 
 #include "context.h"
 #include "rules.h"
@@ -165,37 +166,31 @@ void Context::applyMatchResult(
 }
 
 // Parse block. Exits, when reached end of the text, or when context is switched
-const ContextSwitcher Context::parseBlock(
+const ContextStack Context::parseBlock(
+        const ContextStack& contextStack,
         TextToMatch& textToMatch,
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap,
-        bool& lineContinue,
-        QStringList& data) const {
+        bool& lineContinue) const {
 
     textToMatch.setCurrentContextKeywordDeliminators(keywordDeliminators);
 
     if (textToMatch.isEmpty() && ( ! _lineEmptyContext.isNull())) {
-        return _lineEmptyContext;
+        return contextStack.switchContext(_lineEmptyContext);
     }
 
     while ( ! textToMatch.isEmpty()) {
-        MatchResult* matchRes = tryMatch(textToMatch);
+        QScopedPointer<MatchResult> matchRes(tryMatch(textToMatch));
 
-        if (matchRes != nullptr) {
+        if ( ! matchRes.isNull()) {
             lineContinue = matchRes->lineContinue;
-            applyMatchResult(textToMatch, matchRes, formats, textTypeMap);
+            applyMatchResult(textToMatch, matchRes.data(), formats, textTypeMap);
 
             textToMatch.shift(matchRes->length);
 
             if ( ! matchRes->nextContext.isNull()) {
-                ContextSwitcher result = matchRes->nextContext;
-                data = matchRes->data;
-                delete matchRes;
-                return result;
-            } else {
-                delete matchRes;
+                return contextStack.switchContext(matchRes->nextContext, matchRes->data);
             }
-
         } else {
             lineContinue = false;
             if ( ! this->style.format().isNull()) {
@@ -205,14 +200,14 @@ const ContextSwitcher Context::parseBlock(
             textTypeMap[textToMatch.currentColumnIndex] = this->style.textType();
 
             if ( ! this->fallthroughContext.isNull()) {
-                return this->fallthroughContext;
+                return contextStack.switchContext(this->fallthroughContext);
             }
 
             textToMatch.shiftOnce();
         }
     }
 
-    return ContextSwitcher();
+    return contextStack;
 }
 
 MatchResult* Context::tryMatch(const TextToMatch& textToMatch) const {

@@ -48,12 +48,12 @@ public:
     ContextSwitcher lineBeginContext() const {return _lineBeginContext;};
     ContextSwitcher lineEndContext() const {return _lineEndContext;};
 
-    const ContextSwitcher parseBlock(
+    const ContextStack parseBlock(
+            const ContextStack& contextStack,
             TextToMatch& textToMatch,
             QVector<QTextLayout::FormatRange>& formats,
             QString& textTypeMap,
-            bool& lineContinue,
-            QStringList& data) const;
+            bool& lineContinue) const;
 
     // Try to match textToMatch with nested rules
     MatchResult* tryMatch(const TextToMatch& textToMatch) const;
@@ -63,6 +63,7 @@ protected:
                           const MatchResult* matchRes,
                           QVector<QTextLayout::FormatRange>& formats,
                           QString& textTypeMap) const;
+
     QString _name;
     QString attribute;
     ContextSwitcher _lineEndContext;
