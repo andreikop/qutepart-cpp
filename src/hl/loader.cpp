@@ -737,8 +737,7 @@ QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamRead
     }
 
     Language* language = new Language(name, extensions, mimetypes,
-                                      priority, hidden, indenter, contexts,
-                                      keywordDeliminators);
+                                      priority, hidden, indenter, contexts);
 
     QSharedPointer<Language> languagePtr(language);
 

@@ -11,14 +11,14 @@ namespace Qutepart {
  */
 class TextToMatch {
 public:
-    TextToMatch(const QString& text, const QString& deliminatorSet, const QStringList& contextData);
+    TextToMatch(const QString& text, const QStringList& contextData);
 
     void shiftOnce();
     void shift(int count);
 
-    void setCurrentContextKeywordDeliminators(const QString& deliminatorSet);
-
     bool isEmpty() const;
+
+    QString word(const QString& deliminators) const;
 
     int currentColumnIndex;
     QString wholeLineText;
@@ -26,12 +26,7 @@ public:
     int textLength;
     bool firstNonSpace;
     bool isWordStart;
-    QString word;
     const QStringList* contextData;
-
-private:
-    void findWord(); // find word by scanning `text` char by char
-    QString mDeliminatorSet;
 };
 
 };

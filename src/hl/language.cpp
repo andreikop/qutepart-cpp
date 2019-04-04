@@ -15,8 +15,7 @@ Language::Language(const QString& name,
                    int priority,
                    bool hidden,
                    const QString& indenter,
-                   const QList<ContextPtr>& contexts,
-                   const QString& keywordDeliminators)
+                   const QList<ContextPtr>& contexts)
   : name(name),
     extensions(extensions),
     mimetypes(mimetypes),
@@ -24,8 +23,7 @@ Language::Language(const QString& name,
     hidden(hidden),
     indenter(indenter),
     contexts(contexts),
-    defaultContextStack(contexts[0].data()),
-    keywordDeliminators(keywordDeliminators)
+    defaultContextStack(contexts[0].data())
 {
 }
 
@@ -54,7 +52,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
     qDebug() << "Highlighting: " << block.text();
     ContextStack contextStack = getContextStack(block);
 
-    TextToMatch textToMatch(block.text(), keywordDeliminators, contextStack.currentData());
+    TextToMatch textToMatch(block.text(), contextStack.currentData());
 
     QString textTypeMap(textToMatch.text.length(), ' ');
 

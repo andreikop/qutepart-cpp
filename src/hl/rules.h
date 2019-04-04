@@ -34,7 +34,10 @@ public:
     virtual QString description() const;
 
     virtual void resolveContextReferences(const QHash<QString, ContextPtr>& contexts, QString& error);
-    virtual void setKeywordParams(const QHash<QString, QStringList>&, bool, QString&) {};
+    virtual void setKeywordParams(const QHash<QString, QStringList>&,
+                                  bool,
+                                  const QString&,
+                                  QString&) {};
     void setStyles(const QHash<QString, Style>& styles, QString& error);
 
     bool lookAhead;
@@ -89,6 +92,7 @@ public:
 
     void setKeywordParams(const QHash<QString, QStringList>& lists,
                           bool caseSensitive,
+                          const QString&,
                           QString& error) override;
 
     QString name() const override {return "Keyword";};
@@ -100,6 +104,7 @@ private:
     QString listName;
     QStringList items;
     bool caseSensitive;
+    QString deliminators;
 };
 
 
@@ -156,9 +161,14 @@ class WordDetectRule: public AbstractStringRule {
     using AbstractStringRule::AbstractStringRule;
 public:
     QString name() const override {return "WordDetect";};
+    void setKeywordParams(const QHash<QString, QStringList>& lists,
+                          bool caseSensitive,
+                          const QString&,
+                          QString& error) override;
 
 private:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const;
+    QString mDeliminatorSet;
 };
 
 

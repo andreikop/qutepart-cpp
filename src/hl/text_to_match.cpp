@@ -5,7 +5,6 @@ namespace Qutepart {
 
 TextToMatch::TextToMatch(
         const QString& text,
-        const QString& deliminatorSet,
         const QStringList& contextData):
     currentColumnIndex(0),
     wholeLineText(text),
@@ -13,71 +12,60 @@ TextToMatch::TextToMatch(
     textLength(text.length()),
     firstNonSpace(true), // copy-paste from Py code
     isWordStart(true), // copy-paste from Py code
-    contextData(&contextData),
-    mDeliminatorSet(deliminatorSet)
-{
-    findWord();
-}
+    contextData(&contextData)
+{}
 
-void TextToMatch::findWord() {
-    if (currentColumnIndex > 0) {
-        QChar prevChar = wholeLineText[currentColumnIndex - 1];
-        if ( ! mDeliminatorSet.contains(prevChar)) {
-            word = QString::null;
-            return;
-        }
-    }
-
-    int wordEndIndex = 0;
-    for(; wordEndIndex < text.length(); wordEndIndex++) {
-        if (mDeliminatorSet.contains(text.at(wordEndIndex))) {
-            break;
-        }
-    }
-    if (wordEndIndex != 0) {
-        word = text.left(wordEndIndex).toString();
+namespace {
+    bool isWordChar(QChar ch) {
+        return ch.isLetterOrNumber() || ch == '_';
     }
 }
 
 void TextToMatch::shiftOnce() {
     QChar prevChar = text.at(0);
     firstNonSpace = firstNonSpace && prevChar.isSpace();
-    isWordStart = prevChar.isSpace() || mDeliminatorSet.contains(prevChar);
+    isWordStart =  (! isWordStart) && textLength > 1 && isWordChar(text.at(1));
 
     currentColumnIndex++;
     text = text.right(text.length() - 1);
     textLength--;
-
-    findWord();
 }
 
 void TextToMatch::shift(int count) {
     for(int i = 0; i < count; i++) {
         QChar prevChar = text.at(i);
         firstNonSpace = firstNonSpace && prevChar.isSpace();
-        isWordStart = prevChar.isSpace() || mDeliminatorSet.contains(prevChar);
+        isWordStart =  (! isWordStart) && textLength > (i + 1) && isWordChar(text.at(i + 1));
     }
 
     currentColumnIndex += count;
     text = text.right(text.length() - count);
     textLength -= count;
-    findWord();
 }
 
 bool TextToMatch::isEmpty() const {
     return text.isEmpty();
 }
 
-void TextToMatch::setCurrentContextKeywordDeliminators(const QString& deliminatorSet) {
-    /*
-        Keyword deliminators are language specific.
-        When one language is included to other, it is necessary to re-find word
-        with new deliminators
-     */
-    if (deliminatorSet != mDeliminatorSet) {
-        mDeliminatorSet = deliminatorSet;
-        findWord();
+QString TextToMatch::word(const QString& deliminatorSet) const {
+    if (currentColumnIndex > 0) {
+        QChar prevChar = wholeLineText[currentColumnIndex - 1];
+        if ( ! deliminatorSet.contains(prevChar)) {
+            return QString::null;
+        }
     }
+
+    int wordEndIndex = 0;
+    for(; wordEndIndex < text.length(); wordEndIndex++) {
+        if (deliminatorSet.contains(text.at(wordEndIndex))) {
+            break;
+        }
+    }
+    if (wordEndIndex != 0) {
+        return text.left(wordEndIndex).toString();
+    }
+
+    return QString::null;
 }
 
 };

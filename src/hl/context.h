@@ -73,8 +73,6 @@ protected:
     ContextSwitcher fallthroughContext;
     bool _dynamic;
 
-    QString keywordDeliminators;  // it is feature of Language. Set by setKeywordParams()
-
     QList<RulePtr> rules;
 
     Style style;

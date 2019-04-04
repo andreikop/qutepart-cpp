@@ -85,12 +85,11 @@ void Context::resolveContextReferences(const QHash<QString, ContextPtr>& context
 }
 
 void Context::setKeywordParams(const QHash<QString, QStringList>& lists,
-                               const QString& deliminators,
+                               const QString& deliminatorSet,
                                bool caseSensitive,
                                QString& error) {
-    keywordDeliminators = deliminators;
     foreach(RulePtr rule, rules) {
-        rule->setKeywordParams(lists, caseSensitive, error);
+        rule->setKeywordParams(lists, caseSensitive, deliminatorSet, error);
         if ( ! error.isNull()) {
             break;
         }
@@ -173,9 +172,7 @@ const ContextStack Context::parseBlock(
         QVector<QTextLayout::FormatRange>& formats,
         QString& textTypeMap,
         bool& lineContinue) const {
-
     textToMatch.contextData = &contextStack.currentData();
-    textToMatch.setCurrentContextKeywordDeliminators(keywordDeliminators);
 
     if (textToMatch.isEmpty() && ( ! _lineEmptyContext.isNull())) {
         return contextStack.switchContext(_lineEmptyContext);

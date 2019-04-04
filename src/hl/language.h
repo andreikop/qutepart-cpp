@@ -18,8 +18,7 @@ public:
              int priority,
              bool hidden,
              const QString& indenter,
-             const QList<ContextPtr>& contexts,
-             const QString& keywordDeliminators);
+             const QList<ContextPtr>& contexts);
 
     void printDescription(QTextStream& out) const;
 
@@ -38,7 +37,6 @@ protected:
 
     QList<ContextPtr> contexts;
     ContextStack defaultContextStack;
-    QString keywordDeliminators;
 
     ContextStack getContextStack(QTextBlock block);
     ContextStack switchAtEndOfLine(ContextStack contextStack);

@@ -122,6 +122,7 @@ KeywordRule::KeywordRule(const AbstractRuleParams& params,
 
 void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
                                    bool caseSensitive,
+                                   const QString& deliminators,
                                    QString& error) {
     if ( ! lists.contains(listName)) {
         error = QString("List '%1' not found").arg(error);
@@ -129,6 +130,7 @@ void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
     }
     items = lists[listName];
     this->caseSensitive = caseSensitive;
+    this->deliminators = deliminators;
 
     if ( ! this->caseSensitive) {
         for (auto it = items.begin(); it != items.end(); it++) {
@@ -138,19 +140,21 @@ void KeywordRule::setKeywordParams(const QHash<QString, QStringList>& lists,
 }
 
 MatchResult* KeywordRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    if (textToMatch.word.isEmpty()) {
+    QString word = textToMatch.word(deliminators);
+
+    if (word.isEmpty()) {
         return nullptr;
     }
 
     bool matched = false;
     if (this->caseSensitive) {
-        matched = items.contains(textToMatch.word);
+        matched = items.contains(word);
     } else {
-        matched = items.contains(textToMatch.word.toLower());
+        matched = items.contains(word.toLower());
     }
 
     if (matched) {
-        return makeMatchResult(textToMatch.word.length(), false);
+        return makeMatchResult(word.length(), false);
     } else {
         return nullptr;
     }
@@ -221,22 +225,28 @@ MatchResult* AnyCharRule::tryMatchImpl(const TextToMatch& textToMatch) const {
 
 
 MatchResult* WordDetectRule::tryMatchImpl(const TextToMatch& textToMatch) const {
-    if (textToMatch.word.isEmpty()) {
+    QString word = textToMatch.word(mDeliminatorSet);
+    if (word.isEmpty()) {
         return nullptr;
     }
 
-    QString wordToCheck = textToMatch.word;
     if (insensitive) {
-        wordToCheck = wordToCheck.toLower();
+        word = word.toLower();
     }
 
-    if (wordToCheck == value){
-        return makeMatchResult(wordToCheck.length());
+    if (word == value){
+        return makeMatchResult(word.length());
     } else {
         return nullptr;
     }
 }
 
+void WordDetectRule::setKeywordParams(const QHash<QString, QStringList>&,
+                                      bool,
+                                      const QString& deliminatorSet,
+                                      QString&) {
+    mDeliminatorSet = deliminatorSet;
+}
 
 RegExpRule::RegExpRule(const AbstractRuleParams& params,
                        const QString& value, bool insensitive,
