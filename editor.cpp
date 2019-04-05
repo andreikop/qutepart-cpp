@@ -31,7 +31,7 @@ int runEditor(int argc, char** argv) {
 
             file.open(QIODevice::ReadOnly);
             QByteArray data = file.readAll();
-            QString text = QTextCodec::codecForUtfText(data)->toUnicode(data);
+            QString text = QTextCodec::codecForUtfText(data, QTextCodec::codecForName("UTF-8"))->toUnicode(data);
             qutepart.setPlainText(text);
         } else {
             qWarning() << "File does not exist" << filePath;
