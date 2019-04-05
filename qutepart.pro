@@ -11,6 +11,7 @@ INCLUDEPATH += include
 SOURCES = \
     editor.cpp \
     src/qutepart.cpp \
+    src/hl_factory.cpp \
     src/hl/context.cpp \
     src/hl/language.cpp \
     src/hl/loader.cpp \
@@ -28,6 +29,7 @@ SOURCES = \
 
 HEADERS = \
     include/qutepart.h \
+    include/hl_factory.h \
     src/hl/context.h \
     src/hl/language.h \
     src/hl/rules.h \

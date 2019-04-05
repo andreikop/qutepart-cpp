@@ -1,9 +1,7 @@
 #include <Qt>
-#include <QDebug>
 #include <QTextLayout>
 
 #include "language.h"
-
 #include "syntax_highlighter.h"
 
 
@@ -11,7 +9,12 @@ namespace Qutepart {
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent, QSharedPointer<Language> language):
     QSyntaxHighlighter(parent),
-    language(std::move(language))
+    language(language)
+{}
+
+SyntaxHighlighter::SyntaxHighlighter(QObject* parent, QSharedPointer<Language> language):
+    QSyntaxHighlighter(parent),
+    language(language)
 {}
 
 void SyntaxHighlighter::highlightBlock(const QString&) {

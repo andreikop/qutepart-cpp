@@ -1,22 +1,20 @@
 #pragma once
 
 #include <QPlainTextEdit>
+#include <QSharedPointer>
+#include <QSyntaxHighlighter>
 
 
 namespace Qutepart {
-
-class SyntaxHighlighter;
 
 class Qutepart: public QPlainTextEdit {
 public:
     Qutepart(QWidget *parent = nullptr);
     Qutepart(const QString &text, QWidget *parent = nullptr);
 
-    virtual ~Qutepart();
-
     void initHighlighter(const QString& filePath);
 private:
-    SyntaxHighlighter* highlighter;
+    QSharedPointer<QSyntaxHighlighter> highlighter;
 };
 
 };

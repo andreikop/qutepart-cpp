@@ -13,6 +13,7 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
     Q_OBJECT
 
 public:
+    SyntaxHighlighter(QObject *parent, QSharedPointer<Language> language);
     SyntaxHighlighter(QTextDocument *parent, QSharedPointer<Language> language);
 
 protected:
