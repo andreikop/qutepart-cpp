@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QObject>
 #include <QString>
 
 #include "qutepart.h"
@@ -9,7 +10,8 @@
 /* Workspace is responsible for opening and switching files
  */
 
-class Workspace {
+class Workspace: public QObject {
+    Q_OBJECT
 public:
     Workspace(MainWindow& mainWindow);
 
@@ -18,4 +20,9 @@ public:
 private:
     QMap<QString, Qutepart::Qutepart*> m_files;
     QMainWindow& m_mainWindow;
+
+    QString readFile(const QString& filePath);
+
+signals:
+    void ioError(const QString& text);
 };
