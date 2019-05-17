@@ -47,7 +47,7 @@ MatchResult* AbstractRule::makeMatchResult(
         int length,
         bool lineContinue,
         const QStringList& data) const {
-    qDebug() << "\t\trule matched" << description() << length << "lookAhead" << lookAhead;
+    //qDebug() << "\t\trule matched" << description() << length << "lookAhead" << lookAhead;
     if (lookAhead) {
         length = 0;
     }

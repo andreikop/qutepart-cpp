@@ -17,7 +17,7 @@ QSharedPointer<Language> chooseAndLoadLanguage(
     QString xmlFileName = chooseLanguage(mimeType, languageName, sourceFilePath, firstLine);
 
     if (xmlFileName.isNull()) {
-        return nullptr;
+        return QSharedPointer<Language>(nullptr);
     }
 
     return loadLanguage(xmlFileName);

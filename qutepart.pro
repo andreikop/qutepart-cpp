@@ -24,7 +24,7 @@ SOURCES = \
     src/hl/text_to_match.cpp \
     src/hl/match_result.cpp \
     src/hl/language_db_generated.cpp \
-    src/hl/language_db.cpp
+    src/hl/language_db.cpp \
 
 
 HEADERS = \
@@ -39,7 +39,7 @@ HEADERS = \
     src/hl/context_switcher.h \
     src/hl/text_to_match.h \
     src/hl/match_result.h \
-    src/hl/language_db.h
+    src/hl/language_db.h \
 
 
 RESOURCES = syntax-files.qrc

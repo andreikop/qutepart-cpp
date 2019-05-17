@@ -49,7 +49,7 @@ void Language::printDescription(QTextStream& out) const {
 }
 
 void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats) {
-    qDebug() << "Highlighting: " << block.text();
+    //qDebug() << "Highlighting: " << block.text();
     ContextStack contextStack = getContextStack(block);
 
     TextToMatch textToMatch(block.text(), contextStack.currentData());
@@ -59,7 +59,7 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
     bool lineContinue = false;
 
     do {
-        qDebug() << "\tIn context " << contextStack.currentContext()->name();
+        //qDebug() << "\tIn context " << contextStack.currentContext()->name();
 
         const Context* context = contextStack.currentContext();
 
