@@ -25,8 +25,9 @@ SOURCES = \
     ../src/hl/language_db_generated.cpp \
     ../src/hl/language_db.cpp \
     \
-    src/main.cpp \
-    src/main_window.cpp
+    src/enki.cpp \
+    src/main_window.cpp \
+    src/workspace.cpp
 
 
 HEADERS = \
@@ -43,7 +44,8 @@ HEADERS = \
     ../src/hl/match_result.h \
     ../src/hl/language_db.h \
     \
-    src/main_window.h
+    src/main_window.h \
+    src/workspace.h
 
 
 RESOURCES = ../syntax-files.qrc
