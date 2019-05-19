@@ -17,12 +17,7 @@ int main(int argc, char** argv) {
 
     if (argc > 1) {
         QString filePath = argv[1];
-        if (QFile(filePath).exists()) {
-            workspace.openFile(filePath);
-        } else {
-            qWarning() << "File does not exist" << filePath;
-            return -1;
-        }
+        workspace.openFile(filePath);
     }
 
     mainWindow.show();

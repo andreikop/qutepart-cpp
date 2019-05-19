@@ -24,5 +24,5 @@ private:
     QString readFile(const QString& filePath);
 
 signals:
-    void ioError(const QString& text);
+    void ioError(const QString& text, int msgTimeout=5000);
 };
