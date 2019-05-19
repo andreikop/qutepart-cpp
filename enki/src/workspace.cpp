@@ -9,7 +9,11 @@
 
 Workspace::Workspace(MainWindow& mainWindow):
     m_mainWindow(mainWindow)
-{}
+{
+    connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
+    connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
+    connect(mainWindow.menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
+}
 
 void Workspace::openFile(const QString& filePath, int /*line*/) {
     QFileInfo fileInfo(filePath);
@@ -57,4 +61,16 @@ QString Workspace::readFile(const QString& filePath) {
 
 void Workspace::showError(const QString& title, const QString& text) {
     QMessageBox::critical(&m_mainWindow, title, text, QMessageBox::Ok);
+}
+
+void Workspace::onFileOpen() {
+
+}
+
+void Workspace::onFileSave() {
+
+}
+
+void Workspace::onFileClose() {
+    delete m_mainWindow.centralWidget(); // FIXME
 }

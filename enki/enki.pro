@@ -27,7 +27,8 @@ SOURCES = \
     \
     src/enki.cpp \
     src/main_window.cpp \
-    src/workspace.cpp
+    src/workspace.cpp \
+    src/menu_bar.cpp
 
 
 HEADERS = \
@@ -45,7 +46,8 @@ HEADERS = \
     ../src/hl/language_db.h \
     \
     src/main_window.h \
-    src/workspace.h
+    src/workspace.h \
+    src/menu_bar.h
 
 
 RESOURCES = ../syntax-files.qrc

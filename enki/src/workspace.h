@@ -23,4 +23,9 @@ private:
 
     QString readFile(const QString& filePath);
     void showError(const QString& header, const QString& text);
+
+private slots:
+    void onFileOpen();
+    void onFileSave();
+    void onFileClose();
 };
