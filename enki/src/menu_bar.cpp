@@ -21,6 +21,9 @@ MenuBar::MenuBar(QMainWindow* parent):
 
     fileMenu->addSeparator();
 
-    m_fileQuitAction = fileMenu->addAction("Quit", QApplication::instance(), SLOT(quit()));
+    m_fileQuitAction = fileMenu->addAction(
+        "Quit",
+        QApplication::instance(), SLOT(quit()),
+        QKeySequence::Quit);
 }
 

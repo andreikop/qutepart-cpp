@@ -7,12 +7,27 @@
 
 #include "workspace.h"
 
+
+Editor::Editor(const QString& filePath, const QString& text, QMainWindow* parent):
+    filePath(filePath),
+    qutepart(text, parent)
+{
+    qutepart.initHighlighter(filePath);
+}
+
+
 Workspace::Workspace(MainWindow& mainWindow):
     m_mainWindow(mainWindow)
 {
     connect(mainWindow.menuBar()->fileOpenAction, &QAction::triggered, this, &Workspace::onFileOpen);
     connect(mainWindow.menuBar()->fileSaveAction, &QAction::triggered, this, &Workspace::onFileSave);
     connect(mainWindow.menuBar()->fileCloseAction, &QAction::triggered, this, &Workspace::onFileClose);
+}
+
+Workspace::~Workspace() {
+    foreach(Editor* editor, m_files) {
+        delete editor;
+    }
 }
 
 void Workspace::openFile(const QString& filePath, int /*line*/) {
@@ -31,12 +46,11 @@ void Workspace::openFile(const QString& filePath, int /*line*/) {
         return;
     }
 
-    Qutepart::Qutepart* qutepart = new Qutepart::Qutepart(text, &m_mainWindow);
-    qutepart->initHighlighter(canonicalPath);
+    Editor *editor = new Editor(canonicalPath, text, &m_mainWindow);
 
-    m_files[canonicalPath] = qutepart;
+    m_files.append(editor);
 
-    m_mainWindow.setCentralWidget(qutepart);
+    m_mainWindow.setCentralWidget(&editor->qutepart);
 }
 
 QString Workspace::readFile(const QString& filePath) {
@@ -72,5 +86,7 @@ void Workspace::onFileSave() {
 }
 
 void Workspace::onFileClose() {
-    delete m_mainWindow.centralWidget(); // FIXME
+    if ( ! m_files.isEmpty()) {
+        delete m_files.takeFirst();
+    }
 }
