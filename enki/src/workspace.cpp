@@ -2,21 +2,20 @@
 #include <QTextCodec>
 #include <QFileInfo>
 #include <QStatusBar>
+#include <QMessageBox>
 #include <QDebug>
 
 #include "workspace.h"
 
 Workspace::Workspace(MainWindow& mainWindow):
     m_mainWindow(mainWindow)
-{
-    connect(this, &Workspace::ioError, mainWindow.statusBar(), &QStatusBar::showMessage);
-}
+{}
 
 void Workspace::openFile(const QString& filePath, int /*line*/) {
     QFileInfo fileInfo(filePath);
 
     if ( ! fileInfo.exists()) {
-        emit ioError(QString("Failed to open file '%0': File does not exist").arg(filePath));
+        showError("Failed to open file", QString("File '%0' does not exist").arg(filePath));
         qDebug() << filePath;
         return;
     }
@@ -41,15 +40,21 @@ QString Workspace::readFile(const QString& filePath) {
 
     bool ok = file.open(QIODevice::ReadOnly);
     if ( ! ok) {
-        emit ioError(QString("Failed to open file %0: %1").arg(filePath, file.errorString()));
+        showError("Failed to open file",
+            QString("Failed to open file %0: %1").arg(filePath, file.errorString()));
         return QString::null;
     }
 
     QByteArray data = file.readAll();
     if (data.isEmpty() && ( ! file.errorString().isEmpty())) {
-        emit ioError(QString("Failed to read file %0: %1").arg(filePath, file.errorString()));
+        showError("Failed to open file",
+            QString("Failed to read file %0: %1").arg(filePath, file.errorString()));
         return QString::null;
     }
 
     return QTextCodec::codecForUtfText(data, QTextCodec::codecForName("UTF-8"))->toUnicode(data);
+}
+
+void Workspace::showError(const QString& title, const QString& text) {
+    QMessageBox::critical(&m_mainWindow, title, text, QMessageBox::Ok);
 }

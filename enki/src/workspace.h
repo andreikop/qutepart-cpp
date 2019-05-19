@@ -22,7 +22,5 @@ private:
     QMainWindow& m_mainWindow;
 
     QString readFile(const QString& filePath);
-
-signals:
-    void ioError(const QString& text, int msgTimeout=5000);
+    void showError(const QString& header, const QString& text);
 };
