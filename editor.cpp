@@ -13,6 +13,7 @@
 
 
 int runEditor(int argc, char** argv) {
+    Q_INIT_RESOURCE(qutepart_syntax_files);
     QApplication app(argc, argv);
     Qutepart::Qutepart qutepart;
 

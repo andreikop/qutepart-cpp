@@ -4,6 +4,7 @@ project(qutepart)
 
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -13,7 +14,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
 set(qutepart_SRCS
-    syntax-files.qrc
+    qutepart-syntax-files.qrc
     editor.cpp
     src/qutepart.cpp
     src/hl_factory.cpp
