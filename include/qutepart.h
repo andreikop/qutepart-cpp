@@ -4,6 +4,8 @@
 #include <QSharedPointer>
 #include <QSyntaxHighlighter>
 
+#include "indent/indenter.h"
+
 
 namespace Qutepart {
 
@@ -22,6 +24,7 @@ public:
 
 private:
     QSharedPointer<QSyntaxHighlighter> highlighter;
+    Indenter indenter;
 };
 
 }; // namespace Qutepart

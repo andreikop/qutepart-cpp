@@ -31,9 +31,11 @@ set(qutepart_SRCS
     src/hl/match_result.cpp
     src/hl/language_db_generated.cpp
     src/hl/language_db.cpp
+    src/indent/indenter.cpp
     )
 
 include_directories(include)
+include_directories(src)
 
 # Tell CMake to create the qutepart library
 add_library(qutepart ${qutepart_SRCS})
