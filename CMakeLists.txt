@@ -48,4 +48,3 @@ target_link_libraries(editor Qt5::Core Qt5::Widgets qutepart)
 # Install only library, not binaries
 install(TARGETS qutepart DESTINATION lib)
 install(FILES include/hl_factory.h include/qutepart.h DESTINATION include/qutepart)
-
