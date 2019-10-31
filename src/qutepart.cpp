@@ -24,4 +24,17 @@ void Qutepart::initHighlighter(const QString& filePath) {
     highlighter = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), QString::null, QString::null, filePath, QString::null));
 }
 
+void Qutepart::keyPressEvent(QKeyEvent *event) {
+    QTextCursor cursor = textCursor();
+    if (cursor.atEnd() && indenter.shouldAutoIndentOnEvent(event)) {
+        QPlainTextEdit::keyPressEvent(event);
+        QString indent = indenter.indentForBlock(cursor.block(), event->text()[0]);
+        if ( ! indent.isNull()) {
+            cursor.insertText(indent);
+        }
+    } else {
+        QPlainTextEdit::keyPressEvent(event);
+    }
+}
+
 }

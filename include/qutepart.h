@@ -22,6 +22,9 @@ public:
 
     void initHighlighter(const QString& filePath);
 
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
+
 private:
     QSharedPointer<QSyntaxHighlighter> highlighter;
     Indenter indenter;
