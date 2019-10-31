@@ -6,6 +6,8 @@
 #include "context_stack.h"
 
 
+#define VERBOSE_LOGS 0
+
 namespace Qutepart {
 // FIXME avoid data where possible
 
@@ -51,7 +53,9 @@ ContextStack ContextStack::switchContext(
 
     if (operation.popsCount() > 0) {
         if (newItems.size() - 1 < operation.popsCount()) {
+#if VERBOSE_LOGS
             qWarning() << "#pop value is too big " << newItems.size() << operation.popsCount();
+#endif
 
             if (newItems.size() > 1) {
                 newItems = newItems.mid(0, 1);
