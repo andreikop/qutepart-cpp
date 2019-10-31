@@ -8,7 +8,7 @@ namespace Qutepart {
 
 class IndentAlg {
 public:
-    virtual const QString& triggerCharacters() const = 0;
+    virtual const QString& triggerCharacters() const;
     virtual QString computeSmartIndent(QTextBlock block, QChar typedKey) const = 0;
 };
 

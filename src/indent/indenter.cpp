@@ -17,6 +17,10 @@ QString lineIndent(const QString& line) {
     return line.left(firstNonSpaceColumn(line));
 }
 
+QString blockIndent(QTextBlock block) {
+    return lineIndent(block.text());
+}
+
 QString prevBlockIndent(QTextBlock block) {
     QTextBlock prevBlock = block.previous();
 
@@ -24,30 +28,54 @@ QString prevBlockIndent(QTextBlock block) {
             return QString::null;
     }
 
-    return lineIndent(prevBlock.text());
+    return blockIndent(prevBlock);
+}
+
+QTextBlock prevNonEmptyBlock(QTextBlock block) {
+    if ( ! block.isValid()) {
+        return QTextBlock();
+    }
+
+    block = block.previous();
+    while (block.isValid() && block.text().isEmpty()) {
+        block = block.previous();
+    }
+
+    return block;
+}
+
+QString prevNonEmptyBlockIndent(const QTextBlock& block) {
+    return blockIndent(prevNonEmptyBlock(block));
 }
 
 
-class NoneIndentAlg: public IndentAlg {
+
+class IndentAlgNone: public IndentAlg {
 public:
-    const QString& triggerCharacters() const override {
-        return TRIGGER_CHARACTERS;
-    }
-
     QString computeSmartIndent(QTextBlock block, QChar typedKey) const override {
-        return "";  // TODO
+        return QString::null;
     }
-
-private:
-    static const QString TRIGGER_CHARACTERS;
 };
 
-const QString NoneIndentAlg::TRIGGER_CHARACTERS = QString("");
 
+class IndentAlgNormal: public IndentAlg {
+public:
+    QString computeSmartIndent(QTextBlock block, QChar typedKey) const override {
+        return prevNonEmptyBlockIndent(block);
+    }
+};
+
+const QString NULL_STRING = QString::null;
 }  // namespace
 
+
+const QString& IndentAlg::triggerCharacters() const {
+    return NULL_STRING;
+}
+
+
 Indenter::Indenter():
-    alg(new NoneIndentAlg())
+    alg(new IndentAlgNormal())
 {
 }
 

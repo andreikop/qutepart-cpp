@@ -26,7 +26,13 @@ void Qutepart::initHighlighter(const QString& filePath) {
 
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
-    if (cursor.atEnd() && indenter.shouldAutoIndentOnEvent(event)) {
+    if (event->matches(QKeySequence::InsertParagraphSeparator)) {
+        QPlainTextEdit::keyPressEvent(event);
+        QString indent = indenter.indentForBlock(cursor.block(), event->text()[0]);
+        if ( ! indent.isNull()) {
+            cursor.insertText(indent);
+        }
+    } else if (cursor.atEnd() && indenter.shouldAutoIndentOnEvent(event)) {
         QPlainTextEdit::keyPressEvent(event);
         QString indent = indenter.indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
