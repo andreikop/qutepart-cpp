@@ -1,0 +1,51 @@
+# Code editor component for C++/Qt5
+
+Written in pure C++/Qt5. No any dependencies.
+
+Component has been created for [Enki editor](http://enki-editor.org)
+
+Currently there are no API documentation, but [the header](include/qutepart.h) is quite clear.
+
+## Features
+
+All features are configurable
+
+* Syntax highlighting for 196 languages
+* Visible witespaces
+* Marker for too long lines
+
+## Build dependencies
+* C++ compiler
+* CMake or qmake
+* Qt5 headers
+
+## Building and installation
+CMake and qmake is supported. CMake is recommented.
+
+```
+mkdir build
+cd build
+cmake ..
+make
+make install  # might require sudo
+```
+
+## Author
+Andrei Kopats
+
+## Bug reports, patches
+[Github page](https://github.com/andreikop/qutepart-cpp)
+
+## Qutepart and Katepart
+[Kate](http://kate-editor.org/) and Katepart (an editor component) is really cool software. The Kate authors and community have created, probably, the biggest set of highlighters and indenters for programming languages.
+
+* Qutepart uses Kate syntax highlighters (XML files)
+* Qutepart contains a port from Javascript to Python of Kate indenters (12% of the code base in version 1.0.0)
+* Qutepart doesn't contain Katepart code.
+
+Nothing is wrong with Katepart. Qutepart has been created to enable reusing highlighters and indenters in projects where a KDE dependency is not acceptable.
+
+## License
+LGPL v2
+
+I don't mind if you use the code under WTFPL license. But consult you layers if I have right to release it this way.
