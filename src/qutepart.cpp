@@ -1,5 +1,5 @@
 #include <QAction>
-#include <QMetaMethod>
+#include <QPainter>
 #include <QDebug>
 
 #include "qutepart.h"
@@ -9,18 +9,19 @@
 #include "hl/loader.h"
 #include "hl/syntax_highlighter.h"
 
+#include "text_block_utils.h"
+
 
 namespace Qutepart {
 
-Qutepart::Qutepart(QWidget *parent):
-    QPlainTextEdit(parent)
-{
-    initActions();
-    setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
-};
-
-Qutepart::Qutepart(const QString &text, QWidget *parent):
-    QPlainTextEdit(text, parent)
+Qutepart::Qutepart(QWidget *parent, const QString& text):
+    QPlainTextEdit(text, parent),
+    drawIndentations_(true),
+    drawAnyWhitespace_(false),
+    drawIncorrectIndentation_(true),
+    drawSolidEdge_(false),
+    lineLengthEdge_(80),
+    lineLengthEdgeColor_(Qt::red)
 {
     initActions();
     setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
@@ -61,6 +62,11 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
     }
 }
 
+void Qutepart::paintEvent(QPaintEvent *event) {
+    QPlainTextEdit::paintEvent(event);
+    drawIndentMarkersAndEdge(event->rect());
+}
+
 void Qutepart::initActions() {
     connect(
         createAction( "Increase indentation", QKeySequence(Qt::Key_Tab)),
@@ -82,6 +88,205 @@ QAction* Qutepart::createAction(
 
     addAction(action);
     return action;
+}
+
+
+namespace {
+
+void setPositionInBlock(
+    QTextCursor* cursor,
+    int positionInBlock,
+    QTextCursor::MoveMode anchor=QTextCursor::MoveAnchor) {
+    return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);
+}
+
+
+}  // namespace
+
+void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
+    QPainter painter(viewport());
+
+    for(QTextBlock block = firstVisibleBlock(); block.isValid(); block = block.next()) {
+        QRectF blockGeometry = blockBoundingGeometry(block).translated(contentOffset());
+        if (blockGeometry.top() > paintEventRect.bottom()) {
+            break;
+        }
+
+        if (block.isVisible() && blockGeometry.toRect().intersects(paintEventRect)) {
+            // Draw indent markers, if good indentation is not drawn
+            if (drawIndentations_ && (! drawAnyWhitespace_)) {
+                QString text = block.text();
+                QStringRef textRef(&text);
+                int column = indenter_.width();
+                while (textRef.startsWith(indenter_.text()) &&
+                       textRef.length() > indenter_.width() &&
+                       textRef.at(indenter_.width()).isSpace()) {
+                    bool lineLengthMarkerHere = (column == lineLengthEdge_);
+                    bool cursorHere = (block.blockNumber() == textCursor().blockNumber() &&
+                         column == textCursor().columnNumber());
+                    if ( ( ! lineLengthMarkerHere) &&
+                         ( ! cursorHere)) { // looks ugly, if both drawn
+                        // on some fonts line is drawn below the cursor, if offset is 1. Looks like Qt bug
+                        drawIndentMarker(&painter, block, column);
+                    }
+
+                    textRef = textRef.mid(indenter_.width());
+                    column += indenter_.width();
+                }
+            }
+
+            // Draw edge, but not over a cursor
+            if ( ! drawSolidEdge_) {
+                int edgePos = effectiveEdgePos(block.text());
+                if (edgePos != -1 && edgePos != textCursor().columnNumber()) {
+                    drawEdgeLine(&painter, block, edgePos);
+                }
+            }
+
+            if (drawAnyWhitespace_ || drawIncorrectIndentation_) {
+                QString text = block.text();
+                QVector<bool> visibleFlags = chooseVisibleWhitespace(text);
+                for(int column = 0; column < visibleFlags.length(); column++) {
+                    bool draw = visibleFlags[column];
+                    if (draw) {
+                        drawWhiteSpace(&painter, block, column, text[column]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Qutepart::drawWhiteSpace(QPainter* painter, QTextBlock block, int column, QChar ch) {
+    QRect leftCursorRect = cursorRect(block, column, 0);
+    QRect rightCursorRect = cursorRect(block, column + 1, 0);
+    if (leftCursorRect.top() == rightCursorRect.top()) {  // if on the same visual line
+        int middleHeight = (leftCursorRect.top() + leftCursorRect.bottom()) / 2;
+        if (ch == ' ') {
+            painter->setPen(Qt::transparent);
+            painter->setBrush(QBrush(Qt::gray));
+            int xPos = (leftCursorRect.x() + rightCursorRect.x()) / 2;
+            painter->drawRect(QRect(xPos, middleHeight, 2, 2));
+        } else {
+            painter->setPen(QColor(Qt::gray).lighter(120));
+            painter->drawLine(leftCursorRect.x() + 3, middleHeight,
+                             rightCursorRect.x() - 3, middleHeight);
+        }
+    }
+}
+
+int Qutepart::effectiveEdgePos(const QString& text) {
+    /* Position of edge in a block.
+     * Defined by lineLengthEdge, but visible width of \t is more than 1,
+     * therefore effective position depends on count and position of \t symbols
+     * Return -1 if line is too short to have edge
+     */
+    if (lineLengthEdge_ <= 0) {
+        return -1;
+    }
+
+    int tabExtraWidth = indenter_.width() - 1;
+    int fullWidth = text.length() + (text.count('\t') * tabExtraWidth);
+    int indentWidth = indenter_.width();
+
+    if (fullWidth <= lineLengthEdge_) {
+        return -1;
+    }
+
+    int currentWidth = 0;
+    for(int pos = 0; pos < text.length(); pos++) {
+        if (text[pos] == '\t') {
+            // Qt indents up to indentation level, so visible \t width depends on position
+            currentWidth += (indentWidth - (currentWidth % indentWidth));
+        } else {
+            currentWidth += 1;
+        }
+        if (currentWidth > lineLengthEdge_) {
+            return pos;
+        }
+    }
+
+    // line too narrow, probably visible \t width is small
+    return -1;
+}
+
+QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
+    QVector<bool> result(text.length());
+
+    int lastNonSpaceColumn = text.length() - 1;
+    while (text[lastNonSpaceColumn].isSpace()) {
+        lastNonSpaceColumn--;
+    }
+
+    // Draw not trailing whitespace
+    if (drawAnyWhitespace_) {
+        // Any
+        for (int column = 0; column < lastNonSpaceColumn; column++) {
+            QChar ch = text[column];
+            if (ch.isSpace() &&
+                (ch == '\t' || column == 0 || text[column - 1].isSpace() ||
+                 ((column + 1) < lastNonSpaceColumn &&
+                  text[column + 1].isSpace()))) {
+                result[column] = true;
+            }
+        }
+    } else if (drawIncorrectIndentation_) {
+        // Only incorrect
+        if (indenter_.useTabs()) {
+            // Find big space groups
+            QString bigSpaceGroup = QString().fill(' ', indenter_.width());
+            for(int column = text.indexOf(bigSpaceGroup);
+                column != -1 && column < lastNonSpaceColumn;
+                column = text.indexOf(bigSpaceGroup, column))
+            {
+                int index = -1;
+                for (index = column; index < column + indenter_.width(); index++) {
+                    result[index] = true;
+                }
+                for (; index < lastNonSpaceColumn && text[index] == ' '; index++) {
+                        result[index] = true;
+                }
+                column = index;
+            }
+        } else {
+            // Find tabs:
+            for(int column = text.indexOf('\t');
+                column != -1 && column < lastNonSpaceColumn;
+                column = text.indexOf('\t', column))
+            {
+                result[column] = true;
+                column += 1;
+            }
+        }
+    }
+
+    // Draw trailing whitespace
+    if (drawIncorrectIndentation_ || drawAnyWhitespace_) {
+        for (int column = lastNonSpaceColumn + 1; column < text.length(); column++) {
+            result[column] = true;
+        }
+    }
+
+    return result;
+}
+
+
+void Qutepart::drawIndentMarker(QPainter* painter, QTextBlock block, int column) {
+    painter->setPen(QColor(Qt::blue).lighter());
+    QRect rect = cursorRect(block, column, 0);
+    painter->drawLine(rect.topLeft(), rect.bottomLeft());
+}
+
+void Qutepart::drawEdgeLine(QPainter* painter, QTextBlock block, int edgePos) {
+    painter->setPen(QPen(QBrush(lineLengthEdgeColor_), 0));
+    QRect rect = cursorRect(block, edgePos, 0);
+    painter->drawLine(rect.topLeft(), rect.bottomLeft());
+}
+
+QRect Qutepart::cursorRect(QTextBlock block, int column, int offset) const {
+    QTextCursor cursor(block);
+    setPositionInBlock(&cursor, column);
+    return QPlainTextEdit::cursorRect(cursor).translated(offset, 0);
 }
 
 }
