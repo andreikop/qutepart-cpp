@@ -11,6 +11,8 @@ INCLUDEPATH += include
 SOURCES = \
     editor.cpp \
     src/qutepart.cpp \
+    src/text_block_utils.cpp \
+    src/indent/indenter.cpp \
     src/hl_factory.cpp \
     src/hl/context.cpp \
     src/hl/language.cpp \
@@ -30,6 +32,8 @@ SOURCES = \
 HEADERS = \
     include/qutepart.h \
     include/hl_factory.h \
+    src/text_block_utils.h \
+    src/indent/indenter.h \
     src/hl/context.h \
     src/hl/language.h \
     src/hl/rules.h \
