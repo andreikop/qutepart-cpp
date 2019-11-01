@@ -221,7 +221,8 @@ void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
 
             if (drawAnyWhitespace_ || drawIncorrectIndentation_) {
                 QString text = block.text();
-                QVector<bool> visibleFlags = chooseVisibleWhitespace(text);
+                QVector<bool> visibleFlags(text.length());
+                chooseVisibleWhitespace(text, &visibleFlags);
                 for(int column = 0; column < visibleFlags.length(); column++) {
                     bool draw = visibleFlags[column];
                     if (draw) {
@@ -286,9 +287,7 @@ int Qutepart::effectiveEdgePos(const QString& text) {
     return -1;
 }
 
-QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
-    QVector<bool> result(text.length());
-
+void Qutepart::chooseVisibleWhitespace(const QString& text, QVector<bool>* result) {
     int lastNonSpaceColumn = text.length() - 1;
     while (text[lastNonSpaceColumn].isSpace()) {
         lastNonSpaceColumn--;
@@ -303,7 +302,7 @@ QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
                 (ch == '\t' || column == 0 || text[column - 1].isSpace() ||
                  ((column + 1) < lastNonSpaceColumn &&
                   text[column + 1].isSpace()))) {
-                result[column] = true;
+                result->replace(column, true);
             }
         }
     } else if (drawIncorrectIndentation_) {
@@ -317,10 +316,10 @@ QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
             {
                 int index = -1;
                 for (index = column; index < column + indenter_.width(); index++) {
-                    result[index] = true;
+                    result->replace(index, true);
                 }
                 for (; index < lastNonSpaceColumn && text[index] == ' '; index++) {
-                        result[index] = true;
+                        result->replace(index, true);
                 }
                 column = index;
             }
@@ -330,7 +329,7 @@ QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
                 column != -1 && column < lastNonSpaceColumn;
                 column = text.indexOf('\t', column))
             {
-                result[column] = true;
+                result->replace(column, true);
                 column += 1;
             }
         }
@@ -339,11 +338,9 @@ QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
     // Draw trailing whitespace
     if (drawIncorrectIndentation_ || drawAnyWhitespace_) {
         for (int column = lastNonSpaceColumn + 1; column < text.length(); column++) {
-            result[column] = true;
+            result->replace(column, true);
         }
     }
-
-    return result;
 }
 
 void Qutepart::setSolidEdgeGeometry() {
