@@ -100,7 +100,7 @@ void Indenter::onShortcutIndent(QTextCursor cursor) const {
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
         indent = alg->computeSmartIndent(block);
-        if (indent.isNull()) {
+        if (indent.isEmpty()) {
             indent = text();
         }
     } else {  // have some indent, insert more
