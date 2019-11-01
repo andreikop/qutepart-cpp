@@ -14,17 +14,40 @@
 
 namespace Qutepart {
 
+
+class EdgeLine: public QWidget {
+public:
+    EdgeLine(Qutepart* qpart):
+        QWidget(qpart),
+        qpart(qpart)
+    {
+        setAttribute(Qt::WA_TransparentForMouseEvents);
+    }
+
+    void paintEvent(QPaintEvent* event) {
+        QPainter painter(this);
+        painter.fillRect(event->rect(), qpart->lineLengthEdgeColor());
+    }
+
+private:
+    Qutepart* qpart;
+};
+
+
 Qutepart::Qutepart(QWidget *parent, const QString& text):
     QPlainTextEdit(text, parent),
     drawIndentations_(true),
     drawAnyWhitespace_(false),
     drawIncorrectIndentation_(true),
-    drawSolidEdge_(false),
+    drawSolidEdge_(true),
     lineLengthEdge_(80),
-    lineLengthEdgeColor_(Qt::red)
+    lineLengthEdgeColor_(Qt::red),
+    _solidEdgeLine(new EdgeLine(this))
 {
     initActions();
     setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
+
+    setDrawSolidEdge(drawSolidEdge_);
 }
 
 void Qutepart::initHighlighter(const QString& filePath) {
@@ -61,6 +84,10 @@ bool Qutepart::drawSolidEdge() const {
 
 void Qutepart::setDrawSolidEdge(bool draw) {
     drawSolidEdge_ = true;
+    _solidEdgeLine->setVisible(draw);
+    if (draw) {
+        setSolidEdgeGeometry();
+    }
 }
 
 int Qutepart::lineLengthEdge() const {
@@ -316,6 +343,23 @@ QVector<bool> Qutepart::chooseVisibleWhitespace(const QString& text) {
     }
 
     return result;
+}
+
+void Qutepart::setSolidEdgeGeometry() {
+    // TODO call when viewport resized
+    // Sets the solid edge line geometry if needed
+    if (lineLengthEdge_ > 0) {
+        QRect cr = contentsRect();
+
+        // contents margin usually gives 1
+        // cursor rectangle left edge for the very first character usually
+        // gives 4
+        int x = fontMetrics().width(QString().fill('9', lineLengthEdge_)) +
+            /* self._totalMarginWidth + */
+            /* self.contentsMargins().left() + */
+            cursorRect(firstVisibleBlock(), 0, 0).left();
+        _solidEdgeLine->setGeometry(QRect(x, cr.top(), 1, cr.bottom()));
+    }
 }
 
 

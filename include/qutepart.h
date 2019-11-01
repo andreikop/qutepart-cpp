@@ -59,6 +59,7 @@ private:
     void drawWhiteSpace(QPainter* painter, QTextBlock block, int column, QChar ch);
     int effectiveEdgePos(const QString& text);
     QVector<bool> chooseVisibleWhitespace(const QString& text);
+    void setSolidEdgeGeometry();
 
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 
@@ -71,6 +72,7 @@ private:
     bool drawSolidEdge_;
     int lineLengthEdge_;
     QColor lineLengthEdgeColor_;
+    QWidget* _solidEdgeLine;
 };
 
 }; // namespace Qutepart
