@@ -17,12 +17,16 @@ public:
     Indenter();
     virtual ~Indenter();
 
+    QString text() const;
+
     bool shouldAutoIndentOnEvent(QKeyEvent* event) const;
+    bool shouldUnindentWithBackspace(const QTextCursor& cursor) const;
 #if 0
     void autoIndentBlock(QTextBlock block, QChar typedKey) const;
 #endif
     QString indentForBlock(QTextBlock block, QChar typedKey) const;
 
+    void onShortcutUnindentWithBackspace(QTextCursor& cursor) const;
 private:
     IndentAlg* alg;
 

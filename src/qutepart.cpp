@@ -21,20 +21,23 @@ Qutepart::Qutepart(const QString &text, QWidget *parent):
 }
 
 void Qutepart::initHighlighter(const QString& filePath) {
-    highlighter = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), QString::null, QString::null, filePath, QString::null));
+    highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), QString::null, QString::null, filePath, QString::null));
 }
 
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
-    if (event->matches(QKeySequence::InsertParagraphSeparator)) {
+    if (event->key() == Qt::Key_Backspace &&
+        indenter_.shouldUnindentWithBackspace(cursor)) {
+        indenter_.onShortcutUnindentWithBackspace(cursor);
+    } else if (event->matches(QKeySequence::InsertParagraphSeparator)) {
         QPlainTextEdit::keyPressEvent(event);
-        QString indent = indenter.indentForBlock(cursor.block(), event->text()[0]);
+        QString indent = indenter_.indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
             cursor.insertText(indent);
         }
-    } else if (cursor.atEnd() && indenter.shouldAutoIndentOnEvent(event)) {
+    } else if (cursor.atEnd() && indenter_.shouldAutoIndentOnEvent(event)) {
         QPlainTextEdit::keyPressEvent(event);
-        QString indent = indenter.indentForBlock(cursor.block(), event->text()[0]);
+        QString indent = indenter_.indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
             cursor.insertText(indent);
         }

@@ -1,5 +1,7 @@
 #include "indenter.h"
 
+#include <QDebug>
+
 namespace Qutepart {
 
 namespace {
@@ -83,11 +85,24 @@ Indenter::~Indenter() {
     delete alg;
 }
 
+QString Indenter::text() const {
+    return "    ";  // TODO
+}
+
 bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {
     return ( ! event->text().isEmpty() &&
             alg->triggerCharacters().contains(event->text()));
 }
 
+bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
+    QString blockText = cursor.block().text();
+    QStringRef textBeforeCursor = blockText.leftRef(cursor.positionInBlock());
+
+    return textBeforeCursor.endsWith(text()) &&
+           ( ! cursor.hasSelection()) &&
+           (cursor.atBlockEnd() ||
+            ( ! blockText[cursor.positionInBlock() + 1].isSpace()));
+}
 
 #if 0
 void Indenter::autoIndentBlock(QTextBlock block, QChar typedKey) const {
@@ -110,6 +125,19 @@ QString Indenter::indentForBlock(QTextBlock block, QChar typedKey) const {
     } else {  // be smart
         return alg->computeSmartIndent(block, typedKey);
     }
+}
+
+void Indenter::onShortcutUnindentWithBackspace(QTextCursor& cursor) const {
+    QString blockText = cursor.block().text();
+    QStringRef textBeforeCursor = blockText.leftRef(cursor.positionInBlock());
+    int charsToRemove = textBeforeCursor.length() % text().length();
+
+    if (charsToRemove == 0) {
+        charsToRemove = text().length();
+    }
+
+    cursor.setPosition(cursor.position() - charsToRemove, QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
 }
 
 }  // namespace Qutepart

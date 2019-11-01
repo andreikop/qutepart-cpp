@@ -26,8 +26,8 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    QSharedPointer<QSyntaxHighlighter> highlighter;
-    Indenter indenter;
+    QSharedPointer<QSyntaxHighlighter> highlighter_;
+    Indenter indenter_;
 };
 
 }; // namespace Qutepart
