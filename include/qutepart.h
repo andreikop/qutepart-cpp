@@ -22,7 +22,16 @@ public:
     Qutepart(Qutepart&&) = delete;
     Qutepart& operator=(Qutepart&&) = delete;
 
+    void setFont(const QFont&); // NOTE this method is not virtual in QWidget
+
     void initHighlighter(const QString& filePath);
+
+    // Editor configuration
+    bool indentUseTabs() const;
+    void setIndentUseTabs(bool);
+
+    int indentWidth() const;
+    void setIndentWidth(int);
 
     // Editor apperance configuration
     bool drawIndentations() const;
@@ -63,6 +72,8 @@ private:
     void updateViewport();
     void updateViewportMargins();
     void resizeEvent(QResizeEvent* event) override;
+
+    void updateTabStopWidth();
 
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 

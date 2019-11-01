@@ -56,8 +56,16 @@ int Indenter::width() const {
     return width_;
 }
 
+void Indenter::setWidth(int width) {
+    width_ = width;
+}
+
 bool Indenter::useTabs() const {
     return useTabs_;
+}
+
+void Indenter::setUseTabs(bool use) {
+    useTabs_ = use;
 }
 
 bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {

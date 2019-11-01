@@ -22,7 +22,10 @@ public:
     QString text() const;
 
     int width() const;
+    void setWidth(int);
+
     bool useTabs() const;
+    void setUseTabs(bool);
 
     bool shouldAutoIndentOnEvent(QKeyEvent* event) const;
     bool shouldUnindentWithBackspace(const QTextCursor& cursor) const;

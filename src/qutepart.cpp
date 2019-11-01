@@ -49,10 +49,46 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
     setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
 
     setDrawSolidEdge(drawSolidEdge_);
+    updateTabStopWidth();
+}
+
+void Qutepart::setFont(const QFont& font) {
+    // Set font and update tab stop width
+    QPlainTextEdit::setFont(font);
+    updateTabStopWidth();
+
+    /* text on line numbers may overlap, if font is bigger, than code font
+       Note: the line numbers margin recalculates its width and if it has
+           been changed then it calls updateViewport() which in turn will
+           update the solid edge line geometry. So there is no need of an
+           explicit call self._setSolidEdgeGeometry() here.
+     */
+#if 0  // TODO
+    lineNumbersMargin = self.getMargin("line_numbers")
+    if lineNumbersMargin:
+        lineNumbersMargin.setFont(font)
+#endif
 }
 
 void Qutepart::initHighlighter(const QString& filePath) {
     highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), QString::null, QString::null, filePath, QString::null));
+}
+
+bool Qutepart::indentUseTabs() const {
+    return indenter_.useTabs();
+}
+
+void Qutepart::setIndentUseTabs(bool use) {
+    indenter_.setUseTabs(use);
+}
+
+int Qutepart::indentWidth() const {
+    return indenter_.width();
+}
+
+void Qutepart::setIndentWidth(int width) {
+    indenter_.setWidth(width);
+    updateTabStopWidth();
 }
 
 bool Qutepart::drawIndentations() const {
@@ -394,6 +430,12 @@ void Qutepart::updateViewportMargins() {
 void Qutepart::resizeEvent(QResizeEvent* event) {
     QPlainTextEdit::resizeEvent(event);
     updateViewport();
+}
+
+void Qutepart::updateTabStopWidth() {
+    // Update tabstop width after font or indentation changed
+    int width = fontMetrics().width(QString().fill(' ', indenter_.width()));
+    setTabStopWidth(width);
 }
 
 void Qutepart::drawIndentMarker(QPainter* painter, QTextBlock block, int column) {
