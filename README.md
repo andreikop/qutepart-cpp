@@ -5,6 +5,7 @@ Written in pure C++/Qt5. No any dependencies.
 Component has been created for [Enki editor](http://enki-editor.org)
 
 Currently there are no API documentation, but [the header](include/qutepart.h) is quite clear.
+See also [example application](editor.cpp).
 
 ## Features
 
