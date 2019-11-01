@@ -1,3 +1,5 @@
+#include <QAction>
+#include <QMetaMethod>
 #include <QDebug>
 
 #include "qutepart.h"
@@ -13,11 +15,15 @@ namespace Qutepart {
 Qutepart::Qutepart(QWidget *parent):
     QPlainTextEdit(parent)
 {
+    initActions();
+    setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
 };
 
 Qutepart::Qutepart(const QString &text, QWidget *parent):
     QPlainTextEdit(text, parent)
 {
+    initActions();
+    setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
 }
 
 void Qutepart::initHighlighter(const QString& filePath) {
@@ -42,8 +48,40 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
             cursor.insertText(indent);
         }
     } else {
+        // make action shortcuts override keyboard events (non-default Qt behaviour)
+        foreach(QAction* action, actions()) {
+            QKeySequence seq = action->shortcut();
+            if (seq.count() == 1 && seq[0] == (event->key() | int(event->modifiers()))) {
+                action->trigger();
+                return;
+            }
+        }
+
         QPlainTextEdit::keyPressEvent(event);
     }
+}
+
+void Qutepart::initActions() {
+    connect(
+        createAction( "Increase indentation", QKeySequence(Qt::Key_Tab)),
+        &QAction::triggered,
+        [=]{indenter_.onShortcutIndent(textCursor());}
+    );
+}
+
+QAction* Qutepart::createAction(
+    const QString& text, QKeySequence shortcut,
+    const QString& iconFileName) {
+
+    QAction* action = new QAction(text, this);
+    // if iconFileName is not None:
+    //     action.setIcon(getIcon(iconFileName))
+
+    action->setShortcut(shortcut);
+    action->setShortcutContext(Qt::WidgetShortcut);
+
+    addAction(action);
+    return action;
 }
 
 }

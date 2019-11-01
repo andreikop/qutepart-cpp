@@ -50,6 +50,10 @@ QString prevNonEmptyBlockIndent(const QTextBlock& block) {
     return blockIndent(prevNonEmptyBlock(block));
 }
 
+QString textBeforeCursor(QTextCursor cursor) {
+    QString blockText = cursor.block().text();
+    return blockText.left(cursor.positionInBlock());
+}
 
 
 class IndentAlgNone: public IndentAlg {
@@ -77,7 +81,9 @@ const QString& IndentAlg::triggerCharacters() const {
 
 
 Indenter::Indenter():
-    alg(new IndentAlgNormal())
+    alg(new IndentAlgNormal()),
+    useTabs_(false),
+    width_(4)
 {
 }
 
@@ -86,7 +92,11 @@ Indenter::~Indenter() {
 }
 
 QString Indenter::text() const {
-    return "    ";  // TODO
+    if (useTabs_){
+        return "\t";
+    } else {
+        return QString().fill(' ', 4);
+    }
 }
 
 bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {
@@ -95,13 +105,10 @@ bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {
 }
 
 bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
-    QString blockText = cursor.block().text();
-    QStringRef textBeforeCursor = blockText.leftRef(cursor.positionInBlock());
-
-    return textBeforeCursor.endsWith(text()) &&
+    return textBeforeCursor(cursor).endsWith(text()) &&
            ( ! cursor.hasSelection()) &&
            (cursor.atBlockEnd() ||
-            ( ! blockText[cursor.positionInBlock() + 1].isSpace()));
+            ( ! cursor.block().text()[cursor.positionInBlock() + 1].isSpace()));
 }
 
 #if 0
@@ -127,10 +134,28 @@ QString Indenter::indentForBlock(QTextBlock block, QChar typedKey) const {
     }
 }
 
+void Indenter::onShortcutIndent(QTextCursor cursor) const {
+    QString indent;
+    if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
+        QTextBlock block = cursor.block();
+        indent = alg->computeSmartIndent(block);
+        if (indent.isNull()) {
+            indent = text();
+        }
+    } else {  // have some indent, insert more
+        if (useTabs_){
+            indent = "\t";
+        } else {
+            int charsToInsert = width_ - (textBeforeCursor(cursor).length() % width_);
+            indent.fill(' ', charsToInsert);
+        }
+    }
+
+    cursor.insertText(indent);
+}
+
 void Indenter::onShortcutUnindentWithBackspace(QTextCursor& cursor) const {
-    QString blockText = cursor.block().text();
-    QStringRef textBeforeCursor = blockText.leftRef(cursor.positionInBlock());
-    int charsToRemove = textBeforeCursor.length() % text().length();
+    int charsToRemove = textBeforeCursor(cursor).length() % text().length();
 
     if (charsToRemove == 0) {
         charsToRemove = text().length();

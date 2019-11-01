@@ -15,7 +15,6 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 # Populate a CMake variable with the sources
 set(qutepart_SRCS
     qutepart-syntax-files.qrc
-    editor.cpp
     src/qutepart.cpp
     src/hl_factory.cpp
     src/hl/context.cpp
@@ -44,7 +43,7 @@ add_library(qutepart ${qutepart_SRCS})
 target_link_libraries(qutepart Qt5::Core Qt5::Widgets)
 
 # Build example executable
-add_executable(editor editor.cpp)
+add_executable(editor editor.cpp include/qutepart.h)
 target_link_libraries(editor Qt5::Core Qt5::Widgets qutepart)
 
 # Install only library, not binaries
