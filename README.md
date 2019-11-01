@@ -41,7 +41,7 @@ Andrei Kopats
 [Kate](http://kate-editor.org/) and Katepart (an editor component) is really cool software. The Kate authors and community have created, probably, the biggest set of highlighters and indenters for programming languages.
 
 * Qutepart uses Kate syntax highlighters (XML files)
-* Qutepart contains a port from Javascript to Python of Kate indenters (12% of the code base in version 1.0.0)
+* Qutepart contains a port from Javascript to C++ of Kate indenters
 * Qutepart doesn't contain Katepart code.
 
 Nothing is wrong with Katepart. Qutepart has been created to enable reusing highlighters and indenters in projects where a KDE dependency is not acceptable.
