@@ -24,6 +24,25 @@ public:
 
     void initHighlighter(const QString& filePath);
 
+    // Editor apperance configuration
+    bool drawIndentations() const;
+    void setDrawIndentations(bool);
+
+    bool drawAnyWhitespace() const;
+    void setDrawAnyWhitespace(bool);
+
+    bool drawIncorrectIndentation() const;
+    void setDrawIncorrectIndentation(bool);
+
+    bool drawSolidEdge() const;
+    void setDrawSolidEdge(bool);
+
+    int lineLengthEdge() const;
+    void setLineLengthEdge(int);
+
+    QColor lineLengthEdgeColor() const;
+    void setLineLengthEdgeColor(QColor);
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event);
@@ -33,6 +52,7 @@ private:
     QAction* createAction(const QString& text, QKeySequence shortcut,
                           const QString& iconFileName=QString::null);
 
+    // whitespace and edge drawing
     void drawIndentMarkersAndEdge(const QRect& rect);
     void drawIndentMarker(QPainter* painter, QTextBlock block, int column);
     void drawEdgeLine(QPainter* painter, QTextBlock block, int edgePos);

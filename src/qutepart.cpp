@@ -31,6 +31,54 @@ void Qutepart::initHighlighter(const QString& filePath) {
     highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), QString::null, QString::null, filePath, QString::null));
 }
 
+bool Qutepart::drawIndentations() const {
+    return drawIndentations_;
+}
+
+void Qutepart::setDrawIndentations(bool draw) {
+    drawIndentations_ = draw;
+}
+
+bool Qutepart::drawAnyWhitespace() const {
+    return drawAnyWhitespace_;
+}
+
+void Qutepart::setDrawAnyWhitespace(bool draw) {
+    drawAnyWhitespace_ = draw;
+}
+
+bool Qutepart::drawIncorrectIndentation() const {
+    return drawIncorrectIndentation_;
+}
+
+void Qutepart::setDrawIncorrectIndentation(bool draw) {
+    drawIncorrectIndentation_ = draw;
+}
+
+bool Qutepart::drawSolidEdge() const {
+    return drawSolidEdge_;
+}
+
+void Qutepart::setDrawSolidEdge(bool draw) {
+    drawSolidEdge_ = true;
+}
+
+int Qutepart::lineLengthEdge() const {
+    return lineLengthEdge_;
+}
+
+void Qutepart::setLineLengthEdge(int edge) {
+    lineLengthEdge_ = edge;
+}
+
+QColor Qutepart::lineLengthEdgeColor() const {
+    return lineLengthEdgeColor_;
+}
+
+void Qutepart::setLineLengthEdgeColor(QColor color) {
+    lineLengthEdgeColor_ = color;
+}
+
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
     if (event->key() == Qt::Key_Backspace &&
