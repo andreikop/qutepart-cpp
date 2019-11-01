@@ -42,7 +42,8 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
     drawSolidEdge_(true),
     lineLengthEdge_(80),
     lineLengthEdgeColor_(Qt::red),
-    _solidEdgeLine(new EdgeLine(this))
+    solidEdgeLine_(new EdgeLine(this)),
+    totalMarginWidth_(0)
 {
     initActions();
     setAttribute(Qt::WA_KeyCompression, false);  // vim can't process compressed keys
@@ -84,7 +85,7 @@ bool Qutepart::drawSolidEdge() const {
 
 void Qutepart::setDrawSolidEdge(bool draw) {
     drawSolidEdge_ = true;
-    _solidEdgeLine->setVisible(draw);
+    solidEdgeLine_->setVisible(draw);
     if (draw) {
         setSolidEdgeGeometry();
     }
@@ -358,10 +359,45 @@ void Qutepart::setSolidEdgeGeometry() {
             /* self._totalMarginWidth + */
             /* self.contentsMargins().left() + */
             cursorRect(firstVisibleBlock(), 0, 0).left();
-        _solidEdgeLine->setGeometry(QRect(x, cr.top(), 1, cr.bottom()));
+        solidEdgeLine_->setGeometry(QRect(x, cr.top(), 1, cr.bottom()));
     }
 }
 
+void Qutepart::updateViewport() {
+    // Recalculates geometry for all the margins and the editor viewport
+    QRect cr = contentsRect();
+    int currentX = cr.left();
+    int top = cr.top();
+    int height = cr.height();
+
+    int totalMarginWidth = 0;
+#if 0
+    for margin in self._margins:
+        if not margin.isHidden():
+            width = margin.width()
+            margin.setGeometry(QRect(currentX, top, width, height))
+            currentX += width
+            totalMarginWidth += width
+#endif
+
+    if (totalMarginWidth_ != totalMarginWidth) {
+        totalMarginWidth_ = totalMarginWidth;
+        updateViewportMargins();
+    } else {
+        setSolidEdgeGeometry();
+    }
+}
+
+void Qutepart::updateViewportMargins() {
+    // Sets the viewport margins and the solid edge geometry
+    setViewportMargins(totalMarginWidth_, 0, 0, 0);
+    setSolidEdgeGeometry();
+}
+
+void Qutepart::resizeEvent(QResizeEvent* event) {
+    QPlainTextEdit::resizeEvent(event);
+    updateViewport();
+}
 
 void Qutepart::drawIndentMarker(QPainter* painter, QTextBlock block, int column) {
     painter->setPen(QColor(Qt::blue).lighter());

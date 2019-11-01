@@ -60,6 +60,9 @@ private:
     int effectiveEdgePos(const QString& text);
     QVector<bool> chooseVisibleWhitespace(const QString& text);
     void setSolidEdgeGeometry();
+    void updateViewport();
+    void updateViewportMargins();
+    void resizeEvent(QResizeEvent* event) override;
 
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 
@@ -72,7 +75,8 @@ private:
     bool drawSolidEdge_;
     int lineLengthEdge_;
     QColor lineLengthEdgeColor_;
-    QWidget* _solidEdgeLine;
+    QWidget* solidEdgeLine_;
+    int totalMarginWidth_;
 };
 
 }; // namespace Qutepart
