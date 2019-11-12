@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 # Find the QtWidgets library
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(Qt5Test CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
 set(qutepart_SRCS
@@ -36,17 +37,25 @@ set(qutepart_SRCS
 
 include_directories(include)
 include_directories(src)
+include_directories(test)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Tell CMake to create the qutepart library
-add_library(qutepart ${qutepart_SRCS})
+add_library(qutepart ${qutepart_SRCS} include/qutepart.h)
 
 # Use the Widgets module from Qt 5
 target_link_libraries(qutepart Qt5::Core Qt5::Widgets)
 
 # Build example executable
-add_executable(editor editor.cpp include/qutepart.h)
+add_executable(editor editor.cpp)
 target_link_libraries(editor Qt5::Core Qt5::Widgets qutepart)
 
 # Install only library, not binaries
 install(TARGETS qutepart DESTINATION lib)
 install(FILES include/hl_factory.h include/qutepart.h DESTINATION include/qutepart)
+
+# Tests
+enable_testing()
+add_executable(test-qpart test/indenter.cpp)
+target_link_libraries(test-qpart Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+add_test(NAME test-qpart COMMAND test-qpart)
