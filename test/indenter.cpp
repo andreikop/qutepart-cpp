@@ -32,24 +32,44 @@ protected:
 };
 
 
+typedef std::pair<int,int> CursorPos;
+
 class Test: public BaseTest
 {
     Q_OBJECT
 private slots:
 
-    void test_normal2() {
-        QString origin(
-            "    bla bla\n");
+    void test_data() {
+        QTest::addColumn<QString>("origin");
+        QTest::addColumn<CursorPos>("cursorPos");
+        QTest::addColumn<QString>("input");
+        QTest::addColumn<QString>("expected");
 
-        QString expected(
-            "    bla bla\n"
-            "ok");
+        QTest::newRow("normal 2")
+            << "    bla bla"
+            << std::make_pair(0, 11)
+            << "\nok"
+            << "    bla bla\n"
+               "    ok";
+    }
+
+    void test() {
+        QFETCH(QString, origin);
+        QFETCH(CursorPos, cursorPos);
+        QFETCH(QString, input);
+        QFETCH(QString, expected);
 
         qpart.setPlainText(origin);
 
-        setCursorPosition(0,11);
-        enter();
-        type("ok");
+        setCursorPosition(cursorPos.first, cursorPos.second);
+
+        for (auto ch = input.begin(); ch != input.end(); ++ch) {
+            if (*ch == '\n') {
+                enter();
+            } else {
+                type(*ch);
+            }
+        }
         verifyExpected(expected);
     }
 };
