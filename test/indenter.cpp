@@ -4,13 +4,14 @@
 #include "qutepart.h"
 
 
+typedef std::pair<int,int> CursorPos;
+
+
 class BaseTest: public QObject {
+    Q_OBJECT
+
 protected:
     Qutepart::Qutepart qpart;
-
-    void init() {  // called by the framework
-        qpart.setPlainText("");
-    }
 
     void setCursorPosition(int line, int col) {
         QTextCursor cursor(qpart.document()->findBlockByNumber(line));
@@ -33,22 +34,56 @@ protected:
     void verifyExpected(const QString& expected) {
         QCOMPARE(qpart.toPlainText(), expected);
     }
+
+    void runDataDrivenTest() {
+        QFETCH(QString, origin);
+        QFETCH(CursorPos, cursorPos);
+        QFETCH(QString, input);
+        QFETCH(QString, expected);
+
+        qpart.setPlainText(origin);
+
+        setCursorPosition(cursorPos.first, cursorPos.second);
+
+        for (auto ch = input.begin(); ch != input.end(); ++ch) {
+            if (*ch == '\n') {
+                enter();
+            } else if (*ch == '\t') {
+                tab();
+            } else {
+                type(*ch);
+            }
+        }
+        verifyExpected(expected);
+    }
+
+private slots:
+    void initTestCase() {
+         Q_INIT_RESOURCE(qutepart_syntax_files);
+    }
+
+    virtual void init() {
+        qpart.setPlainText("");
+    }
+
 };
 
-
-typedef std::pair<int,int> CursorPos;
 
 class Test: public BaseTest
 {
     Q_OBJECT
-private slots:
 
-    void test_data() {
+private:
+    void addColumns() {
         QTest::addColumn<QString>("origin");
         QTest::addColumn<CursorPos>("cursorPos");
         QTest::addColumn<QString>("input");
         QTest::addColumn<QString>("expected");
+    }
+private slots:
 
+    void normal_data() {
+        addColumns();
         QTest::newRow("normal 2")
             << "    bla bla"
             << std::make_pair(0, 11)
@@ -136,26 +171,23 @@ private slots:
                 "ok\n";
     }
 
-    void test() {
-        QFETCH(QString, origin);
-        QFETCH(CursorPos, cursorPos);
-        QFETCH(QString, input);
-        QFETCH(QString, expected);
+    void normal() {
+        runDataDrivenTest();
+    }
 
-        qpart.setPlainText(origin);
+    void lua_data() {
+        addColumns();
+        QTest::newRow("lua")
+            << "    bla bla\n"
+            << std::make_pair(0, 11)
+            << "\nok"
+            << "    bla bla\n"
+               "    ok\n";
+    }
 
-        setCursorPosition(cursorPos.first, cursorPos.second);
-
-        for (auto ch = input.begin(); ch != input.end(); ++ch) {
-            if (*ch == '\n') {
-                enter();
-            } else if (*ch == '\t') {
-                tab();
-            } else {
-                type(*ch);
-            }
-        }
-        verifyExpected(expected);
+    void lua() {
+        qpart.initHighlighter("file.lua");
+        runDataDrivenTest();
     }
 };
 
