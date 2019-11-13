@@ -19,6 +19,12 @@ QString blockIndent(QTextBlock block) {
     return lineIndent(block.text());
 }
 
+void setBlockIndent(QTextCursor* cursor, const QString& indent) {
+    int currentIndentLength = blockIndent(cursor->block()).size();
+    setPositionInBlock(cursor, currentIndentLength, QTextCursor::KeepAnchor);
+    cursor->insertText(indent);
+}
+
 QString prevBlockIndent(QTextBlock block) {
     QTextBlock prevBlock = block.previous();
 
@@ -49,6 +55,10 @@ QString prevNonEmptyBlockIndent(const QTextBlock& block) {
 QString textBeforeCursor(QTextCursor cursor) {
     QString blockText = cursor.block().text();
     return blockText.left(cursor.positionInBlock());
+}
+
+void setPositionInBlock(QTextCursor* cursor, int positionInBlock, QTextCursor::MoveMode anchor) {
+    return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);
 }
 
 }  // namespace

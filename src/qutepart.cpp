@@ -152,13 +152,13 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
         QPlainTextEdit::keyPressEvent(event);
         QString indent = indenter_.indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
-            cursor.insertText(indent);
+            setBlockIndent(&cursor, indent);
         }
     } else if (cursor.atEnd() && indenter_.shouldAutoIndentOnEvent(event)) {
         QPlainTextEdit::keyPressEvent(event);
         QString indent = indenter_.indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
-            cursor.insertText(indent);
+            setBlockIndent(&cursor, indent);
         }
     } else {
         // make action shortcuts override keyboard events (non-default Qt behaviour)
@@ -202,18 +202,6 @@ QAction* Qutepart::createAction(
     return action;
 }
 
-
-namespace {
-
-void setPositionInBlock(
-    QTextCursor* cursor,
-    int positionInBlock,
-    QTextCursor::MoveMode anchor=QTextCursor::MoveAnchor) {
-    return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);
-}
-
-
-}  // namespace
 
 void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
     QPainter painter(viewport());

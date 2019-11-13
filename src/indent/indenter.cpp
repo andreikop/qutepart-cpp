@@ -95,7 +95,7 @@ void Indenter::autoIndentBlock(QTextBlock block, QChar typedKey) const {
 
 QString Indenter::indentForBlock(QTextBlock block, QChar typedKey) const {
     QString prevBlockText = block.previous().text();  // invalid block returns empty text
-    if (typedKey == '\n' &&
+    if (typedKey == '\r' &&
         prevBlockText.trimmed().isEmpty()) {  // continue indentation, if no text
         return prevBlockIndent(block);
     } else {  // be smart
