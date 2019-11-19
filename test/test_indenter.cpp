@@ -1,72 +1,6 @@
 #include <QtTest/QtTest>
-#include <QTextCursor>
 
-#include "qutepart.h"
-
-
-typedef std::pair<int,int> CursorPos;
-
-
-class BaseTest: public QObject {
-    Q_OBJECT
-
-protected:
-    Qutepart::Qutepart qpart;
-
-    void setCursorPosition(int line, int col) {
-        QTextCursor cursor(qpart.document()->findBlockByNumber(line));
-        cursor.setPosition(cursor.block().position() + col);
-        qpart.setTextCursor(cursor);
-    }
-
-    void enter() {
-        QTest::keyClick(&qpart, Qt::Key_Enter);
-    }
-
-    void tab() {
-        QTest::keyClick(&qpart, Qt::Key_Tab);
-    }
-
-    void type(const QString& text) {
-        QTest::keyClicks(&qpart, text);
-    }
-
-    void verifyExpected(const QString& expected) {
-        QCOMPARE(qpart.toPlainText(), expected);
-    }
-
-    void runDataDrivenTest() {
-        QFETCH(QString, origin);
-        QFETCH(CursorPos, cursorPos);
-        QFETCH(QString, input);
-        QFETCH(QString, expected);
-
-        qpart.setPlainText(origin);
-
-        setCursorPosition(cursorPos.first, cursorPos.second);
-
-        for (auto ch = input.begin(); ch != input.end(); ++ch) {
-            if (*ch == '\n') {
-                enter();
-            } else if (*ch == '\t') {
-                tab();
-            } else {
-                type(*ch);
-            }
-        }
-        verifyExpected(expected);
-    }
-
-private slots:
-    void initTestCase() {
-         Q_INIT_RESOURCE(qutepart_syntax_files);
-    }
-
-    virtual void init() {
-        qpart.setPlainText("");
-    }
-
-};
+#include "base_test.h"
 
 
 class Test: public BaseTest
@@ -407,4 +341,4 @@ private slots:
 
 
 QTEST_MAIN(Test)
-#include "indenter.moc"
+#include "test_indenter.moc"
