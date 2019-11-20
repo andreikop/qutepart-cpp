@@ -4,6 +4,13 @@
 #include <QTextCursor>
 
 
+void BaseTest::addColumns() {
+    QTest::addColumn<QString>("origin");
+    QTest::addColumn<CursorPos>("cursorPos");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expected");
+}
+
 void BaseTest::setCursorPosition(int line, int col) {
     QTextCursor cursor(qpart.document()->findBlockByNumber(line));
     cursor.setPosition(cursor.block().position() + col);

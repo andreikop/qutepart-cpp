@@ -7,13 +7,6 @@ class Test: public BaseTest
 {
     Q_OBJECT
 
-private:
-    void addColumns() {
-        QTest::addColumn<QString>("origin");
-        QTest::addColumn<CursorPos>("cursorPos");
-        QTest::addColumn<QString>("input");
-        QTest::addColumn<QString>("expected");
-    }
 private slots:
 
     void normal_data() {

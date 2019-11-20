@@ -13,6 +13,8 @@ class BaseTest: public QObject {
 protected:
     Qutepart::Qutepart qpart;
 
+    void addColumns();
+
     void setCursorPosition(int line, int col);
     void enter();
     void tab();

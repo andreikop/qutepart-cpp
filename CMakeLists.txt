@@ -56,6 +56,11 @@ install(FILES include/hl_factory.h include/qutepart.h DESTINATION include/qutepa
 
 # Tests
 enable_testing()
-add_executable(test-qpart test/base_test.cpp test/test_indenter.cpp)
-target_link_libraries(test-qpart Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+
+add_executable(test-indenter test/base_test.cpp test/test_indenter.cpp)
+target_link_libraries(test-indenter Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+
+add_executable(test-indenter-ruby test/base_test.cpp test/test_indenter_ruby.cpp)
+target_link_libraries(test-indenter-ruby Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+
 add_test(NAME test-qpart COMMAND test-qpart)
