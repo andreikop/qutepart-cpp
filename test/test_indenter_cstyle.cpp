@@ -10,7 +10,7 @@ class Test: public BaseTest
 private slots:
 
     void Top() {
-        qpart.initHighlighter("file.TODO");
+        qpart.setHighlighter("isocpp.xml");
         runDataDrivenTest();
     }
 

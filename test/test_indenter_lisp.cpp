@@ -40,7 +40,7 @@ private slots:
     }
 
     void lisp() {
-        qpart.initHighlighter("file.lisp");
+        qpart.setHighlighter("lisp.xml");
         runDataDrivenTest();
     }
 };

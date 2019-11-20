@@ -1,6 +1,6 @@
-#include "hl/language_db.h"
 #include "hl/loader.h"
 #include "hl/syntax_highlighter.h"
+#include "qutepart.h"
 
 #include "hl_factory.h"
 
@@ -14,24 +14,21 @@ QSharedPointer<Language> chooseAndLoadLanguage(
     const QString& languageName,
     const QString& sourceFilePath,
     const QString& firstLine) {
-    QString xmlFileName = chooseLanguage(mimeType, languageName, sourceFilePath, firstLine);
+    LangInfo langInfo = chooseLanguage(mimeType, languageName, sourceFilePath, firstLine);
 
-    if (xmlFileName.isNull()) {
+    if ( ! langInfo.isValid()) {
         return QSharedPointer<Language>(nullptr);
     }
 
-    return loadLanguage(xmlFileName);
+    return loadLanguage(langInfo.id);
 }
 
 }
 
 QSyntaxHighlighter* makeHighlighter(
     QObject* parent,
-    const QString& mimeType,
-    const QString& languageName,
-    const QString& sourceFilePath,
-    const QString& firstLine) {
-    QSharedPointer<Language> language = chooseAndLoadLanguage(mimeType, languageName, sourceFilePath, firstLine);
+    const QString& languageId) {
+    QSharedPointer<Language> language = loadLanguage(languageId);
     if ( ! language.isNull()) {
         return new SyntaxHighlighter(parent, language);
     }
@@ -41,11 +38,8 @@ QSyntaxHighlighter* makeHighlighter(
 
 QSyntaxHighlighter* makeHighlighter(
     QTextDocument* parent,
-    const QString& mimeType,
-    const QString& languageName,
-    const QString& sourceFilePath,
-    const QString& firstLine) {
-    QSharedPointer<Language> language = chooseAndLoadLanguage(mimeType, languageName, sourceFilePath, firstLine);
+    const QString& languageId) {
+    QSharedPointer<Language> language = loadLanguage(languageId);
     if ( ! language.isNull()) {
         return new SyntaxHighlighter(parent, language);
     }

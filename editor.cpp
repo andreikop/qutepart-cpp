@@ -28,7 +28,11 @@ int runEditor(int argc, char** argv) {
         QString filePath = argv[1];
         QFile file(filePath);
         if (file.exists()) {
-            qutepart.initHighlighter(filePath);
+            Qutepart::LangInfo langInfo = Qutepart::chooseLanguage(
+                QString::null, QString::null, filePath);
+            if (langInfo.isValid()) {
+                qutepart.setHighlighter(langInfo.id);
+            }
 
             file.open(QIODevice::ReadOnly);
             QByteArray data = file.readAll();

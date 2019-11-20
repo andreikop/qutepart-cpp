@@ -9,7 +9,7 @@ class Test: public BaseTest
 
 private slots:
     void If() {
-        qpart.initHighlighter("file.TODO");
+        qpart.setHighlighter("ruby.xml");
         runDataDrivenTest();
     }
 

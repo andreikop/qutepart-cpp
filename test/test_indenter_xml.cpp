@@ -10,7 +10,7 @@ class Test: public BaseTest
 private slots:
 
     void Split() {
-        qpart.initHighlighter("file.TODO");
+        qpart.setHighlighter("xml.xml");
         runDataDrivenTest();
     }
 

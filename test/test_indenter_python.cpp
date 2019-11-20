@@ -182,7 +182,7 @@ private slots:
     }
 
     void python() {
-        qpart.initHighlighter("file.py");
+        qpart.setHighlighter("python.xml");
         runDataDrivenTest();
     }
 };

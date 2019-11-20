@@ -10,6 +10,36 @@
 
 namespace Qutepart {
 
+
+struct LangInfo {
+    QString id;  // Internal unique language ID
+    QStringList names;   // user readable language names
+    QString indenter;   // indenter algorithm name for the language. Might be null.
+
+    LangInfo() = default;
+
+    inline LangInfo(const QString& id, const QStringList& names, const QString& indenter):
+        id(id),
+        names(names),
+        indenter(indenter)
+    {};
+
+    inline bool isValid() const {
+        return ! id.isEmpty();
+    }
+};
+
+/* Choose language by available parameters
+ * First parameters have higher priority
+ * Returns QString::null if failed
+ */
+LangInfo chooseLanguage(
+    const QString& mimeType=QString::null,
+    const QString& languageName=QString::null,
+    const QString& sourceFilePath=QString::null,
+    const QString& firstLine=QString::null);
+
+
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
 
@@ -24,7 +54,8 @@ public:
 
     void setFont(const QFont&); // NOTE this method is not virtual in QWidget
 
-    void initHighlighter(const QString& filePath);
+    // Set highlighter. Use chooseLanguage() to get the id
+    void setHighlighter(const QString& languageId);
 
     // Editor configuration
     bool indentUseTabs() const;

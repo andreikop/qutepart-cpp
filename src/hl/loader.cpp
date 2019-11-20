@@ -3,9 +3,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 
+#include "qutepart.h"
 #include "rules.h"
 #include "style.h"
-#include "language_db.h"
 
 #include "loader.h"
 
@@ -814,13 +814,13 @@ ContextPtr loadExternalContext(const QString& externalCtxName) {
         contextName = parts[0];
     }
 
-    QString xmlFileName = chooseLanguage(QString::null, langName);
-    if (xmlFileName.isEmpty()) {
+    LangInfo langInfo = chooseLanguage(QString::null, langName);
+    if ( ! langInfo.isValid()) {
         qWarning() << "Unknown language" << langName;
         return ContextPtr();
     }
 
-    QSharedPointer<Language> language = loadLanguage(xmlFileName);
+    QSharedPointer<Language> language = loadLanguage(langInfo.id);
     if (language.isNull()) {
         qWarning() << "Failed to load context" << externalCtxName;
         return ContextPtr();

@@ -14,10 +14,7 @@ namespace Qutepart {
  */
 QSyntaxHighlighter* makeHighlighter(
     QObject* parent,
-    const QString& mimeType = QString::null,
-    const QString& languageName = QString::null,
-    const QString& sourceFilePath = QString::null,
-    const QString& firstLine = QString::null);
+    const QString& languageId);
 
 
 /*
@@ -30,9 +27,6 @@ QSyntaxHighlighter* makeHighlighter(
  */
 QSyntaxHighlighter* makeHighlighter(
     QTextDocument* parent,
-    const QString& mimeType = QString::null,
-    const QString& languageName = QString::null,
-    const QString& sourceFilePath = QString::null,
-    const QString& firstLine = QString::null);
+    const QString& id);
 
 };

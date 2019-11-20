@@ -9,7 +9,7 @@ class Test: public BaseTest
 
 private slots:
     void test() {
-        qpart.initHighlighter("file.TODO");
+        qpart.setHighlighter("scheme.xml");
         runDataDrivenTest();
     }
 

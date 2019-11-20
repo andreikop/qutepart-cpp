@@ -12,7 +12,7 @@ GENERATE_PL_FILE_PATH = os.path.join(MY_PATH, 'generate-php.pl')
 
 
 Syntax = collections.namedtuple('Syntax',
-    ['name', 'extensions', 'firstLineGlobs', 'mimetype', 'priority', 'hidden'])
+    ['name', 'extensions', 'firstLineGlobs', 'mimetype', 'priority', 'hidden', 'indenter'])
 
 
 def parseSemicolonSeparatedList(line):
@@ -64,7 +64,8 @@ def loadLanguage(filePath):
         firstLineGlobs=parseSemicolonSeparatedList(root.attrib.get('firstLineGlobs', '')),
         mimetype=parseSemicolonSeparatedList(root.attrib.get('mimetype', '')),
         priority=int(root.attrib.get('priority', '0')),
-        hidden=parseBoolAttribute(root.attrib.get('hidden', 'false'))
+        hidden=parseBoolAttribute(root.attrib.get('hidden', 'false')),
+        indenter=root.attrib.get('indenter', None)
     )
 
 
@@ -85,10 +86,12 @@ def load_language_db(xmlFilesPath):
     mimeTypeToXmlFileName = {}
     extensionToXmlFileName = {}
     firstLineToXmlFileName = {}
+    xmlFileNameToIndenter = {}
 
     for xmlFileName in xmlFileNames:
         xmlFilePath = os.path.join(xmlFilesPath, xmlFileName)
         syntax = loadLanguage(xmlFilePath)
+
         if not syntax.name in languageNameToXmlFileName or \
            languageNameToXmlFileName[syntax.name][0] < syntax.priority:
             languageNameToXmlFileName[syntax.name] = (syntax.priority, xmlFileName)
@@ -111,6 +114,9 @@ def load_language_db(xmlFilesPath):
                    firstLineToXmlFileName[glob][0] < syntax.priority:
                     firstLineToXmlFileName[glob] = (syntax.priority, xmlFileName)
 
+        if syntax.indenter is not None:
+            xmlFileNameToIndenter[xmlFileName] = syntax.indenter
+
     # remove priority, leave only xml file names
     for dictionary in (languageNameToXmlFileName,
                        mimeTypeToXmlFileName,
@@ -130,6 +136,7 @@ def load_language_db(xmlFilesPath):
         'mimeTypeToXmlFileName' : mimeTypeToXmlFileName,
         'extensionToXmlFileName' : extensionToXmlFileName,
         'firstLineToXmlFileName' : firstLineToXmlFileName,
+        'xmlFileNameToIndenter' : xmlFileNameToIndenter,
     }
 
 
@@ -150,7 +157,7 @@ def write_syntax_db(out_file_path, syntax_db):
             print('\tQMap<QString,QString> {}; '.format(key), file=out_file)
             for valKey, valValue in valueMap.items():
                 print('\t{}["{}"] = "{}";'.format(key, valKey, valValue), file=out_file)
-            print('\t return {};'.format(key), file=out_file)
+            print('\treturn {};'.format(key), file=out_file)
             print('}}'.format(key), file=out_file)
             print('QMap<QString,QString> {} = create_{}();'.format(key, key), file=out_file)
         print ('}; // namespace Qutepart', file=out_file)

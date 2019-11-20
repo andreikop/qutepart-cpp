@@ -113,7 +113,7 @@ private slots:
     }
 
     void lua() {
-        qpart.initHighlighter("file.lua");
+        qpart.setHighlighter("lua.xml");
         runDataDrivenTest();
     }
 };
