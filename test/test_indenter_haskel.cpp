@@ -1,10 +1,19 @@
+#include <QtTest/QtTest>
 
-    void Test() {
+#include "base_test.h"
+
+
+class Test: public BaseTest
+{
+    Q_OBJECT
+
+private slots:
+    void test() {
         qpart.initHighlighter("file.TODO");
         runDataDrivenTest();
     }
 
-    void Test_data() {
+    void test_data() {
         addColumns();
 
         QTest::newRow("dontIndent1")
@@ -42,7 +51,7 @@
                 "\"\"]"
             <<  std::make_pair(0, 0)
             <<  "\n"
-                "(\\"-\\", numericBinop (-)),"
+                "(\"-\", numericBinop (-)),"
             <<  "primitives = [(\"+\", numericBinop (+)),\n"
                 "    (\"-\", numericBinop (-)),\n"
                 "\"\"]\n"
@@ -72,3 +81,8 @@
                 "\"\"]\n"
                 "";
     }
+};
+
+
+QTEST_MAIN(Test)
+#include "test_indenter_haskel.moc"

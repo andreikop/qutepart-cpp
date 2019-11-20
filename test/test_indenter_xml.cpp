@@ -1,12 +1,13 @@
+#include <QtTest/QtTest>
 
-    void BaseTestClass() {
-        qpart.initHighlighter("file.TODO");
-        runDataDrivenTest();
-    }
+#include "base_test.h"
 
-    void BaseTestClass_data() {
-        addColumns();
-    }
+
+class Test: public BaseTest
+{
+    Q_OBJECT
+
+private slots:
 
     void Split() {
         qpart.initHighlighter("file.TODO");
@@ -278,3 +279,8 @@
                 "'']\n"
                 "";
     }
+};
+
+
+QTEST_MAIN(Test)
+#include "test_indenter_xml.moc"

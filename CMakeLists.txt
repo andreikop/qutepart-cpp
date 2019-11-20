@@ -57,14 +57,17 @@ install(FILES include/hl_factory.h include/qutepart.h DESTINATION include/qutepa
 # Tests
 enable_testing()
 
-add_executable(test-indenter test/base_test.cpp test/test_indenter.cpp)
-target_link_libraries(test-indenter Qt5::Test Qt5::Core Qt5::Widgets qutepart)
-add_test(NAME test-indenter COMMAND test-indenter)
+function(indent_test name)
+    add_executable(test-indenter-${name} test/base_test.cpp test/test_indenter_${name}.cpp)
+    target_link_libraries(test-indenter-${name} Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+    add_test(NAME test-indenter-${name} COMMAND test-indenter-${name})
+endfunction()
 
-add_executable(test-indenter-ruby test/base_test.cpp test/test_indenter_ruby.cpp)
-target_link_libraries(test-indenter-ruby Qt5::Test Qt5::Core Qt5::Widgets qutepart)
-add_test(NAME test-indenter-ruby COMMAND test-indenter-ruby)
-
-add_executable(test-indenter-cstyle test/base_test.cpp test/test_indenter_cstyle.cpp)
-target_link_libraries(test-indenter-cstyle Qt5::Test Qt5::Core Qt5::Widgets qutepart)
-add_test(NAME test-indenter-cstyle COMMAND test-indenter-cstyle)
+indent_test(python)
+indent_test(ruby)
+indent_test(cstyle)
+indent_test(xml)
+indent_test(scheme)
+indent_test(lisp)
+indent_test(normal)
+indent_test(haskel)
