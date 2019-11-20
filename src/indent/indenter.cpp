@@ -2,6 +2,8 @@
 
 #include "text_block_utils.h"
 
+#include "alg_lisp.h"
+
 #include "indenter.h"
 
 

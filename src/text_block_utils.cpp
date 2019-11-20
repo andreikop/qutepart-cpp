@@ -52,10 +52,25 @@ QString prevNonEmptyBlockIndent(const QTextBlock& block) {
     return blockIndent(prevNonEmptyBlock(block));
 }
 
+QTextBlock nextNonEmptyBlock(QTextBlock block) {
+    if ( ! block.isValid()) {
+        return block;
+    }
+
+    block = block.next();
+
+    while (block.isValid() && block.text().trimmed().isEmpty()) {
+        block = block.next();
+    }
+
+    return block;
+}
+
 QString textBeforeCursor(QTextCursor cursor) {
     QString blockText = cursor.block().text();
     return blockText.left(cursor.positionInBlock());
 }
+
 
 void setPositionInBlock(QTextCursor* cursor, int positionInBlock, QTextCursor::MoveMode anchor) {
     return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);

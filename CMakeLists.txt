@@ -33,6 +33,7 @@ set(qutepart_SRCS
     src/hl/language_db_generated.cpp
     src/hl/language_db.cpp
     src/indent/indenter.cpp
+    src/indent/alg_lisp.cpp
     )
 
 include_directories(include)
@@ -63,11 +64,11 @@ function(indent_test name)
     add_test(NAME test-indenter-${name} COMMAND test-indenter-${name})
 endfunction()
 
+indent_test(normal)
 indent_test(python)
 indent_test(ruby)
 indent_test(cstyle)
 indent_test(xml)
 indent_test(scheme)
 indent_test(lisp)
-indent_test(normal)
 indent_test(haskel)
