@@ -7,24 +7,6 @@
 
 namespace Qutepart {
 
-namespace {
-
-QSharedPointer<Language> chooseAndLoadLanguage(
-    const QString& mimeType,
-    const QString& languageName,
-    const QString& sourceFilePath,
-    const QString& firstLine) {
-    LangInfo langInfo = chooseLanguage(mimeType, languageName, sourceFilePath, firstLine);
-
-    if ( ! langInfo.isValid()) {
-        return QSharedPointer<Language>(nullptr);
-    }
-
-    return loadLanguage(langInfo.id);
-}
-
-}
-
 QSyntaxHighlighter* makeHighlighter(
     QObject* parent,
     const QString& languageId) {

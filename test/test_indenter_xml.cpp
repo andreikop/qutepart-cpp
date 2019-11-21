@@ -10,7 +10,7 @@ class Test: public BaseTest
 private slots:
 
     void Split() {
-        qpart.setHighlighter("xml.xml");
+        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_XML);
         runDataDrivenTest();
     }
 

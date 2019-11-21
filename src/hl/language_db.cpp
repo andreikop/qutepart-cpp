@@ -2,6 +2,7 @@
 #include <QMap>
 #include <QRegExp>
 #include <QFileInfo>
+#include <QDebug>
 
 #include "qutepart.h"
 
@@ -67,6 +68,21 @@ QString chooseLanguageXmlFileName(
     return QString::null;
 }
 
+IndentAlg convertIndenter(const QString& stringVal) {
+    if (stringVal == "none") {
+        return INDENT_ALG_NONE;
+    } else if (stringVal == "normal") {
+        return INDENT_ALG_NORMAL;
+    } else if (stringVal == "lisp") {
+        return INDENT_ALG_LISP;
+    } else if  (stringVal.isNull()) {
+        return INDENT_ALG_NORMAL;  // default
+    } else {
+        qWarning() << "Wrong indent algorithm value in the DB" << stringVal;
+        return INDENT_ALG_NORMAL;  // default
+    }
+}
+
 /* Choose language XML file name by available parameters
  * First parameters have higher priority
  */
@@ -81,8 +97,8 @@ LangInfo chooseLanguage(const QString& mimeType,
         return LangInfo();
     } else {
         QList<QString> langNames = languageNameToXmlFileName.keys(xmlName);
-        QString indenter = xmlFileNameToIndenter[xmlName];
-        return LangInfo(xmlName, langNames, indenter);
+        IndentAlg indentAlg = convertIndenter(xmlFileNameToIndenter[xmlName]);
+        return LangInfo(xmlName, langNames, indentAlg);
     }
 };
 

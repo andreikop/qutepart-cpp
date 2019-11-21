@@ -4,6 +4,7 @@
 
 #include "qutepart.h"
 #include "hl_factory.h"
+#include "indent/indenter.h"
 
 #include "hl/loader.h"
 #include "hl/syntax_highlighter.h"
@@ -34,6 +35,7 @@ private:
 
 Qutepart::Qutepart(QWidget *parent, const QString& text):
     QPlainTextEdit(text, parent),
+    indenter_(std::make_unique<Indenter>()),
     drawIndentations_(true),
     drawAnyWhitespace_(false),
     drawIncorrectIndentation_(true),
@@ -48,6 +50,9 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
 
     setDrawSolidEdge(drawSolidEdge_);
     updateTabStopWidth();
+}
+
+Qutepart::~Qutepart() {
 }
 
 void Qutepart::setFont(const QFont& font) {
@@ -72,20 +77,24 @@ void Qutepart::setHighlighter(const QString& languageId) {
     highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), languageId));
 }
 
+void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
+    indenter_->setAlgorithm(indentAlg);
+}
+
 bool Qutepart::indentUseTabs() const {
-    return indenter_.useTabs();
+    return indenter_->useTabs();
 }
 
 void Qutepart::setIndentUseTabs(bool use) {
-    indenter_.setUseTabs(use);
+    indenter_->setUseTabs(use);
 }
 
 int Qutepart::indentWidth() const {
-    return indenter_.width();
+    return indenter_->width();
 }
 
 void Qutepart::setIndentWidth(int width) {
-    indenter_.setWidth(width);
+    indenter_->setWidth(width);
     updateTabStopWidth();
 }
 
@@ -144,17 +153,17 @@ void Qutepart::setLineLengthEdgeColor(QColor color) {
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
     if (event->key() == Qt::Key_Backspace &&
-        indenter_.shouldUnindentWithBackspace(cursor)) {
-        indenter_.onShortcutUnindentWithBackspace(cursor);
+        indenter_->shouldUnindentWithBackspace(cursor)) {
+        indenter_->onShortcutUnindentWithBackspace(cursor);
     } else if (event->matches(QKeySequence::InsertParagraphSeparator)) {
         QPlainTextEdit::keyPressEvent(event);
-        QString indent = indenter_.indentForBlock(cursor.block(), event->text()[0]);
+        QString indent = indenter_->indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
             setBlockIndent(&cursor, indent);
         }
-    } else if (cursor.atEnd() && indenter_.shouldAutoIndentOnEvent(event)) {
+    } else if (cursor.atEnd() && indenter_->shouldAutoIndentOnEvent(event)) {
         QPlainTextEdit::keyPressEvent(event);
-        QString indent = indenter_.indentForBlock(cursor.block(), event->text()[0]);
+        QString indent = indenter_->indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
             setBlockIndent(&cursor, indent);
         }
@@ -181,7 +190,7 @@ void Qutepart::initActions() {
     connect(
         createAction( "Increase indentation", QKeySequence(Qt::Key_Tab)),
         &QAction::triggered,
-        [=]{indenter_.onShortcutIndent(textCursor());}
+        [=]{indenter_->onShortcutIndent(textCursor());}
     );
 }
 
@@ -215,10 +224,10 @@ void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
             if (drawIndentations_ && (! drawAnyWhitespace_)) {
                 QString text = block.text();
                 QStringRef textRef(&text);
-                int column = indenter_.width();
-                while (textRef.startsWith(indenter_.text()) &&
-                       textRef.length() > indenter_.width() &&
-                       textRef.at(indenter_.width()).isSpace()) {
+                int column = indenter_->width();
+                while (textRef.startsWith(indenter_->text()) &&
+                       textRef.length() > indenter_->width() &&
+                       textRef.at(indenter_->width()).isSpace()) {
                     bool lineLengthMarkerHere = (column == lineLengthEdge_);
                     bool cursorHere = (block.blockNumber() == textCursor().blockNumber() &&
                          column == textCursor().columnNumber());
@@ -228,8 +237,8 @@ void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
                         drawIndentMarker(&painter, block, column);
                     }
 
-                    textRef = textRef.mid(indenter_.width());
-                    column += indenter_.width();
+                    textRef = textRef.mid(indenter_->width());
+                    column += indenter_->width();
                 }
             }
 
@@ -284,9 +293,9 @@ int Qutepart::effectiveEdgePos(const QString& text) {
         return -1;
     }
 
-    int tabExtraWidth = indenter_.width() - 1;
+    int tabExtraWidth = indenter_->width() - 1;
     int fullWidth = text.length() + (text.count('\t') * tabExtraWidth);
-    int indentWidth = indenter_.width();
+    int indentWidth = indenter_->width();
 
     if (fullWidth <= lineLengthEdge_) {
         return -1;
@@ -329,15 +338,15 @@ void Qutepart::chooseVisibleWhitespace(const QString& text, QVector<bool>* resul
         }
     } else if (drawIncorrectIndentation_) {
         // Only incorrect
-        if (indenter_.useTabs()) {
+        if (indenter_->useTabs()) {
             // Find big space groups
-            QString bigSpaceGroup = QString().fill(' ', indenter_.width());
+            QString bigSpaceGroup = QString().fill(' ', indenter_->width());
             for(int column = text.indexOf(bigSpaceGroup);
                 column != -1 && column < lastNonSpaceColumn;
                 column = text.indexOf(bigSpaceGroup, column))
             {
                 int index = -1;
-                for (index = column; index < column + indenter_.width(); index++) {
+                for (index = column; index < column + indenter_->width(); index++) {
                     result->replace(index, true);
                 }
                 for (; index < lastNonSpaceColumn && text[index] == ' '; index++) {
@@ -420,7 +429,7 @@ void Qutepart::resizeEvent(QResizeEvent* event) {
 
 void Qutepart::updateTabStopWidth() {
     // Update tabstop width after font or indentation changed
-    int width = fontMetrics().width(QString().fill(' ', indenter_.width()));
+    int width = fontMetrics().width(QString().fill(' ', indenter_->width()));
     setTabStopWidth(width);
 }
 

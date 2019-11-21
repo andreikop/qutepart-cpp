@@ -9,7 +9,7 @@ class Test: public BaseTest
 
 private slots:
     void If() {
-        qpart.setHighlighter("ruby.xml");
+        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_RUBY);
         runDataDrivenTest();
     }
 

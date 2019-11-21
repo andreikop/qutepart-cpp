@@ -1,13 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 #include <QTextBlock>
 #include <QKeyEvent>
 
+#include "qutepart.h"
+
+
 namespace Qutepart {
 
-class IndentAlg {
+class IndentAlgImpl {
 public:
     virtual const QString& triggerCharacters() const;
     virtual QString computeSmartIndent(QTextBlock block, QChar typedKey=QChar::Null) const = 0;
@@ -17,7 +22,8 @@ public:
 class Indenter: public QObject {
 public:
     Indenter();
-    virtual ~Indenter();
+
+    void setAlgorithm(IndentAlg alg);
 
     QString text() const;
 
@@ -39,7 +45,7 @@ public slots:
     void onShortcutUnindentWithBackspace(QTextCursor& cursor) const;
 
 private:
-    IndentAlg* alg;
+    std::unique_ptr<IndentAlgImpl> alg_;
     bool useTabs_;
     int width_;
 };

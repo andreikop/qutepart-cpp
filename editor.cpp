@@ -32,6 +32,7 @@ int runEditor(int argc, char** argv) {
                 QString::null, QString::null, filePath);
             if (langInfo.isValid()) {
                 qutepart.setHighlighter(langInfo.id);
+                qutepart.setIndentAlgorithm(langInfo.indentAlg);
             }
 
             file.open(QIODevice::ReadOnly);

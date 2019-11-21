@@ -11,7 +11,7 @@ namespace Qutepart {
 
 namespace {
 
-class IndentAlgNone: public IndentAlg {
+class IndentAlgNone: public IndentAlgImpl {
 public:
     QString computeSmartIndent(QTextBlock block, QChar typedKey) const override {
         return QString::null;
@@ -19,7 +19,7 @@ public:
 };
 
 
-class IndentAlgNormal: public IndentAlg {
+class IndentAlgNormal: public IndentAlgImpl {
 public:
     QString computeSmartIndent(QTextBlock block, QChar typedKey) const override {
         return prevNonEmptyBlockIndent(block);
@@ -30,20 +30,33 @@ const QString NULL_STRING = QString::null;
 }  // namespace
 
 
-const QString& IndentAlg::triggerCharacters() const {
+const QString& IndentAlgImpl::triggerCharacters() const {
     return NULL_STRING;
 }
 
 
 Indenter::Indenter():
-    alg(new IndentAlgNormal()),
+    alg_(std::make_unique<IndentAlgNormal>()),
     useTabs_(false),
     width_(4)
 {
 }
 
-Indenter::~Indenter() {
-    delete alg;
+void Indenter::setAlgorithm(IndentAlg alg) {
+    switch (alg) {
+        case INDENT_ALG_NONE:
+            alg_ = std::make_unique<IndentAlgNone>();
+        break;
+        case INDENT_ALG_NORMAL:
+            alg_ = std::make_unique<IndentAlgNormal>();
+        break;
+        case INDENT_ALG_LISP:
+            alg_ = std::make_unique<IndentAlgLisp>();
+        break;
+        default:
+            qWarning() << "Wrong indentation algorithm requested" << alg;
+        break;
+    }
 }
 
 QString Indenter::text() const {
@@ -72,7 +85,7 @@ void Indenter::setUseTabs(bool use) {
 
 bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {
     return ( ! event->text().isEmpty() &&
-            alg->triggerCharacters().contains(event->text()));
+            alg_->triggerCharacters().contains(event->text()));
 }
 
 bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
@@ -101,7 +114,7 @@ QString Indenter::indentForBlock(QTextBlock block, QChar typedKey) const {
         prevBlockText.trimmed().isEmpty()) {  // continue indentation, if no text
         return prevBlockIndent(block);
     } else {  // be smart
-        return alg->computeSmartIndent(block, typedKey);
+        return alg_->computeSmartIndent(block, typedKey);
     }
 }
 
@@ -109,7 +122,7 @@ void Indenter::onShortcutIndent(QTextCursor cursor) const {
     QString indent;
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
-        indent = alg->computeSmartIndent(block);
+        indent = alg_->computeSmartIndent(block);
         if (indent.isEmpty()) {
             indent = text();
         }

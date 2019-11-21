@@ -1,27 +1,34 @@
 #pragma once
 
+#include <memory>
+
 #include <QColor>
 #include <QPlainTextEdit>
 #include <QSharedPointer>
 #include <QSyntaxHighlighter>
 
-#include "indent/indenter.h"
-
 
 namespace Qutepart {
+
+
+enum IndentAlg {
+    INDENT_ALG_NONE = 0,
+    INDENT_ALG_NORMAL,
+    INDENT_ALG_LISP
+};
 
 
 struct LangInfo {
     QString id;  // Internal unique language ID
     QStringList names;   // user readable language names
-    QString indenter;   // indenter algorithm name for the language. Might be null.
+    IndentAlg indentAlg;   // indenter algorithm for the language
 
     LangInfo() = default;
 
-    inline LangInfo(const QString& id, const QStringList& names, const QString& indenter):
+    inline LangInfo(const QString& id, const QStringList& names, IndentAlg indentAlg):
         id(id),
         names(names),
-        indenter(indenter)
+        indentAlg(indentAlg)
     {};
 
     inline bool isValid() const {
@@ -39,6 +46,7 @@ LangInfo chooseLanguage(
     const QString& sourceFilePath=QString::null,
     const QString& firstLine=QString::null);
 
+class Indenter;
 
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
@@ -52,10 +60,15 @@ public:
     Qutepart(Qutepart&&) = delete;
     Qutepart& operator=(Qutepart&&) = delete;
 
+    virtual ~Qutepart();
+
     void setFont(const QFont&); // NOTE this method is not virtual in QWidget
 
     // Set highlighter. Use chooseLanguage() to get the id
     void setHighlighter(const QString& languageId);
+
+    // Set indenter algorithm. Use chooseLanguage() to choose algorithm
+    void setIndentAlgorithm(IndentAlg indentAlg);
 
     // Editor configuration
     bool indentUseTabs() const;
@@ -109,7 +122,7 @@ private:
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 
     QSharedPointer<QSyntaxHighlighter> highlighter_;
-    Indenter indenter_;
+    std::unique_ptr<Indenter> indenter_;
 
     bool drawIndentations_;
     bool drawAnyWhitespace_;

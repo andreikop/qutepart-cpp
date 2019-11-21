@@ -182,7 +182,7 @@ private slots:
     }
 
     void python() {
-        qpart.setHighlighter("python.xml");
+        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_PYTHON);
         runDataDrivenTest();
     }
 };

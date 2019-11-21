@@ -99,6 +99,7 @@ private slots:
     }
 
     void normal() {
+        qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_NORMAL);
         runDataDrivenTest();
     }
 
@@ -113,7 +114,8 @@ private slots:
     }
 
     void lua() {
-        qpart.setHighlighter("lua.xml");
+        // lua is not implemented. Check is not crashed at least
+        qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_NORMAL);
         runDataDrivenTest();
     }
 };

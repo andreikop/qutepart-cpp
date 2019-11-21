@@ -9,6 +9,7 @@ class Test: public BaseTest
 
 private slots:
     void test() {
+        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_HASKEL);
         qpart.setHighlighter("haskel.xml");
         runDataDrivenTest();
     }

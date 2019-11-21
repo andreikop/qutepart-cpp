@@ -10,7 +10,7 @@ class Test: public BaseTest
 private slots:
 
     void Top() {
-        qpart.setHighlighter("isocpp.xml");
+        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_CSTYLE);
         runDataDrivenTest();
     }
 

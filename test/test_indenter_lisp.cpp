@@ -40,7 +40,7 @@ private slots:
     }
 
     void lisp() {
-        qpart.setHighlighter("lisp.xml");
+        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_LISP);
         runDataDrivenTest();
     }
 };

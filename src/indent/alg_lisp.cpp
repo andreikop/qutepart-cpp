@@ -2,6 +2,7 @@
 
 #include "alg_lisp.h"
 
+
 namespace Qutepart {
 
 const QString& IndentAlgLisp::triggerCharacters() const {
