@@ -161,11 +161,14 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
         if ( ! indent.isNull()) {
             setBlockIndent(&cursor, indent);
         }
-    } else if (cursor.atEnd() && indenter_->shouldAutoIndentOnEvent(event)) {
+    } else if (cursor.positionInBlock() == (cursor.block().length() - 1) &&
+               indenter_->shouldAutoIndentOnEvent(event)) {
         QPlainTextEdit::keyPressEvent(event);
         QString indent = indenter_->indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
+            qDebug() << "~ upd indent" << indent << cursor.block().text();
             setBlockIndent(&cursor, indent);
+            qDebug() << "~ after upd indent" << indent << cursor.block().text();
         }
     } else {
         // make action shortcuts override keyboard events (non-default Qt behaviour)

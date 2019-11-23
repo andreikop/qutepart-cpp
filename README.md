@@ -12,6 +12,9 @@ See also [example application](editor.cpp).
 All features are configurable
 
 * Syntax highlighting for 196 languages
+* Smart indentation algorithms:
+    * Generic
+    * Lisp
 * Visible witespaces
 * Marker for too long lines
 

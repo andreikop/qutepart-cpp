@@ -15,7 +15,10 @@ namespace Qutepart {
 class IndentAlgImpl {
 public:
     virtual const QString& triggerCharacters() const;
-    virtual QString computeSmartIndent(QTextBlock block, QChar typedKey=QChar::Null) const = 0;
+    virtual QString computeSmartIndent(
+        QTextBlock block,
+        const QString& configuredIndent,
+        QChar typedKey=QChar::Null) const = 0;
 };
 
 

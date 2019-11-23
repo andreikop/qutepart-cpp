@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "text_block_utils.h"
 
 namespace Qutepart {
@@ -21,6 +23,7 @@ QString blockIndent(QTextBlock block) {
 
 void setBlockIndent(QTextCursor* cursor, const QString& indent) {
     int currentIndentLength = blockIndent(cursor->block()).size();
+    setPositionInBlock(cursor, 0, QTextCursor::MoveAnchor);
     setPositionInBlock(cursor, currentIndentLength, QTextCursor::KeepAnchor);
     cursor->insertText(indent);
 }
@@ -76,4 +79,87 @@ void setPositionInBlock(QTextCursor* cursor, int positionInBlock, QTextCursor::M
     return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);
 }
 
-}  // namespace
+BackwardCharIterator::BackwardCharIterator(const TextPosition& position):
+        position_(position)
+{
+    movePositionBack();
+}
+
+QChar BackwardCharIterator::step() {
+    if ( ! atEnd()) {
+        QChar retVal = position_.block.text()[position_.column];
+        movePositionBack();
+        return retVal;
+    } else {
+        return QChar::Null;
+    }
+}
+
+TextPosition BackwardCharIterator::currentPosition() const {
+    return position_;
+}
+
+bool BackwardCharIterator::atEnd() const {
+    return ! position_.isValid();
+}
+
+void BackwardCharIterator::movePositionBack() {
+    while (1) {
+        if (position_.column > 0) {
+            position_.column--;
+            break;
+        } else {
+            position_.block = position_.block.previous();
+            if ( ! position_.block.isValid()) {
+                break;
+            }
+
+            position_.column = position_.block.length();
+            /* move block backward, but the block might be empty
+               Go to next while loop iteration and move back
+               more blocks if necessary
+             */
+        }
+    }
+}
+
+TextPosition findBracketBackward(QChar bracket, const TextPosition& position) {
+    QChar opening = QChar::Null;
+    QChar closing = QChar::Null;
+
+    if (bracket == '(' || bracket == ')') {
+        opening = '(';
+        closing = ')';
+    } else if (bracket == '[' || bracket == ']') {
+        opening = '[';
+        closing = ']';
+    } else if (bracket == '{' || bracket == '}') {
+        opening = '{';
+        closing = '}';
+    } else {
+        qDebug() << "Invalid bracket" << bracket;
+        return TextPosition();
+    }
+
+    int depth = 1;
+
+    BackwardCharIterator it(position);
+    while ( ! it.atEnd()) {
+        QChar ch = it.step();
+        // TODO if not self._qpart.isComment(foundBlock.blockNumber(), foundColumn):
+        if (ch == opening) {
+            depth--;
+        }
+        else if (ch == closing) {
+            depth++;
+        }
+
+        if (depth == 0) {
+            return it.currentPosition();
+        }
+    }
+
+    return TextPosition();
+}
+
+}  // namespace Qutepart

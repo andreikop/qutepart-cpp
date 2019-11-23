@@ -13,7 +13,10 @@ namespace {
 
 class IndentAlgNone: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block, QChar typedKey) const override {
+    QString computeSmartIndent(
+            QTextBlock block,
+            const QString& configuredIndent,
+            QChar typedKey) const override {
         return QString::null;
     }
 };
@@ -21,7 +24,10 @@ public:
 
 class IndentAlgNormal: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block, QChar typedKey) const override {
+    QString computeSmartIndent(
+        QTextBlock block,
+            const QString& configuredIndent,
+        QChar typedKey) const override {
         return prevNonEmptyBlockIndent(block);
     }
 };
@@ -63,7 +69,7 @@ QString Indenter::text() const {
     if (useTabs_){
         return "\t";
     } else {
-        return QString().fill(' ', 4);
+        return QString().fill(' ', width_);
     }
 }
 
@@ -114,7 +120,7 @@ QString Indenter::indentForBlock(QTextBlock block, QChar typedKey) const {
         prevBlockText.trimmed().isEmpty()) {  // continue indentation, if no text
         return prevBlockIndent(block);
     } else {  // be smart
-        return alg_->computeSmartIndent(block, typedKey);
+        return alg_->computeSmartIndent(block, text(), typedKey);
     }
 }
 
@@ -122,7 +128,7 @@ void Indenter::onShortcutIndent(QTextCursor cursor) const {
     QString indent;
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
-        indent = alg_->computeSmartIndent(block);
+        indent = alg_->computeSmartIndent(block, text());
         if (indent.isEmpty()) {
             indent = text();
         }

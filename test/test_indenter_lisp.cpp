@@ -15,7 +15,7 @@ private slots:
                 "   asdf"
             << std::make_pair(0, 6)
             << ";;;"
-            <<  ";;;"
+            <<  ";;;\n"
                 "   asdf";
 
         QTest::newRow("two semicolons")
@@ -23,11 +23,12 @@ private slots:
                 "   asdf"
             <<  std::make_pair(0, 6)
             <<  ";;"
-            <<  "   ;;";
+            <<  "   ;;\n"
+                "   asdf";
 
         QTest::newRow("find brace")
             <<  "  (bla                   (x (y (z)))"
-            <<  std::make_pair(0, 6)
+            <<  std::make_pair(0, 36)
             <<  "\n"
             <<  "  (bla                   (x (y (z)))\n"
                 "    ";
@@ -40,7 +41,8 @@ private slots:
     }
 
     void lisp() {
-        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_LISP);
+        qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_LISP);
+        qpart.setIndentWidth(2);
         runDataDrivenTest();
     }
 };
