@@ -43,13 +43,21 @@ void BaseTest::runDataDrivenTest() {
 
     setCursorPosition(cursorPos.first, cursorPos.second);
 
-    for (auto ch = input.begin(); ch != input.end(); ++ch) {
-        if (*ch == '\n') {
-            enter();
-        } else if (*ch == '\t') {
-            tab();
-        } else {
-            type(*ch);
+    if (input.startsWith("<<alignLine(")) {
+        int blockIndex = input.mid(QString("<<alignLine(").length(), 1).toInt();
+        QTextBlock block = qpart.document()->findBlockByNumber(blockIndex);
+        QTextCursor cursor(block);
+        qpart.setTextCursor(cursor);
+        qpart.autoIndentCurrentLine();
+    } else {
+        for (auto ch = input.begin(); ch != input.end(); ++ch) {
+            if (*ch == '\n') {
+                enter();
+            } else if (*ch == '\t') {
+                tab();
+            } else {
+                type(*ch);
+            }
         }
     }
     verifyExpected(expected);

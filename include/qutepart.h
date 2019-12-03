@@ -71,6 +71,9 @@ public:
     // Set indenter algorithm. Use chooseLanguage() to choose algorithm
     void setIndentAlgorithm(IndentAlg indentAlg);
 
+    // Indent current line using current smart indentation algorithm
+    void autoIndentCurrentLine();
+
     // Editor configuration
     bool indentUseTabs() const;
     void setIndentUseTabs(bool);

@@ -81,6 +81,15 @@ void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
     indenter_->setAlgorithm(indentAlg);
 }
 
+void Qutepart::autoIndentCurrentLine() {
+    QTextCursor cursor = textCursor();
+
+    QString indent = indenter_->indentForBlock(cursor.block(), QChar::Null);
+    if ( ! indent.isNull()) {
+        setBlockIndent(&cursor, indent);
+    }
+}
+
 bool Qutepart::indentUseTabs() const {
     return indenter_->useTabs();
 }
@@ -166,9 +175,7 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
         QPlainTextEdit::keyPressEvent(event);
         QString indent = indenter_->indentForBlock(cursor.block(), event->text()[0]);
         if ( ! indent.isNull()) {
-            qDebug() << "~ upd indent" << indent << cursor.block().text();
             setBlockIndent(&cursor, indent);
-            qDebug() << "~ after upd indent" << indent << cursor.block().text();
         }
     } else {
         // make action shortcuts override keyboard events (non-default Qt behaviour)
