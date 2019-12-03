@@ -19,7 +19,6 @@ bool matches(const QString& pattern, const QString& text) {
 }
 }
 
-
 QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& configuredIndent, QChar typedKey) const {
     QString lineText = block.text();
 
@@ -28,16 +27,15 @@ QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& config
     bool alignOnly = (typedKey == QChar::Null);
 
     if (alignOnly) {
-#if 0
         QRegularExpression splitter(">\\s*<");
-        QString lineToSplit = lineText.left(lineText.length());
 
-        auto match = splitter.match(lineToSplit);
+        auto match = splitter.match(lineText);
 
         if (match.capturedLength() > 0) {
+            typedKey = '\n';
             while (match.capturedLength() > 0) {
-                QString newLine = lineToSplit.left(match.capturedStart() + 1);  // +1 for >
-                lineToSplit = lineToSplit.mid(match.capturedEnd() - 1);  // -1 for <
+                QString newLine = lineText.left(match.capturedStart() + 1);  // +1 for >
+                lineText = lineText.mid(match.capturedEnd() - 1);  // -1 for <
 
                 QChar ch = '\n';
                 if (matches("^\\s*</", newLine)) {
@@ -57,10 +55,9 @@ QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& config
                 setBlockIndent(&cursor, indent);
 
                 prevLineText = cursor.block().text();
-                match = splitter.match(lineToSplit);
+                match = splitter.match(lineText);
             }
         } else {  // no tokens, do not split line, just compute indent
-#endif
             QChar ch = '\n';
             if (matches("^\\s*</", lineText)) {
                 ch = '/';
@@ -68,9 +65,7 @@ QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& config
                 ch = '>';
             }
             return processChar(lineText, prevLineText, ch, configuredIndent);
-#if 0
         }
-#endif
     }
 
     return processChar(lineText, prevLineText, typedKey, configuredIndent);

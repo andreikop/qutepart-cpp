@@ -17,7 +17,7 @@ private slots:
     }
 
     void Split() {
-        // runDataDrivenTest();
+        runDataDrivenTest();
     }
 
     void Split_data() {
