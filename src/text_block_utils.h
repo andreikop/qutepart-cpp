@@ -31,6 +31,9 @@ QString blockIndent(QTextBlock block);
 void setBlockIndent(QTextCursor* cursor, const QString& indent);
 QString prevBlockIndent(QTextBlock block);
 
+QString increaseIndent(const QString& line, const QString& indent);
+QString decreaseIndent(const QString& line, const QString& indent);
+
 QTextBlock prevNonEmptyBlock(QTextBlock block);
 QString prevNonEmptyBlockIndent(const QTextBlock& block);
 

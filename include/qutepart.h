@@ -14,7 +14,8 @@ namespace Qutepart {
 enum IndentAlg {
     INDENT_ALG_NONE = 0,
     INDENT_ALG_NORMAL,
-    INDENT_ALG_LISP
+    INDENT_ALG_LISP,
+    INDENT_ALG_XML
 };
 
 

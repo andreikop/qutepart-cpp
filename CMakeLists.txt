@@ -34,6 +34,7 @@ set(qutepart_SRCS
     src/hl/language_db.cpp
     src/indent/indenter.cpp
     src/indent/alg_lisp.cpp
+    src/indent/alg_xml.cpp
     )
 
 include_directories(include)

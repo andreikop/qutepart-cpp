@@ -38,6 +38,18 @@ QString prevBlockIndent(QTextBlock block) {
     return blockIndent(prevBlock);
 }
 
+QString increaseIndent(const QString& line, const QString& indent) {
+    return indent + line;
+}
+
+QString decreaseIndent(const QString& line, const QString& indent) {
+    if (line.endsWith(indent)) {
+        return line.mid(indent.length());
+    } else {  // oops, strange indentation, just return previous indent
+        return line;
+    }
+}
+
 QTextBlock prevNonEmptyBlock(QTextBlock block) {
     if ( ! block.isValid()) {
         return QTextBlock();
