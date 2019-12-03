@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QRegularExpression>
 
 #include "text_block_utils.h"
@@ -14,7 +15,7 @@ const QString& IndentAlgXml::triggerCharacters() const {
 
 namespace {
 bool matches(const QString& pattern, const QString& text) {
-    return QRegularExpression(pattern).match(text).isValid();
+    return QRegularExpression(pattern).match(text).capturedLength() > 0;
 }
 }
 
@@ -22,25 +23,26 @@ bool matches(const QString& pattern, const QString& text) {
 QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& configuredIndent, QChar typedKey) const {
     QString lineText = block.text();
 
-    bool alignOnly = (typedKey == QChar::Null);
-
     QString prevLineText = prevNonEmptyBlock(block).text();
 
+    bool alignOnly = (typedKey == QChar::Null);
+
     if (alignOnly) {
+#if 0
         QRegularExpression splitter(">\\s*<");
-        QStringRef lineToSplit = lineText.leftRef(lineText.length());
+        QString lineToSplit = lineText.left(lineText.length());
 
         auto match = splitter.match(lineToSplit);
 
-        if (match.isValid()) {
-            while (match.isValid()) {
-                QStringRef newLine = lineToSplit.left(match.capturedStart() + 1);  // +1 for >
-                lineToSplit = lineToSplit.right(match.capturedEnd() - 1);
+        if (match.capturedLength() > 0) {
+            while (match.capturedLength() > 0) {
+                QString newLine = lineToSplit.left(match.capturedStart() + 1);  // +1 for >
+                lineToSplit = lineToSplit.mid(match.capturedEnd() - 1);  // -1 for <
 
                 QChar ch = '\n';
-                if (matches("^\\s*</", newLine.toString())) {
+                if (matches("^\\s*</", newLine)) {
                     ch = '/';
-                } else if (matches("\\>[^<>]*$", newLine.toString())) {
+                } else if (matches("\\>[^<>]*$", newLine)) {
                     ch = '>';
                 }
 
@@ -50,14 +52,15 @@ QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& config
                 cursor.insertBlock();
 
                 // Indent line
-                QString indent = processChar(newLine.toString(), prevLineText, ch, configuredIndent);
+                QString indent = processChar(newLine, prevLineText, ch, configuredIndent);
                 cursor = QTextCursor(block);
                 setBlockIndent(&cursor, indent);
 
-                prevLineText = newLine.toString();
+                prevLineText = cursor.block().text();
                 match = splitter.match(lineToSplit);
             }
         } else {  // no tokens, do not split line, just compute indent
+#endif
             QChar ch = '\n';
             if (matches("^\\s*</", lineText)) {
                 ch = '/';
@@ -65,10 +68,12 @@ QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& config
                 ch = '>';
             }
             return processChar(lineText, prevLineText, ch, configuredIndent);
+#if 0
         }
-    } else {
-        return processChar(lineText, prevLineText, typedKey, configuredIndent);
+#endif
     }
+
+    return processChar(lineText, prevLineText, typedKey, configuredIndent);
 }
 
 QString IndentAlgXml::processChar(
@@ -77,6 +82,7 @@ QString IndentAlgXml::processChar(
         QChar ch,
         const QString& configuredIndent) const {
     QString prevIndent = lineIndent(prevLineText);
+
     if (ch == '/') {
         if ( ! matches("^\\s*</", lineText)) {
             /* might happen when we have something like <foo bar="asdf/ycxv">
@@ -97,7 +103,7 @@ QString IndentAlgXml::processChar(
             return "";
         }
 
-        if (matches("^<(\?xml|!DOCTYPE).*", prevLineText)) {
+        if (matches("^<(\\?xml|!DOCTYPE).*", prevLineText)) {
             return "";
         } else if (matches("^<(\?xml|!DOCTYPE).*", lineText)) {
             return "";
@@ -116,8 +122,8 @@ QString IndentAlgXml::processChar(
         }
 
         return increaseIndent(prevIndent, configuredIndent);
-    } else if (ch == '\n') {
-        if (matches("^<(\?xml|!DOCTYPE)", prevLineText)) {
+    } else if (ch == '\n' || ch == '\r') {
+        if (matches("^<(\\?xml|!DOCTYPE)", prevLineText)) {
             return "";
         } else if (matches("<([^/!]|[^/!][^>]*[^/])>[^<>]*$", prevLineText)) {
             // increase indent when prev line opened a tag (but not for comments)

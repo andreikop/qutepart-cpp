@@ -43,6 +43,7 @@ void BaseTest::runDataDrivenTest() {
 
     setCursorPosition(cursorPos.first, cursorPos.second);
 
+#if 1  // xml splitting not supported now
     if (input.startsWith("<<alignLine(")) {
         int blockIndex = input.mid(QString("<<alignLine(").length(), 1).toInt();
         QTextBlock block = qpart.document()->findBlockByNumber(blockIndex);
@@ -50,6 +51,7 @@ void BaseTest::runDataDrivenTest() {
         qpart.setTextCursor(cursor);
         qpart.autoIndentCurrentLine();
     } else {
+#endif
         for (auto ch = input.begin(); ch != input.end(); ++ch) {
             if (*ch == '\n') {
                 enter();
@@ -59,7 +61,9 @@ void BaseTest::runDataDrivenTest() {
                 type(*ch);
             }
         }
+#if 1
     }
+#endif
     verifyExpected(expected);
 }
 

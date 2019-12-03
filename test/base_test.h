@@ -22,9 +22,7 @@ protected:
     void verifyExpected(const QString& expected);
     void runDataDrivenTest();
 
+    virtual void init();
 private slots:
     void initTestCase();
-
-    virtual void init();
-
 };
