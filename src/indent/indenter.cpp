@@ -105,47 +105,46 @@ bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
             ( ! cursor.block().text()[cursor.positionInBlock() + 1].isSpace()));
 }
 
-#if 0
-void Indenter::autoIndentBlock(QTextBlock block, QChar typedKey) const {
-    // TODO
-    const QString& currentText = block.text();
-    int spaceAtStartLen = firstNonSpaceColumn(currentText);
-    QString indent = indentForBlock(block, typedKey);
-    if (( ! indent.isNull()) &&
-        indent != lineIndent(block.text())) {
-            // TODO apply indent
-    }
-}
-#endif
-
-QString Indenter::indentForBlock(QTextBlock block, QChar typedKey) const {
+void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
     QString prevBlockText = block.previous().text();  // invalid block returns empty text
+    QString indent;
     if (typedKey == '\r' &&
         prevBlockText.trimmed().isEmpty()) {  // continue indentation, if no text
-        return prevBlockIndent(block);
+        indent = prevBlockIndent(block);
+
+        if ( ! indent.isNull()) {
+            QTextCursor cursor(block);
+            cursor.insertText(indent);
+        }
     } else {  // be smart
-        return alg_->computeSmartIndent(block, text(), typedKey);
+        QString indentedLine = alg_->computeSmartIndent(block, text(), typedKey) + stripLeftWhitespace(block.text());
+        if ( (! indentedLine.isNull()) &&
+             indentedLine != block.text()) {
+            QTextCursor cursor(block);
+            cursor.select(QTextCursor::LineUnderCursor);
+            cursor.insertText(indentedLine);
+        }
     }
 }
 
 void Indenter::onShortcutIndent(QTextCursor cursor) const {
-    QString indent;
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
-        indent = alg_->computeSmartIndent(block, text());
-        if (indent.isEmpty()) {
-            indent = text();
+        QString indentedLine = alg_->computeSmartIndent(block, text());
+        if (indentedLine.isEmpty()) {
+            indentedLine = text();
         }
+        cursor.insertText(indentedLine);
     } else {  // have some indent, insert more
+        QString indent;
         if (useTabs_){
             indent = "\t";
         } else {
             int charsToInsert = width_ - (textBeforeCursor(cursor).length() % width_);
             indent.fill(' ', charsToInsert);
         }
+        cursor.insertText(indent);
     }
-
-    cursor.insertText(indent);
 }
 
 void Indenter::onShortcutUnindentWithBackspace(QTextCursor& cursor) const {

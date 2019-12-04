@@ -26,6 +26,8 @@ public:
 
 int firstNonSpaceColumn(const QString& line);
 
+QString stripLeftWhitespace(const QString& line);
+
 QString lineIndent(const QString& line);
 QString blockIndent(QTextBlock block);
 void setBlockIndent(QTextCursor* cursor, const QString& indent);
