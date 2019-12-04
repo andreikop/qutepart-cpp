@@ -25,8 +25,10 @@ public:
 };
 
 int firstNonSpaceColumn(const QString& line);
+int lastNonSpaceColumn(const QString& line);
 
 QString stripLeftWhitespace(const QString& line);
+QString stripRightWhitespace(const QString& line);
 
 QString lineIndent(const QString& line);
 QString blockIndent(QTextBlock block);

@@ -3,6 +3,7 @@
 #include "text_block_utils.h"
 
 #include "alg_lisp.h"
+#include "alg_scheme.h"
 #include "alg_xml.h"
 
 #include "indenter.h"
@@ -77,6 +78,9 @@ void Indenter::setAlgorithm(IndentAlg alg) {
         break;
         case INDENT_ALG_XML:
             alg_ = std::make_unique<IndentAlgXml>();
+        break;
+        case INDENT_ALG_SCHEME:
+            alg_ = std::make_unique<IndentAlgScheme>();
         break;
         default:
             qWarning() << "Wrong indentation algorithm requested" << alg;

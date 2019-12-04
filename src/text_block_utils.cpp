@@ -13,8 +13,21 @@ int firstNonSpaceColumn(const QString& line) {
     return line.size();
 }
 
+int lastNonSpaceColumn(const QString& line) {
+    for(int i = line.size() - 1; i >= 0; i--) {
+        if ( ! line[i].isSpace()) {
+            return i;
+        }
+    }
+    return 0;
+}
+
 QString stripLeftWhitespace(const QString& line) {
     return line.mid(firstNonSpaceColumn(line));
+}
+
+QString stripRightWhitespace(const QString& line) {
+    return line.left(lastNonSpaceColumn(line));
 }
 
 QString lineIndent(const QString& line) {

@@ -15,6 +15,7 @@ All features are configurable
 * Smart indentation algorithms:
     * Generic
     * Lisp
+    * XML
 * Visible witespaces
 * Marker for too long lines
 

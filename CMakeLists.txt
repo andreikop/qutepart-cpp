@@ -35,6 +35,7 @@ set(qutepart_SRCS
     src/indent/indenter.cpp
     src/indent/alg_lisp.cpp
     src/indent/alg_xml.cpp
+    src/indent/alg_scheme.cpp
     )
 
 include_directories(include)

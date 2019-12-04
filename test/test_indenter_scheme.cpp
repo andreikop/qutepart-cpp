@@ -9,7 +9,7 @@ class Test: public BaseTest
 
 private slots:
     void test() {
-        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_SCHEME);
+        qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_SCHEME);
         runDataDrivenTest();
     }
 
