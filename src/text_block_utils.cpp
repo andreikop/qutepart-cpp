@@ -110,14 +110,12 @@ void setPositionInBlock(QTextCursor* cursor, int positionInBlock, QTextCursor::M
 
 BackwardCharIterator::BackwardCharIterator(const TextPosition& position):
         position_(position)
-{
-    movePositionBack();
-}
+{}
 
 QChar BackwardCharIterator::step() {
     if ( ! atEnd()) {
-        QChar retVal = position_.block.text()[position_.column];
         movePositionBack();
+        QChar retVal = position_.block.text()[position_.column];
         return retVal;
     } else {
         return QChar::Null;
@@ -129,7 +127,8 @@ TextPosition BackwardCharIterator::currentPosition() const {
 }
 
 bool BackwardCharIterator::atEnd() const {
-    return ! position_.isValid();
+    return position_.column == 0 &&
+           ( ! position_.block.isValid());
 }
 
 void BackwardCharIterator::movePositionBack() {

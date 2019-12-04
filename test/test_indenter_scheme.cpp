@@ -18,79 +18,79 @@ private slots:
 
         QTest::newRow("1")
             <<  "(myfunc a"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "b"
+            <<  std::make_pair(0, 9)
+            <<  "\nb"
             <<  "(myfunc a\n"
                 "        b";
 
         QTest::newRow("2")
             <<  "(myfunc (if (a) a b)"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "b"
+            <<  std::make_pair(0, 20)
+            <<  "\nb"
             <<  "(myfunc (if (a) a b)\n"
                 "        b";
 
         QTest::newRow("3")
             <<  "(myfunc a)"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "b"
+            <<  std::make_pair(0, 10)
+            <<  "\nb"
             <<  "(myfunc a)\n"
                 "b";
 
         QTest::newRow("4")
             <<  "  (myfunc a)"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "b"
+            <<  std::make_pair(0, 12)
+            <<  "\nb"
             <<  "  (myfunc a)\n"
                 "  b";
 
         QTest::newRow("5")
             <<  "    (define"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "b"
+            <<  std::make_pair(0, 11)
+            <<  "\nb"
             <<  "    (define\n"
                 "     b";
 
         QTest::newRow("6")
             <<  "a\n"
                 "b"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "x"
+            <<  std::make_pair(1, 1)
+            <<  "\nx"
             <<  "a\n"
                 "b\n"
                 "x";
 
         QTest::newRow("7")
             <<  "   a\n"
-                "'']"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "x"
+                ""
+            <<  std::make_pair(1, 0)
+            <<  "\n\tx"
             <<  "   a\n"
                 "\n"
                 "   x";
 
         QTest::newRow("8")
             <<  "(define myfunc"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "x"
+            <<  std::make_pair(0, 14)
+            <<  "\nx"
             <<  "(define myfunc\n"
                 "  x";
 
         QTest::newRow("9")
             <<  "(let ((pi 3.14) (r 120))"
-            <<  std::make_pair(0, 0)
-            <<  "\n"
-                "x"
+            <<  std::make_pair(0, 24)
+            <<  "\nx"
             <<  "(let ((pi 3.14) (r 120))\n"
                 "  x";
+    }
+
+    void autoindent() {
+        qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_SCHEME);
+        runDataDrivenTest();
+    }
+
+    void autoindent_data() {
+        addColumns();
 
         QTest::newRow("1")
             <<  "(define (fac n)\n"
@@ -98,7 +98,7 @@ private slots:
                 "1\n"
                 "(* n (fac (- n 1)))))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(define (fac n)\n"
                 "  (if (zero? n)\n"
                 "      1\n"
@@ -109,7 +109,7 @@ private slots:
                 "(answer 42))\n"
                 "(frobnicate fnord answer))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(let ((fnord 5)\n"
                 "      (answer 42))\n"
                 "  (frobnicate fnord answer))";
@@ -119,7 +119,7 @@ private slots:
                 "(bar)\n"
                 "(baz))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(list (foo)\n"
                 "      (bar)\n"
                 "      (baz))";
@@ -130,7 +130,7 @@ private slots:
                 "(bar)\n"
                 "(baz))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(list\n"
                 " (foo)\n"
                 " (bar)\n"
@@ -141,7 +141,7 @@ private slots:
                 "(r 120))\n"
                 "(* pi r r))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(let ((pi 3.14)\n"
                 "      (r 120))\n"
                 "  (* pi r r))";
@@ -153,7 +153,7 @@ private slots:
                 "((ugly? x) (handle-ugly x))\n"
                 "(else      (handle-default x)))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(cond\n"
                 " ((good? x) (handle-good x))\n"
                 " ((bad? x)  (handle-bad x))\n"
@@ -173,7 +173,7 @@ private slots:
                 "(else\n"
                 "(handle-default x)))"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(cond\n"
                 " ((good? x)\n"
                 "  (handle-good x))\n"
@@ -199,7 +199,7 @@ private slots:
                 "\n"
                 ")"
             <<  std::make_pair(0, 0)
-            <<  "<<align all>>"
+            <<  "<<alignLine(*)>>"
             <<  "(module gauss mzscheme\n"
                 "\n"
                 "(define (sum-up-to n)\n"
@@ -212,6 +212,7 @@ private slots:
                 "\n"
                 ")";
     }
+
 };
 
 

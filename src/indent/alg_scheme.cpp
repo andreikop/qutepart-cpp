@@ -1,21 +1,33 @@
+/*
+This indenter works according to
+    http://community.schemewiki.org/?scheme-style
+
+TODO support (module
+ */
+
+#include <QDebug>
+
 #include "text_block_utils.h"
 
 #include "alg_scheme.h"
 
+
+
+
 namespace Qutepart {
 
-
 namespace {
+
 /* Move backward to the start of the word at the end of a string.
  * Return the word
  */
 QString lastWord(const QString& text) {
-    for(int i = 0; i < text.length(); i++) {
+    for(int i = text.length() - 1; i >= 0; i--) {
         QChar ch = text[i];
         if (ch.isSpace() ||
             ch == '(' ||
             ch == ')') {
-            return text.mid(text.length() - i);
+            return text.mid(i + 1);
         }
     }
 
@@ -40,6 +52,7 @@ TextPosition findExpressionStart(QTextBlock block) {
     TextPosition expEnd = findExpressionEnd(block);
 
     QString text = expEnd.block.text().left(expEnd.column + 1);
+
     if (text.endsWith(")")) {
         return findBracketBackward('(', expEnd);
     } else {
@@ -54,15 +67,15 @@ QString IndentAlgScheme::computeSmartIndent(
         QTextBlock block,
         const QString& configuredIndent,
         QChar typedKey) const {
-    TextPosition pos = findExpressionStart(block.previous());
+    TextPosition expStart = findExpressionStart(block.previous());
 
-    if (! pos.isValid()) {
+    if (! expStart.isValid()) {
         return "";
     }
 
-    QString blockText = pos.block.text();
-    QString expression = stripRightWhitespace(blockText.mid(pos.column));
-    QString beforeExpression = blockText.left(pos.column).trimmed();
+    QString blockText = expStart.block.text();
+    QString expression = stripRightWhitespace(blockText.mid(expStart.column));
+    QString beforeExpression = blockText.left(expStart.column).trimmed();
 
     if (beforeExpression.startsWith("(module")) {  // special case
         return "";
@@ -71,7 +84,7 @@ QString IndentAlgScheme::computeSmartIndent(
     } else if (beforeExpression.endsWith("let")) {  // special case
         return QString().fill(' ', beforeExpression.length() - QString("let").length() + 1);
     } else {
-        return QString().fill(' ', pos.column);
+        return QString().fill(' ', expStart.column);
     }
 }
 
