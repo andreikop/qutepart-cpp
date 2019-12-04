@@ -15,10 +15,25 @@ namespace Qutepart {
 class IndentAlgImpl {
 public:
     virtual const QString& triggerCharacters() const;
+
+    /* Compute line with proper indentation
+     * This method has default implementation which calls
+     * computeSmartIndent()
+     * but can be overriden to modify string
+     */
+    virtual QString computeIndentedLine(
+        QTextBlock block,
+        const QString& configuredIndent,
+        QChar typedKey=QChar::Null) const;
+
+    /* Compute indent for line.
+     * The majority of algorithms should override this method.
+     * Default implementation returns empty string
+     */
     virtual QString computeSmartIndent(
         QTextBlock block,
         const QString& configuredIndent,
-        QChar typedKey=QChar::Null) const = 0;
+        QChar typedKey=QChar::Null) const;
 };
 
 

@@ -48,7 +48,6 @@ QString increaseIndent(const QString& line, const QString& indent) {
 
 QString decreaseIndent(const QString& line, const QString& indent) {
     if (line.startsWith(indent)) {
-        qDebug() << "cut" << line << indent << line.mid(indent.length());
         return line.mid(indent.length());
     } else {  // oops, strange indentation, just return previous indent
         return line;

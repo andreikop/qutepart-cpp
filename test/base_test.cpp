@@ -43,15 +43,18 @@ void BaseTest::runDataDrivenTest() {
 
     setCursorPosition(cursorPos.first, cursorPos.second);
 
-#if 1  // xml splitting not supported now
     if (input.startsWith("<<alignLine(")) {
-        int blockIndex = input.mid(QString("<<alignLine(").length(), 1).toInt();
-        QTextBlock block = qpart.document()->findBlockByNumber(blockIndex);
-        QTextCursor cursor(block);
-        qpart.setTextCursor(cursor);
-        qpart.autoIndentCurrentLine();
+        QString blockIndexStr = input.mid(QString("<<alignLine(").length(), 1);
+        if (blockIndexStr == "*") {
+            int initialBlockCount = qpart.document()->blockCount();
+            for(int i = 0; i < initialBlockCount; i++) {
+                autoIndentBlock(qpart.document()->blockCount() - initialBlockCount + i);
+            }
+        } else {
+            int blockIndex = blockIndexStr.toInt();
+            autoIndentBlock(blockIndex);
+        }
     } else {
-#endif
         for (auto ch = input.begin(); ch != input.end(); ++ch) {
             if (*ch == '\n') {
                 enter();
@@ -61,9 +64,7 @@ void BaseTest::runDataDrivenTest() {
                 type(*ch);
             }
         }
-#if 1
     }
-#endif
     verifyExpected(expected);
 }
 
@@ -73,4 +74,11 @@ void BaseTest::initTestCase() {
 
 void BaseTest::init() {
     qpart.setPlainText("");
+}
+
+void BaseTest::autoIndentBlock(int blockIndex) {
+    QTextBlock block = qpart.document()->findBlockByNumber(blockIndex);
+    QTextCursor cursor(block);
+    qpart.setTextCursor(cursor);
+    qpart.autoIndentCurrentLine();
 }

@@ -33,11 +33,26 @@ public:
     }
 };
 
-const QString NULL_STRING = QString::null;
 }  // namespace
 
 
+QString IndentAlgImpl::computeIndentedLine(
+    QTextBlock block,
+    const QString& configuredIndent,
+    QChar typedKey) const {
+    return computeSmartIndent(block, configuredIndent, typedKey) + stripLeftWhitespace(block.text());
+}
+
+QString IndentAlgImpl::computeSmartIndent(
+        QTextBlock block,
+        const QString& configuredIndent,
+        QChar typedKey) const {
+    return "";
+}
+
+
 const QString& IndentAlgImpl::triggerCharacters() const {
+    static const QString NULL_STRING = QString::null;
     return NULL_STRING;
 }
 
@@ -117,7 +132,7 @@ void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
             cursor.insertText(indent);
         }
     } else {  // be smart
-        QString indentedLine = alg_->computeSmartIndent(block, text(), typedKey) + stripLeftWhitespace(block.text());
+        QString indentedLine = alg_->computeIndentedLine(block, text(), typedKey);
         if ( (! indentedLine.isNull()) &&
              indentedLine != block.text()) {
             QTextCursor cursor(block);

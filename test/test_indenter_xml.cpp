@@ -49,7 +49,7 @@ private slots:
                 "</rect>\n"
                 "</property>"
             <<  std::make_pair(0, 0)
-            <<  "<<alignLine(i)>>"
+            <<  "<<alignLine(*)>>"
             <<  "<property name=\"geometry\">\n"
                 "  <rect>\n"
                 "    <x>0</x>\n"
@@ -65,8 +65,7 @@ private slots:
             <<  "<<alignLine(0)>>"
             <<  "<a>\n"
                 "  <b>8</b>\n"
-                "'</a>']\n"
-                "";
+                "</a>";
     }
 
     void Align() {

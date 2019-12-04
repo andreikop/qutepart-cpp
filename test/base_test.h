@@ -25,4 +25,7 @@ protected:
     virtual void init();
 private slots:
     void initTestCase();
+
+private:
+    void autoIndentBlock(int blockIndex);
 };
