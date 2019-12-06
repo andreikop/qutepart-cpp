@@ -5,6 +5,7 @@
 #include "alg_lisp.h"
 #include "alg_scheme.h"
 #include "alg_xml.h"
+#include "alg_python.h"
 
 #include "indenter.h"
 
@@ -37,6 +38,11 @@ public:
 }  // namespace
 
 
+void IndentAlgImpl::setConfig(int width, bool useTabs) {
+    width_ = width;
+    useTabs_ = useTabs;
+}
+
 QString IndentAlgImpl::computeIndentedLine(
     QTextBlock block,
     const QString& configuredIndent,
@@ -57,12 +63,20 @@ const QString& IndentAlgImpl::triggerCharacters() const {
     return NULL_STRING;
 }
 
+QString IndentAlgImpl::indentText() const {
+    if (useTabs_) {
+        return QString("\t");
+    } else {
+        return QString().fill(' ', width_);
+    }
+}
 
 Indenter::Indenter():
     alg_(std::make_unique<IndentAlgNormal>()),
     useTabs_(false),
     width_(4)
 {
+    alg_->setConfig(width_, useTabs_);
 }
 
 void Indenter::setAlgorithm(IndentAlg alg) {
@@ -82,10 +96,14 @@ void Indenter::setAlgorithm(IndentAlg alg) {
         case INDENT_ALG_SCHEME:
             alg_ = std::make_unique<IndentAlgScheme>();
         break;
+        case INDENT_ALG_PYTHON:
+            alg_ = std::make_unique<IndentAlgPython>();
+        break;
         default:
             qWarning() << "Wrong indentation algorithm requested" << alg;
         break;
     }
+    alg_->setConfig(width_, useTabs_);
 }
 
 QString Indenter::text() const {
@@ -102,6 +120,7 @@ int Indenter::width() const {
 
 void Indenter::setWidth(int width) {
     width_ = width;
+    alg_->setConfig(width_, useTabs_);
 }
 
 bool Indenter::useTabs() const {
@@ -110,6 +129,7 @@ bool Indenter::useTabs() const {
 
 void Indenter::setUseTabs(bool use) {
     useTabs_ = use;
+    alg_->setConfig(width_, useTabs_);
 }
 
 bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {

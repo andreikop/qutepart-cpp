@@ -12,8 +12,6 @@ TODO support (module
 #include "alg_scheme.h"
 
 
-
-
 namespace Qutepart {
 
 namespace {

@@ -14,6 +14,8 @@ namespace Qutepart {
 
 class IndentAlgImpl {
 public:
+    void setConfig(int width, bool useTabs);
+
     virtual const QString& triggerCharacters() const;
 
     /* Compute line with proper indentation
@@ -34,6 +36,12 @@ public:
         QTextBlock block,
         const QString& configuredIndent,
         QChar typedKey=QChar::Null) const;
+
+protected:
+    int width_;
+    bool useTabs_;
+
+    QString indentText() const;
 };
 
 

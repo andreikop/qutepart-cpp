@@ -38,6 +38,20 @@ QString prevBlockIndent(QTextBlock block);
 QString increaseIndent(const QString& line, const QString& indent);
 QString decreaseIndent(const QString& line, const QString& indent);
 
+
+/* Make indent text with specified with.
+ * Contains width count of spaces, or tabs and spaces
+ */
+QString makeIndentFromWidth( int width, bool confWidth, bool confUseTabs);
+
+/* Make indent equal to column indent.
+Shiftted by offset
+*/
+QString makeIndentAsColumn(
+        QTextBlock block, int column,
+        int confIndentWidth, bool confUseTabs,
+        int offset=0);
+
 QTextBlock prevNonEmptyBlock(QTextBlock block);
 QString prevNonEmptyBlockIndent(const QTextBlock& block);
 
@@ -70,5 +84,16 @@ private:
    NOTE this function ignores comments
  */
 TextPosition findBracketBackward(QChar bracket, const TextPosition& position);
+
+/* Search for opening bracket. Ignores balanced bracket pairs
+
+    (a + (b + c)
+    ^
+    this bracket will be found
+
+NOTE this methods ignores strings and comments
+TODO currently it doesn't
+ */
+TextPosition findAnyOpeningBracketBackward(const TextPosition& pos);
 
 }  // namespace Qutepart

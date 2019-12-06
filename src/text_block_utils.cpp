@@ -1,3 +1,6 @@
+#include <utility>
+#include <map>
+
 #include <QDebug>
 
 #include "text_block_utils.h"
@@ -65,6 +68,31 @@ QString decreaseIndent(const QString& line, const QString& indent) {
     } else {  // oops, strange indentation, just return previous indent
         return line;
     }
+}
+
+/* Make indent text with specified with.
+ * Contains width count of spaces, or tabs and spaces
+ */
+QString makeIndentFromWidth(int width, bool confWidth, bool confUseTabs) {
+    if (confUseTabs) {
+        int tabCount = width / confWidth;
+        int spaceCount = width % confWidth;
+        return QString().fill('\t', tabCount) + QString().fill(' ', spaceCount);
+    } else {
+        return QString().fill(' ', width);
+    }
+}
+
+QString makeIndentAsColumn(
+        QTextBlock block, int column,
+        int confIndentWidth, bool confUseTabs,
+        int offset) {
+    QString blockText = block.text();
+    QString textBeforeColumn = blockText.left(column);
+    int tabCount = textBeforeColumn.count('\t');
+
+    int visibleColumn = column + (tabCount * (confIndentWidth - 1));
+    return makeIndentFromWidth(visibleColumn + offset, confIndentWidth, confUseTabs);
 }
 
 QTextBlock prevNonEmptyBlock(QTextBlock block) {
@@ -184,6 +212,37 @@ TextPosition findBracketBackward(QChar bracket, const TextPosition& position) {
 
         if (depth == 0) {
             return it.currentPosition();
+        }
+    }
+
+    return TextPosition();
+}
+
+TextPosition findAnyOpeningBracketBackward(const TextPosition& pos) {
+    std::map<std::pair<QChar, QChar>, int> depth;
+
+    depth[std::make_pair('(', ')')] = 1;
+    depth[std::make_pair('[', ']')] = 1;
+    depth[std::make_pair('{', '}')] = 1;
+
+    BackwardCharIterator it(pos);
+
+    while ( ! it.atEnd()) {
+        QChar ch = it.step();
+        // if self._qpart.isCode(foundBlock.blockNumber(), foundColumn):
+
+        for (auto mapIt = depth.begin(); mapIt != depth.end(); ++mapIt) {
+            QChar opening = mapIt->first.first;
+            QChar closing = mapIt->first.second;
+
+            if (ch == opening) {
+                mapIt->second--;
+                if (mapIt->second == 0) {
+                    return it.currentPosition();
+                }
+            } else if (ch == closing) {
+                mapIt->second++;
+            }
         }
     }
 
