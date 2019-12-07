@@ -1,5 +1,7 @@
 #include <QDebug>
 
+#include "indent_funcs.h"
+
 #include "alg_python.h"
 
 

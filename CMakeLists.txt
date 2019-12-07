@@ -33,6 +33,7 @@ set(qutepart_SRCS
     src/hl/language_db_generated.cpp
     src/hl/language_db.cpp
     src/indent/indenter.cpp
+    src/indent/indent_funcs.cpp
     src/indent/alg_lisp.cpp
     src/indent/alg_xml.cpp
     src/indent/alg_scheme.cpp

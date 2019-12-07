@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "text_block_utils.h"
+#include "indent_funcs.h"
 
 #include "alg_lisp.h"
 

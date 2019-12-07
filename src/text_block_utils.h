@@ -30,31 +30,7 @@ int lastNonSpaceColumn(const QString& line);
 QString stripLeftWhitespace(const QString& line);
 QString stripRightWhitespace(const QString& line);
 
-QString lineIndent(const QString& line);
-QString blockIndent(QTextBlock block);
-void setBlockIndent(QTextCursor* cursor, const QString& indent);
-QString prevBlockIndent(QTextBlock block);
-
-QString increaseIndent(const QString& line, const QString& indent);
-QString decreaseIndent(const QString& line, const QString& indent);
-
-
-/* Make indent text with specified with.
- * Contains width count of spaces, or tabs and spaces
- */
-QString makeIndentFromWidth( int width, bool confWidth, bool confUseTabs);
-
-/* Make indent equal to column indent.
-Shiftted by offset
-*/
-QString makeIndentAsColumn(
-        QTextBlock block, int column,
-        int confIndentWidth, bool confUseTabs,
-        int offset=0);
-
 QTextBlock prevNonEmptyBlock(QTextBlock block);
-QString prevNonEmptyBlockIndent(const QTextBlock& block);
-
 QTextBlock nextNonEmptyBlock(QTextBlock block);
 
 QString textBeforeCursor(QTextCursor cursor);
