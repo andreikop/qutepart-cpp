@@ -111,8 +111,7 @@ QString IndentAlgPython::computeSmartIndent(
 
 QString IndentAlgPython::computeSmartIndent(
         QTextBlock block,
-        const QString& configuredIndent,
-        QChar typedKey) const {
+        const QString& configuredIndent) const {
     QTextBlock nonEmpty = prevNonEmptyBlock(block);
     int column = nonEmpty.text().length();
     return computeSmartIndent(TextPosition(nonEmpty, column), configuredIndent);

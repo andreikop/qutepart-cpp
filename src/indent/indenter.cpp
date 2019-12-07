@@ -18,9 +18,7 @@ namespace {
 class IndentAlgNone: public IndentAlgImpl {
 public:
     QString computeSmartIndent(
-            QTextBlock block,
-            const QString& configuredIndent,
-            QChar typedKey) const override {
+            QTextBlock block, const QString& configuredIndent) const override {
         return QString::null;
     }
 };
@@ -29,9 +27,7 @@ public:
 class IndentAlgNormal: public IndentAlgImpl {
 public:
     QString computeSmartIndent(
-        QTextBlock block,
-            const QString& configuredIndent,
-        QChar typedKey) const override {
+        QTextBlock block, const QString& configuredIndent) const override {
         return prevNonEmptyBlockIndent(block);
     }
 };
@@ -48,13 +44,11 @@ QString IndentAlgImpl::computeIndentedLine(
     QTextBlock block,
     const QString& configuredIndent,
     QChar typedKey) const {
-    return computeSmartIndent(block, configuredIndent, typedKey) + stripLeftWhitespace(block.text());
+    return computeSmartIndent(block, configuredIndent) + stripLeftWhitespace(block.text());
 }
 
 QString IndentAlgImpl::computeSmartIndent(
-        QTextBlock block,
-        const QString& configuredIndent,
-        QChar typedKey) const {
+        QTextBlock block, const QString& configuredIndent) const {
     return "";
 }
 

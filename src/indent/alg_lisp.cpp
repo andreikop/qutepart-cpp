@@ -15,8 +15,7 @@ const QString& IndentAlgLisp::triggerCharacters() const {
 
 QString IndentAlgLisp::computeSmartIndent(
         QTextBlock block,
-        const QString& configuredIndent,
-        QChar typedKey) const
+        const QString& configuredIndent) const
 {
     /* special rules: ;;; -> indent 0
                       ;;  -> align with next line, if possible

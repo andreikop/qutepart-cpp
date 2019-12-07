@@ -12,7 +12,7 @@ namespace Qutepart {
 
 class IndentAlgPython: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block, const QString& configuredIndent, QChar typedKey=QChar::Null) const override;
+    QString computeSmartIndent(QTextBlock block, const QString& configuredIndent) const override;
 
 private:
     QString computeSmartIndent(

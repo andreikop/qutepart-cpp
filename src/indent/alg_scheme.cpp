@@ -63,8 +63,7 @@ TextPosition findExpressionStart(QTextBlock block) {
 
 QString IndentAlgScheme::computeSmartIndent(
         QTextBlock block,
-        const QString& configuredIndent,
-        QChar typedKey) const {
+        const QString& configuredIndent) const {
     TextPosition expStart = findExpressionStart(block.previous());
 
     if (! expStart.isValid()) {

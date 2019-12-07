@@ -34,8 +34,7 @@ public:
      */
     virtual QString computeSmartIndent(
         QTextBlock block,
-        const QString& configuredIndent,
-        QChar typedKey=QChar::Null) const;
+        const QString& configuredIndent) const;
 
 protected:
     int width_;

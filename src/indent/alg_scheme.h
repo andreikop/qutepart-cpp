@@ -10,7 +10,7 @@ namespace Qutepart {
 
 class IndentAlgScheme: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block, const QString& configuredIndent, QChar typedKey=QChar::Null) const override;
+    QString computeSmartIndent(QTextBlock block, const QString& configuredIndent) const override;
 };
 
 };  // namespace Qutepart
