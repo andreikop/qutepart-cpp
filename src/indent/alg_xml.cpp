@@ -38,38 +38,44 @@ bool isGoingToCloseTag(const QString& line) {
 
 }
 
-QString IndentAlgXml::computeIndentedLine(QTextBlock block, const QString& configuredIndent, QChar typedKey) const {
+QString IndentAlgXml::autoFormatLine(QTextBlock block, const QString& configuredIndent) const {
     QString lineText = block.text();
 
     QString prevLineText = prevNonEmptyBlock(block).text();
 
-    if (typedKey == QChar::Null) {  // align only
-        QRegularExpression splitter(">\\s*<");
+    QRegularExpression splitter(">\\s*<");
 
-        auto match = splitter.match(lineText);
+    auto match = splitter.match(lineText);
 
-        if (match.capturedLength() > 0) {  // if having tags to split
-            QStringList newLines;
-            while (match.capturedLength() > 0) {
-                QString newLine = lineText.left(match.capturedStart() + 1);  // +1 for >
-                lineText = lineText.mid(match.capturedEnd() - 1);  // -1 for <
+    if (match.capturedLength() > 0) {  // if having tags to split
+        QStringList newLines;
+        while (match.capturedLength() > 0) {
+            QString newLine = lineText.left(match.capturedStart() + 1);  // +1 for >
+            lineText = lineText.mid(match.capturedEnd() - 1);  // -1 for <
 
-                // Indent new line
-                QString indent = indentForLine(newLine, prevLineText, configuredIndent);
-                newLine  = indent + stripLeftWhitespace(newLine);
-                newLines << newLine;
+            // Indent new line
+            QString indent = indentForLine(newLine, prevLineText, configuredIndent);
+            newLine  = indent + stripLeftWhitespace(newLine);
+            newLines << newLine;
 
-                prevLineText = newLine;
-                match = splitter.match(lineText);
-            }
-
-            newLines << indentForLine(lineText, prevLineText, configuredIndent) + stripLeftWhitespace(lineText);
-
-            return newLines.join('\n');
+            prevLineText = newLine;
+            match = splitter.match(lineText);
         }
+
+        newLines << indentForLine(lineText, prevLineText, configuredIndent) + stripLeftWhitespace(lineText);
+
+        return newLines.join('\n');
     }
 
     return indentForLine(lineText, prevLineText, configuredIndent) + stripLeftWhitespace(lineText);
+}
+
+QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& configuredIndent) const {
+    QString lineText = block.text();
+    QString prevLineText = prevNonEmptyBlock(block).text();
+
+    return indentForLine(lineText, prevLineText, configuredIndent);
+
 }
 
 QString IndentAlgXml::indentForLine(

@@ -40,10 +40,7 @@ void IndentAlgImpl::setConfig(int width, bool useTabs) {
     useTabs_ = useTabs;
 }
 
-QString IndentAlgImpl::computeIndentedLine(
-    QTextBlock block,
-    const QString& configuredIndent,
-    QChar typedKey) const {
+QString IndentAlgImpl::autoFormatLine(QTextBlock block, const QString& configuredIndent) const {
     return computeSmartIndent(block, configuredIndent) + stripLeftWhitespace(block.text());
 }
 
@@ -151,7 +148,12 @@ void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
             cursor.insertText(indent);
         }
     } else {  // be smart
-        QString indentedLine = alg_->computeIndentedLine(block, text(), typedKey);
+        QString indentedLine;
+        if (typedKey == QChar::Null) {  // format line on shortcut
+            indentedLine = alg_->autoFormatLine(block, text());
+        } else {
+            indentedLine = alg_->computeSmartIndent(block, text()) + stripLeftWhitespace(block.text());
+        }
         if ( (! indentedLine.isNull()) &&
              indentedLine != block.text()) {
             QTextCursor cursor(block);

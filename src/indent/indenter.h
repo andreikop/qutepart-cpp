@@ -19,22 +19,22 @@ public:
     virtual const QString& triggerCharacters() const;
 
     /* Compute line with proper indentation
-     * This method has default implementation which calls
-     * computeSmartIndent()
-     * but can be overriden to modify string
+     * and other formatting.
+     * i.e. split line onto multiple lines.
+     *
+     * Default implementation indents the line with computeSmartIndent()
+
+     * Return value QString::null means 'do not modify the string'
      */
-    virtual QString computeIndentedLine(
-        QTextBlock block,
-        const QString& configuredIndent,
-        QChar typedKey=QChar::Null) const;
+    virtual QString autoFormatLine(
+        QTextBlock block, const QString& configuredIndent) const;
 
     /* Compute indent for line.
      * The majority of algorithms should override this method.
      * Default implementation returns empty string
      */
     virtual QString computeSmartIndent(
-        QTextBlock block,
-        const QString& configuredIndent) const;
+        QTextBlock block, const QString& configuredIndent) const;
 
 protected:
     int width_;
