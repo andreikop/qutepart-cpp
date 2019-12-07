@@ -1,3 +1,4 @@
+#include <QDebug>
 
 #include "alg_python.h"
 
@@ -69,9 +70,9 @@ QString IndentAlgPython::computeSmartIndent(
     */
     TextPosition foundPos = findAnyOpeningBracketBackward(pos);
         // indent this way only line, which contains 'y', not 'z'
-        if (foundPos.block.blockNumber() == pos.block.blockNumber()) {
-            return makeIndentAsColumn(foundPos.block, foundPos.column + 1, width_, useTabs_);
-        }
+    if (foundPos.block.blockNumber() == pos.block.blockNumber()) {
+        return makeIndentAsColumn(foundPos.block, foundPos.column + 1, width_, useTabs_);
+    }
 
     // finally, a raise, pass, and continue should unindent
     if (KEYWORDS.contains(lineStripped) ||
