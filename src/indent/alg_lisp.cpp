@@ -13,9 +13,7 @@ const QString& IndentAlgLisp::triggerCharacters() const {
     return ch;
 }
 
-QString IndentAlgLisp::computeSmartIndent(
-        QTextBlock block,
-        const QString& configuredIndent) const
+QString IndentAlgLisp::computeSmartIndent(QTextBlock block) const
 {
     /* special rules: ;;; -> indent 0
                       ;;  -> align with next line, if possible
@@ -39,7 +37,7 @@ QString IndentAlgLisp::computeSmartIndent(
         return QString::null;
     }
 
-    return blockIndent(pos.block) + configuredIndent;
+    return blockIndent(pos.block) + indentText();
 }
 
 };  // namespace Qutepart

@@ -42,10 +42,18 @@ QString decreaseIndent(const QString& line, const QString& indent) {
     }
 }
 
+QString makeIndent(int confWidth, bool confUseTabs) {
+    if (confUseTabs) {
+        return QString("\t");
+    } else {
+        return QString().fill(' ', confWidth);
+    }
+}
+
 /* Make indent text with specified with.
  * Contains width count of spaces, or tabs and spaces
  */
-QString makeIndentFromWidth(int width, bool confWidth, bool confUseTabs) {
+QString makeIndentFromWidth(int width, int confWidth, bool confUseTabs) {
     if (confUseTabs) {
         int tabCount = width / confWidth;
         int spaceCount = width % confWidth;

@@ -22,8 +22,7 @@ QChar last(const QString& str) {
 
 // Compute smart indent for case when cursor is on pos
 QString IndentAlgPython::computeSmartIndent(
-        const TextPosition& pos,
-        const QString& configuredIndent) const {
+        const TextPosition& pos) const {
     QString lineStripped = pos.block.text().left(pos.column).trimmed();  // empty text from invalid block is ok
     int spaceLen = firstNonSpaceColumn(pos.block.text());
 
@@ -38,7 +37,7 @@ QString IndentAlgPython::computeSmartIndent(
             TextPosition(pos.block,
                          spaceLen + lineStripped.length() - 1));
         if (foundPos.isValid()) {
-            return computeSmartIndent(foundPos, configuredIndent);
+            return computeSmartIndent(foundPos);
         }
     }
 
@@ -57,7 +56,7 @@ QString IndentAlgPython::computeSmartIndent(
             TextPosition(pos.block,
                          stripRightWhitespace(pos.block.text().left(pos.column)).length() - 2));
         if (foundPos.isValid()) {
-            return computeSmartIndent(foundPos, configuredIndent);
+            return computeSmartIndent(foundPos);
         }
     }
 
@@ -80,7 +79,7 @@ QString IndentAlgPython::computeSmartIndent(
     if (KEYWORDS.contains(lineStripped) ||
         lineStripped.startsWith("raise ") ||
         lineStripped.startsWith("return ")) {
-        return decreaseIndent(blockIndent(pos.block), configuredIndent);
+        return decreaseIndent(blockIndent(pos.block), indentText());
     }
 
     /*
@@ -91,8 +90,8 @@ QString IndentAlgPython::computeSmartIndent(
      */
     if (lineStripped.endsWith(':')) {
         int newColumn = spaceLen + lineStripped.length() - 1;
-        QString prevIndent = computeSmartIndent(TextPosition(pos.block, newColumn), configuredIndent);
-        return increaseIndent(prevIndent, configuredIndent);
+        QString prevIndent = computeSmartIndent(TextPosition(pos.block, newColumn));
+        return increaseIndent(prevIndent, indentText());
     }
 
     /* Generally, when a brace is on its own at the end of a regular line
@@ -103,18 +102,16 @@ QString IndentAlgPython::computeSmartIndent(
     }
     */
     if (lineStripped.endsWith("{[")) {
-        return increaseIndent(blockIndent(pos.block), configuredIndent);
+        return increaseIndent(blockIndent(pos.block), indentText());
     }
 
     return blockIndent(pos.block);
 }
 
-QString IndentAlgPython::computeSmartIndent(
-        QTextBlock block,
-        const QString& configuredIndent) const {
+QString IndentAlgPython::computeSmartIndent(QTextBlock block) const {
     QTextBlock nonEmpty = prevNonEmptyBlock(block);
     int column = nonEmpty.text().length();
-    return computeSmartIndent(TextPosition(nonEmpty, column), configuredIndent);
+    return computeSmartIndent(TextPosition(nonEmpty, column));
 }
 
 

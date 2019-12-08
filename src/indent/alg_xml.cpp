@@ -38,7 +38,7 @@ bool isGoingToCloseTag(const QString& line) {
 
 }
 
-QString IndentAlgXml::autoFormatLine(QTextBlock block, const QString& configuredIndent) const {
+QString IndentAlgXml::autoFormatLine(QTextBlock block) const {
     QString lineText = block.text();
 
     QString prevLineText = prevNonEmptyBlock(block).text();
@@ -54,7 +54,7 @@ QString IndentAlgXml::autoFormatLine(QTextBlock block, const QString& configured
             lineText = lineText.mid(match.capturedEnd() - 1);  // -1 for <
 
             // Indent new line
-            QString indent = indentForLine(newLine, prevLineText, configuredIndent);
+            QString indent = indentForLine(newLine, prevLineText);
             newLine  = indent + stripLeftWhitespace(newLine);
             newLines << newLine;
 
@@ -62,26 +62,25 @@ QString IndentAlgXml::autoFormatLine(QTextBlock block, const QString& configured
             match = splitter.match(lineText);
         }
 
-        newLines << indentForLine(lineText, prevLineText, configuredIndent) + stripLeftWhitespace(lineText);
+        newLines << indentForLine(lineText, prevLineText) + stripLeftWhitespace(lineText);
 
         return newLines.join('\n');
     }
 
-    return indentForLine(lineText, prevLineText, configuredIndent) + stripLeftWhitespace(lineText);
+    return indentForLine(lineText, prevLineText) + stripLeftWhitespace(lineText);
 }
 
-QString IndentAlgXml::computeSmartIndent(QTextBlock block, const QString& configuredIndent) const {
+QString IndentAlgXml::computeSmartIndent(QTextBlock block) const {
     QString lineText = block.text();
     QString prevLineText = prevNonEmptyBlock(block).text();
 
-    return indentForLine(lineText, prevLineText, configuredIndent);
+    return indentForLine(lineText, prevLineText);
 
 }
 
 QString IndentAlgXml::indentForLine(
         const QString& lineText,
-        const QString& prevLineText,
-        const QString& configuredIndent) const {
+        const QString& prevLineText) const {
     QString prevIndent = lineIndent(prevLineText);
     if (isDocumentHeader(prevLineText)) {
         return "";
@@ -90,7 +89,7 @@ QString IndentAlgXml::indentForLine(
     if (lineText.isEmpty()) {  // new line, use prev line to indent properly
         if (isOpeningTag(prevLineText)) {
             // increase indent when prev line opened a tag (but not for comments)
-            return increaseIndent(prevIndent, configuredIndent);
+            return increaseIndent(prevIndent, indentText());
         } else {
             return prevIndent;
         }
@@ -99,14 +98,14 @@ QString IndentAlgXml::indentForLine(
     } else if (isGoingToCloseTag(lineText)) {
         if ( ! isOpeningTag(prevLineText)) {
             // decrease indent when we write </ and prior line did not start a tag
-            return decreaseIndent(prevIndent, configuredIndent);
+            return decreaseIndent(prevIndent, indentText());
         } else {
             return prevIndent;
         }
     }
 
     if (isOpeningTag(prevLineText)) {
-        return increaseIndent(prevIndent, configuredIndent);
+        return increaseIndent(prevIndent, indentText());
     } else {
         return prevIndent;
     }

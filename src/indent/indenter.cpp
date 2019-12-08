@@ -17,8 +17,7 @@ namespace {
 
 class IndentAlgNone: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(
-            QTextBlock block, const QString& configuredIndent) const override {
+    QString computeSmartIndent(QTextBlock block) const override {
         return QString::null;
     }
 };
@@ -26,8 +25,7 @@ public:
 
 class IndentAlgNormal: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(
-        QTextBlock block, const QString& configuredIndent) const override {
+    QString computeSmartIndent(QTextBlock block) const override {
         return prevNonEmptyBlockIndent(block);
     }
 };
@@ -40,12 +38,11 @@ void IndentAlgImpl::setConfig(int width, bool useTabs) {
     useTabs_ = useTabs;
 }
 
-QString IndentAlgImpl::autoFormatLine(QTextBlock block, const QString& configuredIndent) const {
-    return computeSmartIndent(block, configuredIndent) + stripLeftWhitespace(block.text());
+QString IndentAlgImpl::autoFormatLine(QTextBlock block) const {
+    return computeSmartIndent(block) + stripLeftWhitespace(block.text());
 }
 
-QString IndentAlgImpl::computeSmartIndent(
-        QTextBlock block, const QString& configuredIndent) const {
+QString IndentAlgImpl::computeSmartIndent(QTextBlock block) const {
     return "";
 }
 
@@ -56,11 +53,7 @@ const QString& IndentAlgImpl::triggerCharacters() const {
 }
 
 QString IndentAlgImpl::indentText() const {
-    if (useTabs_) {
-        return QString("\t");
-    } else {
-        return QString().fill(' ', width_);
-    }
+    return makeIndent(width_, useTabs_);
 }
 
 Indenter::Indenter():
@@ -98,12 +91,8 @@ void Indenter::setAlgorithm(IndentAlg alg) {
     alg_->setConfig(width_, useTabs_);
 }
 
-QString Indenter::text() const {
-    if (useTabs_){
-        return "\t";
-    } else {
-        return QString().fill(' ', width_);
-    }
+QString Indenter::indentText() const {
+    return makeIndent(width_, useTabs_);
 }
 
 int Indenter::width() const {
@@ -130,7 +119,7 @@ bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {
 }
 
 bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
-    return textBeforeCursor(cursor).endsWith(text()) &&
+    return textBeforeCursor(cursor).endsWith(indentText()) &&
            ( ! cursor.hasSelection()) &&
            (cursor.atBlockEnd() ||
             ( ! cursor.block().text()[cursor.positionInBlock() + 1].isSpace()));
@@ -150,9 +139,9 @@ void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
     } else {  // be smart
         QString indentedLine;
         if (typedKey == QChar::Null) {  // format line on shortcut
-            indentedLine = alg_->autoFormatLine(block, text());
+            indentedLine = alg_->autoFormatLine(block);
         } else {
-            indentedLine = alg_->computeSmartIndent(block, text()) + stripLeftWhitespace(block.text());
+            indentedLine = alg_->computeSmartIndent(block) + stripLeftWhitespace(block.text());
         }
         if ( (! indentedLine.isNull()) &&
              indentedLine != block.text()) {
@@ -166,9 +155,9 @@ void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
 void Indenter::onShortcutIndent(QTextCursor cursor) const {
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
-        QString indentedLine = alg_->computeSmartIndent(block, text());
+        QString indentedLine = alg_->computeSmartIndent(block);
         if (indentedLine.isEmpty()) {
-            indentedLine = text();
+            indentedLine = indentText();
         }
         cursor.insertText(indentedLine);
     } else {  // have some indent, insert more
@@ -184,10 +173,10 @@ void Indenter::onShortcutIndent(QTextCursor cursor) const {
 }
 
 void Indenter::onShortcutUnindentWithBackspace(QTextCursor& cursor) const {
-    int charsToRemove = textBeforeCursor(cursor).length() % text().length();
+    int charsToRemove = textBeforeCursor(cursor).length() % indentText().length();
 
     if (charsToRemove == 0) {
-        charsToRemove = text().length();
+        charsToRemove = indentText().length();
     }
 
     cursor.setPosition(cursor.position() - charsToRemove, QTextCursor::KeepAnchor);

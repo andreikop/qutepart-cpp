@@ -8,7 +8,7 @@ namespace Qutepart {
 class IndentAlgLisp: public IndentAlgImpl {
 public:
     const QString& triggerCharacters() const override;
-    QString computeSmartIndent(QTextBlock block, const QString& configuredIndent) const override;
+    QString computeSmartIndent(QTextBlock block) const override;
 };
 
 };  // namespace Qutepart

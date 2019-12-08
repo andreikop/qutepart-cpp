@@ -15,10 +15,12 @@ QString increaseIndent(const QString& line, const QString& indent);
 QString decreaseIndent(const QString& line, const QString& indent);
 
 
+QString makeIndent(int confWidth, bool confUseTabs);
+
 /* Make indent text with specified with.
  * Contains width count of spaces, or tabs and spaces
  */
-QString makeIndentFromWidth( int width, bool confWidth, bool confUseTabs);
+QString makeIndentFromWidth(int width, int confWidth, bool confUseTabs);
 
 /* Make indent equal to column indent.
 Shiftted by offset

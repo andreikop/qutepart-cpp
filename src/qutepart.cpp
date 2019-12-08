@@ -228,7 +228,7 @@ void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
                 QString text = block.text();
                 QStringRef textRef(&text);
                 int column = indenter_->width();
-                while (textRef.startsWith(indenter_->text()) &&
+                while (textRef.startsWith(indenter_->indentText()) &&
                        textRef.length() > indenter_->width() &&
                        textRef.at(indenter_->width()).isSpace()) {
                     bool lineLengthMarkerHere = (column == lineLengthEdge_);

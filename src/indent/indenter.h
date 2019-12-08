@@ -26,15 +26,13 @@ public:
 
      * Return value QString::null means 'do not modify the string'
      */
-    virtual QString autoFormatLine(
-        QTextBlock block, const QString& configuredIndent) const;
+    virtual QString autoFormatLine(QTextBlock block) const;
 
     /* Compute indent for line.
      * The majority of algorithms should override this method.
      * Default implementation returns empty string
      */
-    virtual QString computeSmartIndent(
-        QTextBlock block, const QString& configuredIndent) const;
+    virtual QString computeSmartIndent(QTextBlock block) const;
 
 protected:
     int width_;
@@ -50,7 +48,7 @@ public:
 
     void setAlgorithm(IndentAlg alg);
 
-    QString text() const;
+    QString indentText() const;
 
     int width() const;
     void setWidth(int);
