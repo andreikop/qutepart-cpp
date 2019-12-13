@@ -17,15 +17,13 @@ public:
     // Convert to string for debugging
     QString toString() const;
 
-#if 0
-    TextPosition offsetToCursor(int offset) const;
-#endif
+    TextPosition offsetToTextPos(int offset) const;
 
     // Return document.isCode at the given offset in a statement
-    bool isCode(int offset) const;
+    bool isPosCode(int offset) const;
 
     // Return document.isComment at the given offset in a statement
-    bool isComment(int offset) const;
+    bool isPosComment(int offset) const;
 
     // Return the indent at the beginning of the statement
     QString indent() const;
@@ -44,7 +42,6 @@ public:
 
 private:
     bool isCommentBlock(QTextBlock block) const;
-    bool isComment(QTextBlock block, int column) const;
     QTextBlock prevNonCommentBlock(QTextBlock block) const;
     bool isLastCodeColumn(QTextBlock block, int column) const;
     bool isStmtContinuing(QTextBlock block) const;

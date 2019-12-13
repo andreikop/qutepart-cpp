@@ -2,6 +2,7 @@
 #include <QDebug>
 
 #include "indent_funcs.h"
+#include "hl/text_type.h"
 
 #include "alg_ruby.h"
 
@@ -47,10 +48,7 @@ QString RubyStatement::toString() const {
     return QString("{ %1, %2}").arg(startBlock.blockNumber()).arg(endBlock.blockNumber());
 }
 
-#if 0
-// Return (block, column)
-// TODO Provide helper function for this when API is converted to using cursors:
-TextPosition RubyStatement::offsetToCursor(int offset) {
+TextPosition RubyStatement::offsetToTextPos(int offset) const {
     QTextBlock block = startBlock;
     while (block != endBlock.next() && block.text().length() < offset) {
         offset -= block.text().length();
@@ -59,22 +57,17 @@ TextPosition RubyStatement::offsetToCursor(int offset) {
 
     return TextPosition(block, offset);
 }
-#endif
 
 // Return document.isCode at the given offset in a statement
-bool RubyStatement::isCode(int offset) const {
-    // TODO
-    return true;
-    // TextPosition = offsetToCursor(offset);
-    // return self._qpart.isCode(block.blockNumber(), column)
+bool RubyStatement::isPosCode(int offset) const {
+    const TextPosition pos = offsetToTextPos(offset);
+    return isCode(pos.block, pos.column);
 }
 
 // Return document.isComment at the given offset in a statement
-bool RubyStatement::isComment(int offset) const {
-    return false;
-    // TODO
-    // TextPosition = offsetToCursor(offset);
-    // return self._qpart.isComment(block.blockNumber(), column)
+bool RubyStatement::isPosComment(int offset) const {
+    TextPosition pos = offsetToTextPos(offset);
+    return isComment(pos.block, pos.column);
 }
 
 // Return the indent at the beginning of the statement
@@ -112,12 +105,6 @@ bool IndentAlgRuby::isCommentBlock(QTextBlock block) const {
     QString text(block.text());
     int firstColumn = firstNonSpaceColumn(text);
     return firstColumn == text.length() || isComment(block, firstColumn);
-}
-
-bool IndentAlgRuby::isComment(QTextBlock block, int column) const {
-    // TODO
-    // return qpart.isComment(block.blockNumber(), column);
-    return false;
 }
 
 /* Return the closest non-empty line, ignoring comments
@@ -187,7 +174,7 @@ previous statement before line.
 RubyStatement IndentAlgRuby::findPrevStmt(QTextBlock block) const {
     QTextBlock stmtEnd = prevNonCommentBlock(block);
     QTextBlock stmtStart = findStmtStart(stmtEnd);
-    return RubyStatement(/* qpart, TODO */stmtStart, stmtEnd);
+    return RubyStatement(stmtStart, stmtEnd);
 }
 
 bool IndentAlgRuby::isBlockStart(const RubyStatement& stmt) const {
@@ -207,7 +194,7 @@ bool IndentAlgRuby::isBlockEnd(const RubyStatement& stmt) const {
 
 RubyStatement IndentAlgRuby::findBlockStart(QTextBlock block) const {
     int nested = 0;
-    RubyStatement stmt(/* TODO qpart, */block, block);
+    RubyStatement stmt(block, block);
     while (true) {
         if ( ! stmt.startBlock.isValid()) {
             return stmt;
@@ -241,16 +228,14 @@ QString IndentAlgRuby::computeSmartIndent(QTextBlock block) const {
     QTextBlock prevBlock = prevNonEmptyBlock(block);
 
     // HACK Detect here documents
-#if 0 // TODO
-    if (qpart.isHereDoc(prevBlock.blockNumber(), prevBlock.length() - 2)) {
+    if (isHereDoc(prevBlock, prevBlock.length() - 2)) {
       return QString::null;
     }
 
     // HACK Detect embedded comments
-    if (qpart.isBlockComment(prevBlock.blockNumber(), prevBlock.length() - 2)) {
+    if (isBlockComment(prevBlock, prevBlock.length() - 2)) {
         return QString::null;
     }
-#endif
 
     QString prevStmtContent = prevStmt.content();
     QString prevStmtIndent = prevStmt.indent();
