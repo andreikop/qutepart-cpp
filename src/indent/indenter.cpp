@@ -7,6 +7,7 @@
 #include "alg_scheme.h"
 #include "alg_xml.h"
 #include "alg_python.h"
+#include "alg_ruby.h"
 
 #include "indenter.h"
 
@@ -84,6 +85,9 @@ void Indenter::setAlgorithm(IndentAlg alg) {
         case INDENT_ALG_PYTHON:
             alg_ = std::make_unique<IndentAlgPython>();
         break;
+        case INDENT_ALG_RUBY:
+            alg_ = std::make_unique<IndentAlgRuby>();
+        break;
         default:
             qWarning() << "Wrong indentation algorithm requested" << alg;
         break;
@@ -141,7 +145,10 @@ void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
         if (typedKey == QChar::Null) {  // format line on shortcut
             indentedLine = alg_->autoFormatLine(block);
         } else {
-            indentedLine = alg_->computeSmartIndent(block) + stripLeftWhitespace(block.text());
+            QString indent = alg_->computeSmartIndent(block);
+            if ( ! indent.isNull()) {
+                indentedLine = indent + stripLeftWhitespace(block.text());
+            }
         }
         if ( (! indentedLine.isNull()) &&
              indentedLine != block.text()) {

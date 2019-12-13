@@ -18,6 +18,7 @@ enum IndentAlg {
     INDENT_ALG_SCHEME,
     INDENT_ALG_XML,
     INDENT_ALG_PYTHON,
+    INDENT_ALG_RUBY,
 };
 
 
