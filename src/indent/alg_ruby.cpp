@@ -134,7 +134,12 @@ bool IndentAlgRuby::isStmtContinuing(QTextBlock block) const {
     }
 
     QRegularExpression rx("(\\+|\\-|\\*|\\/|\\=|&&|\\|\\||\\band\\b|\\bor\\b|,)\\s*$");
-    return rx.match(block.text()).hasMatch();
+    QRegularExpressionMatch match = rx.match(block.text());
+
+    // FIXME handle the case when comment it at the end of line
+    qDebug() << "!!!!!! text type map" << textTypeMap(block);
+    return match.hasMatch() &&
+           isCode(block, match.capturedStart());
 }
 
 /* Return the first line that is not preceded by a "continuing" line.

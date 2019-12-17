@@ -11,6 +11,7 @@ private slots:
     void init() override {
         BaseTest::init();
 
+        qpart.setHighlighter("ruby.xml");
         qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_RUBY);
         qpart.setIndentWidth(2);
     }
