@@ -33,4 +33,7 @@ QString makeIndentAsColumn(
 
 QString prevNonEmptyBlockIndent(const QTextBlock& block);
 
+// Block text with comments replaced with space
+QString textWithCommentsWiped(const QTextBlock& block);
+
 };  // namespace Qutepart

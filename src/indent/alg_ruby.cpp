@@ -104,7 +104,7 @@ const QString& IndentAlgRuby::triggerCharacters() const {
 bool IndentAlgRuby::isCommentBlock(QTextBlock block) const {
     QString text(block.text());
     int firstColumn = firstNonSpaceColumn(text);
-    return firstColumn == text.length() || isComment(block, firstColumn);
+    return (firstColumn == -1) || isComment(block, firstColumn);
 }
 
 /* Return the closest non-empty line, ignoring comments
@@ -133,11 +133,11 @@ bool IndentAlgRuby::isStmtContinuing(QTextBlock block) const {
         return true;
     }
 
-    QRegularExpression rx("(\\+|\\-|\\*|\\/|\\=|&&|\\|\\||\\band\\b|\\bor\\b|,)\\s*$");
-    QRegularExpressionMatch match = rx.match(block.text());
+    QString text = textWithCommentsWiped(block);
 
-    // FIXME handle the case when comment it at the end of line
-    qDebug() << "!!!!!! text type map" << textTypeMap(block);
+    QRegularExpression rx("(\\+|\\-|\\*|\\/|\\=|&&|\\|\\||\\band\\b|\\bor\\b|,)\\s*$");
+    QRegularExpressionMatch match = rx.match(text);
+
     return match.hasMatch() &&
            isCode(block, match.capturedStart());
 }

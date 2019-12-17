@@ -1,4 +1,5 @@
 #include "text_block_utils.h"
+#include "hl/text_type.h"
 
 #include "indent_funcs.h"
 
@@ -80,4 +81,17 @@ QString prevNonEmptyBlockIndent(const QTextBlock& block) {
     return blockIndent(prevNonEmptyBlock(block));
 }
 
+QString textWithCommentsWiped(const QTextBlock& block) {
+    QString text = block.text();
+    QString typeMap = textTypeMap(block);
+    for(int i = 0; i < text.length(); i++) {
+        if (typeMap[i] == 'c') {
+            text[i] = ' ';
+        }
+    }
+
+    return text;
+}
+
 };  // namespace Qutepart
+

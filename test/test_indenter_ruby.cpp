@@ -217,7 +217,7 @@ private slots:
         QTest::newRow("do1")
             <<  "# do1.txt\n"
                 "5.times do\n"
-            <<  std::make_pair(1, 24)
+            <<  std::make_pair(1, 10)
             <<  "\nend"
             <<  "# do1.txt\n"
                 "5.times do\n"
