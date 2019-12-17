@@ -41,7 +41,7 @@ bool isCode(const QTextBlock& block, int column) {
 }
 
 bool isComment(const QTextBlock& block, int column) {
-    QChar type = getTextType(block, column) == ' ';
+    QChar type = getTextType(block, column);
 
     return type == 'c' || type == 'b' || type == 'h';
 }

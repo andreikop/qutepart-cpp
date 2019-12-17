@@ -294,7 +294,7 @@ private slots:
             <<  "# no-do1.txt\n"
                 "if foo\n"
                 "  # nothing to do\n"
-            <<  std::make_pair(2, 32)
+            <<  std::make_pair(2, 17)
             <<  "\nend"
             <<  "# no-do1.txt\n"
                 "if foo\n"
@@ -305,7 +305,7 @@ private slots:
             <<  "# no-do2.txt\n"
                 "if foo\n"
                 "  # nothing to do\n"
-            <<  std::make_pair(2, 32)
+            <<  std::make_pair(2, 17)
             <<  "\nf\nend"
             <<  "# no-do2.txt\n"
                 "if foo\n"
@@ -421,12 +421,12 @@ private slots:
                 "    :a,\n"
                 "    :b\n"
             <<  std::make_pair(2, 6)
-            <<  "\n"
+            <<  "\n(3,2)\n"
             <<  "  array = [\n"
                 "    :a,\n"
                 "    :b\n"
                 "  (3,2)\n"
-                "\n";
+                "  \n";
 
         QTest::newRow("array6")
             <<  "  array = [:a,\n"
@@ -627,12 +627,12 @@ private slots:
                 "    :a,\n"
                 "    :b # comment\n"
             <<  std::make_pair(2, 16)
-            <<  "\n"
+            <<  "\n(3,2)\n"
             <<  "  array = [\n"
                 "    :a,\n"
                 "    :b # comment\n"
                 "  (3,2)\n"
-                "\n";
+                "  \n";
     }
 
     void Hash() {
@@ -681,12 +681,12 @@ private slots:
                 "    :a => 1,\n"
                 "    :b => 2\n"
             <<  std::make_pair(2, 11)
-            <<  "\n"
+            <<  "\n(3,2)\n"
             <<  "  hash = {\n"
                 "    :a => 1,\n"
                 "    :b => 2\n"
                 "  (3,2)\n"
-                "\n";
+                "  \n";
 
         QTest::newRow("hash6")
             <<  "  hash = {:a => 1,\n"
@@ -1138,7 +1138,7 @@ private slots:
         QTest::newRow("multiline3")
             <<  "# multiline3.txt\n"
                 "s = \"hello\" +\n"
-            <<  std::make_pair(1, 15)
+            <<  std::make_pair(1, 13)
             <<  "\n\"world\"\nbar"
             <<  "# multiline3.txt\n"
                 "s = \"hello\" +\n"
@@ -1149,7 +1149,7 @@ private slots:
             <<  "# multiline4.txt\n"
                 "s = \"hello\" +\n"
                 "    # Comment\n"
-            <<  std::make_pair(2, 19)
+            <<  std::make_pair(2, 13)
             <<  "\n\"world\"\nbar"
             <<  "# multiline4.txt\n"
                 "s = \"hello\" +\n"
@@ -1183,7 +1183,7 @@ private slots:
 
         QTest::newRow("multiline7")
             <<  "foo \"hello\",\n"
-            <<  std::make_pair(0, 13)
+            <<  std::make_pair(0, 12)
             <<  "\n\"world\""
             <<  "foo \"hello\",\n"
                 "    \"world\"\n";

@@ -14,9 +14,11 @@ All features are configurable
 * Syntax highlighting for 196 languages
 * Smart indentation algorithms:
     * Generic
+    * Python
+    * Ruby
+    * XML
     * Lisp
     * Scheme
-    * XML
 * Visible witespaces
 * Marker for too long lines
 
