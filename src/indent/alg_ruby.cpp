@@ -77,12 +77,16 @@ QString RubyStatement::indent() const {
 
 // Return the content of the statement from the document
 QString RubyStatement::content() const {
+    if ( ! contentCache_.isNull()) {
+        return contentCache_;
+    }
+
     QString cnt;
 
     QTextBlock block = startBlock;
 
     while (block != endBlock.next()) {
-        QString text = block.text();
+        QString text = textWithCommentsWiped(block);
         if (text.endsWith('\\')) {
             cnt += text.left(text.length() - 1);
             cnt += ' ';
@@ -92,6 +96,7 @@ QString RubyStatement::content() const {
         block = block.next();
     }
 
+    contentCache_ = cnt;
     return cnt;
 }
 

@@ -32,6 +32,9 @@ public:
 
     QTextBlock startBlock;
     QTextBlock endBlock;
+
+private:
+    mutable QString contentCache_;
 };
 
 
