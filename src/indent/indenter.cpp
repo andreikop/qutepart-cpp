@@ -19,7 +19,7 @@ namespace {
 
 class IndentAlgNone: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block) const override {
+    QString computeSmartIndent(QTextBlock block, int cursorPos) const override {
         return QString::null;
     }
 };
@@ -27,7 +27,7 @@ public:
 
 class IndentAlgNormal: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block) const override {
+    QString computeSmartIndent(QTextBlock block, int cursorPos) const override {
         return prevNonEmptyBlockIndent(block);
     }
 };
@@ -41,10 +41,10 @@ void IndentAlgImpl::setConfig(int width, bool useTabs) {
 }
 
 QString IndentAlgImpl::autoFormatLine(QTextBlock block) const {
-    return computeSmartIndent(block) + stripLeftWhitespace(block.text());
+    return computeSmartIndent(block, -1) + stripLeftWhitespace(block.text());
 }
 
-QString IndentAlgImpl::computeSmartIndent(QTextBlock block) const {
+QString IndentAlgImpl::computeSmartIndent(QTextBlock block, int cursorPos) const {
     return "";
 }
 
@@ -133,7 +133,7 @@ bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
             ( ! cursor.block().text()[cursor.positionInBlock() + 1].isSpace()));
 }
 
-void Indenter::indentBlock(QTextBlock block, int column, QChar typedKey) const {
+void Indenter::indentBlock(QTextBlock block, int cursorPos, QChar typedKey) const {
     QString prevBlockText = block.previous().text();  // invalid block returns empty text
     QString indent;
     if (typedKey == '\r' &&
@@ -148,8 +148,8 @@ void Indenter::indentBlock(QTextBlock block, int column, QChar typedKey) const {
         QString indentedLine;
         if (typedKey == QChar::Null) {  // format line on shortcut
             indentedLine = alg_->autoFormatLine(block);
-        } else if (block.text().left(column).trimmed().isEmpty()) {  // if no text before cursor
-            QString indent = alg_->computeSmartIndent(block);
+        } else {
+            QString indent = alg_->computeSmartIndent(block, cursorPos);
             if ( ! indent.isNull()) {
                 indentedLine = indent + stripLeftWhitespace(block.text());
             }
@@ -167,7 +167,7 @@ void Indenter::indentBlock(QTextBlock block, int column, QChar typedKey) const {
 void Indenter::onShortcutIndent(QTextCursor cursor) const {
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
-        QString indentedLine = alg_->computeSmartIndent(block);
+        QString indentedLine = alg_->computeSmartIndent(block, -1);
         if (indentedLine.isEmpty()) {
             indentedLine = indentText();
         }

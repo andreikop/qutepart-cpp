@@ -13,7 +13,7 @@ namespace Qutepart {
 class IndentAlgCstyle: public IndentAlgImpl {
 public:
     const QString& triggerCharacters() const override;
-    QString computeSmartIndent(QTextBlock block) const override;
+    QString computeSmartIndent(QTextBlock block, int cursorPos) const override;
 
 private:
     QString findLeftBrace(const QTextBlock& block, int column) const;
@@ -28,7 +28,7 @@ private:
     QString tryStatement(const QTextBlock& block) const;
     QString tryMatchedAnchor(const QTextBlock& block, bool autoIndent) const;
     QString indentLine(const QTextBlock& block, bool autoIndent) const;
-    QString processChar(const QTextBlock& block, QChar c) const;
+    QString processChar(const QTextBlock& block, QChar c, int cursorPos) const;
 };
 
 };  // namespace Qutepart

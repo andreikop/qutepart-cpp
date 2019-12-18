@@ -225,7 +225,7 @@ RubyStatement IndentAlgRuby::findBlockStart(QTextBlock block) const {
     }
 }
 
-QString IndentAlgRuby::computeSmartIndent(QTextBlock block) const {
+QString IndentAlgRuby::computeSmartIndent(QTextBlock block, int cursorPos) const {
     if ( ! isValidTrigger(block)) {
         return QString::null;
     }

@@ -70,7 +70,7 @@ QString IndentAlgXml::autoFormatLine(QTextBlock block) const {
     return indentForLine(lineText, prevLineText) + stripLeftWhitespace(lineText);
 }
 
-QString IndentAlgXml::computeSmartIndent(QTextBlock block) const {
+QString IndentAlgXml::computeSmartIndent(QTextBlock block, int cursorPos) const {
     QString lineText = block.text();
     QString prevLineText = prevNonEmptyBlock(block).text();
 

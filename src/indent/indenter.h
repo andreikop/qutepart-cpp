@@ -30,9 +30,13 @@ public:
 
     /* Compute indent for line.
      * The majority of algorithms should override this method.
+     *
+     * cursorPos is -1 if autoIndent shortcut is triggered,
+     * actual position if text is being typed
+     *
      * Default implementation returns empty string
      */
-    virtual QString computeSmartIndent(QTextBlock block) const;
+    virtual QString computeSmartIndent(QTextBlock block, int cursorPos) const;
 
 protected:
     int width_;

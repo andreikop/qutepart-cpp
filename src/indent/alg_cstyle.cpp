@@ -718,20 +718,14 @@ QString IndentAlgCstyle::indentLine(const QTextBlock& block, bool autoIndent) co
     return prevNonEmptyBlockIndent(block);
 }
 
-QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c) const {
+QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c, int cursorPos) const {
     QString currentBlockIndent = blockIndent(block);
 
     if (c == ';' || ( ! (triggerCharacters().contains(c)))) {
         return currentBlockIndent;
     }
 
-#if 0  // FIXME port to C++ properly
-    int column = qpart.cursorPosition[1];
-    bool firstCharAfterIndent = (column == (currentBlockIndent.length() + 1));
-#else
-    int column = block.text().length();
-    bool firstCharAfterIndent = true;
-#endif
+    bool firstCharAfterIndent = (cursorPos == (currentBlockIndent.length() + 1));
 
     if (firstCharAfterIndent && c == '{') {
         // todo: maybe look for if etc.
@@ -780,7 +774,7 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c) const {
         return indent;
     } else if (c == ')' && firstCharAfterIndent) {
         // align on start of identifier of function call
-        TextPosition foundPos = findBracketBackward('(', TextPosition(block, column - 1));
+        TextPosition foundPos = findBracketBackward('(', TextPosition(block, cursorPos - 1));
         if (foundPos.isValid()) {
             QString text = foundPos.block.text().left(foundPos.column);
             static const QRegularExpression rx("\\b(\\w+)\\s*$");
@@ -804,15 +798,15 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c) const {
     return currentBlockIndent;
 }
 
-QString IndentAlgCstyle::computeSmartIndent(QTextBlock block) const {
+QString IndentAlgCstyle::computeSmartIndent(QTextBlock block, int cursorPos) const {
     QChar ch = '\n';
 
-#if 0
     QString blockText = block.text();
-    if ( ! blockText.isEmpty()) {
-        ch = blockText[blockText.length() - 1];
+    if (cursorPos > 0) {
+        ch = blockText[cursorPos - 1];
     }
 
+#if 0
     bool autoIndent = ch.isNull();  // TODO proper condition
 #else
     bool autoIndent = false;
