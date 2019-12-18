@@ -133,7 +133,7 @@ bool Indenter::shouldUnindentWithBackspace(const QTextCursor& cursor) const {
             ( ! cursor.block().text()[cursor.positionInBlock() + 1].isSpace()));
 }
 
-void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
+void Indenter::indentBlock(QTextBlock block, int column, QChar typedKey) const {
     QString prevBlockText = block.previous().text();  // invalid block returns empty text
     QString indent;
     if (typedKey == '\r' &&
@@ -148,12 +148,13 @@ void Indenter::indentBlock(QTextBlock block, QChar typedKey) const {
         QString indentedLine;
         if (typedKey == QChar::Null) {  // format line on shortcut
             indentedLine = alg_->autoFormatLine(block);
-        } else {
+        } else if (block.text().left(column).trimmed().isEmpty()) {  // if no text before cursor
             QString indent = alg_->computeSmartIndent(block);
             if ( ! indent.isNull()) {
                 indentedLine = indent + stripLeftWhitespace(block.text());
             }
         }
+
         if ( (! indentedLine.isNull()) &&
              indentedLine != block.text()) {
             QTextCursor cursor(block);

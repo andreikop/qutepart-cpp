@@ -61,7 +61,7 @@ public:
 #if 0
     void autoIndentBlock(QTextBlock block, QChar typedKey) const;
 #endif
-    void indentBlock(QTextBlock block, QChar typedKey) const;
+    void indentBlock(QTextBlock block, int column, QChar typedKey) const;
 
 public slots:
     void onShortcutIndent(QTextCursor cursor) const;

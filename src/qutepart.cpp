@@ -83,7 +83,7 @@ void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
 
 void Qutepart::autoIndentCurrentLine() {
     QTextCursor cursor = textCursor();
-    indenter_->indentBlock(cursor.block(), QChar::Null);
+    indenter_->indentBlock(cursor.block(), 0, QChar::Null);
 }
 
 bool Qutepart::indentUseTabs() const {
@@ -164,12 +164,12 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
     } else if (event->matches(QKeySequence::InsertParagraphSeparator)) {
         // Enter pressed. Indent new empty line
         QPlainTextEdit::keyPressEvent(event);
-        indenter_->indentBlock(cursor.block(), event->text()[0]);
+        indenter_->indentBlock(cursor.block(), cursor.positionInBlock(), event->text()[0]);
     } else if (cursor.positionInBlock() == (cursor.block().length() - 1) &&
                indenter_->shouldAutoIndentOnEvent(event)) {
         // Indentation on special characters. Like closing bracket in XML
         QPlainTextEdit::keyPressEvent(event);
-        indenter_->indentBlock(cursor.block(), event->text()[0]);
+        indenter_->indentBlock(cursor.block(), cursor.positionInBlock(), event->text()[0]);
     } else {
         // make action shortcuts override keyboard events (non-default Qt behaviour)
         foreach(QAction* action, actions()) {

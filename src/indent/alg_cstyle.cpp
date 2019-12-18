@@ -730,7 +730,7 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c) const {
     bool firstCharAfterIndent = (column == (currentBlockIndent.length() + 1));
 #else
     int column = block.text().length();
-    bool firstCharAfterIndent = block.text().trimmed().isEmpty();
+    bool firstCharAfterIndent = true;
 #endif
 
     if (firstCharAfterIndent && c == '{') {
@@ -807,12 +807,16 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c) const {
 QString IndentAlgCstyle::computeSmartIndent(QTextBlock block) const {
     QChar ch = '\n';
 
+#if 0
     QString blockText = block.text();
     if ( ! blockText.isEmpty()) {
         ch = blockText[blockText.length() - 1];
     }
 
     bool autoIndent = ch.isNull();  // TODO proper condition
+#else
+    bool autoIndent = false;
+#endif
 
     if (ch != '\n' && ( ! autoIndent)) {
         QString res = processChar(block, ch);
