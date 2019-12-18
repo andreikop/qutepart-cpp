@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QRegularExpression>
 
 #include "indent_funcs.h"
@@ -21,6 +22,12 @@ const bool CFG_AUTO_INSERT_SLACHES = false;  // auto insert '//' after C++-comme
  */
 const int CFG_ACCESS_MODIFIERS = 1;
 
+
+void dbg(const QString& text) {
+#if 1
+    qDebug() << text;
+#endif
+}
 
 QTextBlock prevNonEmptyNonCommentBlock(const QTextBlock& block) {
     QTextBlock currentBlock = block.previous();
@@ -107,7 +114,7 @@ QString IndentAlgCstyle::trySwitchStatement(const QTextBlock& block) const {
     while (currentBlock.isValid()) {
         QString text = currentBlock.text();
         if (caseRx.match(text).hasMatch()) {
-            // dbg("trySwitchStatement: success in line %1".arg(currentBlock.blockNumber()));
+            dbg(QString("trySwitchStatement: success in line %1").arg(currentBlock.blockNumber()));
             return lineIndent(text);
         } else if (switchRx.match(text).hasMatch()) {
             if (CFG_INDENT_CASE) {
@@ -147,7 +154,7 @@ QString IndentAlgCstyle::tryAccessModifiers(const QTextBlock& block) const {
         indentation = increaseIndent(indentation, indentText());
     }
 
-    // dbg("tryAccessModifiers: success in line %d" % block.blockNumber())
+    dbg(QString("tryAccessModifiers: success in line %1").arg(block.blockNumber()));
     return indentation;
 }
 
@@ -169,7 +176,7 @@ QString IndentAlgCstyle::tryCComment(const QTextBlock& block) const {
         TextPosition foundPos = findTextBackward(prevNonEmptyBlock, "/*");
 
         if (foundPos.isValid()) {
-            // dbg("tryCComment: success (1) in line %d" % foundBlock.blockNumber())
+            dbg(QString("tryCComment: success (1) in line %1").arg(foundPos.block.blockNumber()));
             return lineIndent(foundPos.block.text());
         }
     }
@@ -199,7 +206,7 @@ QString IndentAlgCstyle::tryCComment(const QTextBlock& block) const {
             }
         }
 
-        // dbg("tryCComment: success (2) in line %d" % block.blockNumber())
+        dbg(QString("tryCComment: success (2) in line %1").arg(block.blockNumber()));
         return indentation;
     } else if (prevBlockTextStripped.startsWith('*') &&
                (prevBlockTextStripped.length() == 1 || prevBlockTextStripped[1].isSpace())) {
@@ -214,7 +221,7 @@ QString IndentAlgCstyle::tryCComment(const QTextBlock& block) const {
             }
         }
 
-        // dbg("tryCComment: success (2) in line %d" % block.blockNumber())
+        dbg(QString("tryCComment: success (2) in line %1").arg(block.blockNumber()));
         return indentation;
     }
 
@@ -274,7 +281,7 @@ QString IndentAlgCstyle::tryCppComment(const QTextBlock& block) const {
     }
 
     if ( ! indentation.isNull()) {
-        // dbg("tryCppComment: success in line %d" % block.previous().blockNumber())
+        dbg(QString("tryCppComment: success in line %1").arg(block.previous().blockNumber()));
     }
 
     return indentation;
@@ -319,7 +326,7 @@ QString IndentAlgCstyle::tryBrace(const QTextBlock& block) const {
     }
 
     if ( ! indentation.isNull()) {
-        //dbg("tryBrace: success in line %d" % block.blockNumber())
+        dbg(QString("tryBrace: success in line %1").arg(block.blockNumber()));
     }
 
     return indentation;
@@ -372,13 +379,13 @@ QString IndentAlgCstyle::tryCKeywords(const QTextBlock& block, bool isBrace) con
         //     --b)
         TextPosition foundPos = findBracketBackward('(', TextPosition(currentBlock, currentBlock.text().length()));
         if (foundPos.isValid()) {
-            // dbg("tryCKeywords: success 1 in line %d" % block.blockNumber())
+            dbg(QString("tryCKeywords: success 1 in line %1").arg(block.blockNumber()));
             return makeIndentAsColumn(foundPos.block, foundPos.column, width_, useTabs_, 1);
         }
     }
 
     if ( ! indentation.isNull()) {
-        // dbg("tryCKeywords: success in line %d" % block.blockNumber())
+        dbg(QString("tryCKeywords: success in line %1").arg(block.blockNumber()));
     }
 
     return indentation;
@@ -398,7 +405,7 @@ QString IndentAlgCstyle::tryCondition(const QTextBlock& block) const {
     QString currentText = currentBlock.text();
     static const QRegularExpression rx("^\\s*(if\\b|[}]?\\s*else|do\\b|while\\b|for)");
     if (stripRightWhitespace(currentText).endsWith(';') &&
-        ( ! rx.match(currentText).hasMatch())) {}
+        ( ! rx.match(currentText).hasMatch())) {
         // idea: we had something like:
         //   if/while/for (expression)
         //       statement();  <-- we catch this trailing ';'
@@ -411,13 +418,13 @@ QString IndentAlgCstyle::tryCondition(const QTextBlock& block) const {
 
         currentBlock = currentBlock.previous();
         while(currentBlock.isValid()) {
-            if ( ! block.text().trimmed().isEmpty()) {
-                QString indentation = blockIndent(block);
+            if ( ! currentBlock.text().trimmed().isEmpty()) {
+                QString indentation = blockIndent(currentBlock);
 
                 if (indentation.length() < currentIndentation.length()) {
-                    QRegularExpression rx("^\\s*(if\\b|[}]?\\s*else|do\\b|while\\b|for)[^{]*$");
-                    if (rx.match(block.text()).hasMatch()) {
-                        // dbg("tryCondition: success in line %d" % block.blockNumber())
+                    static const QRegularExpression rx("^\\s*(if\\b|[}]?\\s*else|do\\b|while\\b|for)[^{]*$");
+                    if (rx.match(currentBlock.text()).hasMatch()) {
+                        dbg(QString("tryCondition: success in line %1").arg(currentBlock.blockNumber()));
                         return indentation;
                     }
                     break;
@@ -425,6 +432,7 @@ QString IndentAlgCstyle::tryCondition(const QTextBlock& block) const {
             }
             currentBlock = currentBlock.previous();
         }
+    }
 
     return QString::null;
 }
@@ -444,7 +452,7 @@ QString IndentAlgCstyle::tryStatement(const QTextBlock& block) const {
     QString currentBlockText = currentBlock.text();
     if (currentBlockText.endsWith('(')) {
         // increase indent level
-        // dbg("tryStatement: success 1 in line %d" % block.blockNumber())
+        dbg(QString("tryStatement: success 1 in line %1").arg(block.blockNumber()));
         return increaseIndent(lineIndent(currentBlockText), indentText());
     }
 
@@ -480,7 +488,7 @@ QString IndentAlgCstyle::tryStatement(const QTextBlock& block) const {
                         // also make sure that this is not a line like '#include "..."' <-- we don't want to indent here
                         static const QRegularExpression rx("^#include");
                         if (rx.match(currentBlockText).hasMatch()) {
-                            // dbg("tryStatement: success 2 in line %d" % block.blockNumber())
+                            dbg(QString("tryStatement: success 2 in line %1").arg(block.blockNumber()));
                             return indentation;
                         }
 
@@ -567,7 +575,7 @@ QString IndentAlgCstyle::tryStatement(const QTextBlock& block) const {
     }
 
     if ( ! indentation.isNull()) {
-        // dbg("tryStatement: success in line %d" % currentBlock.blockNumber())
+        dbg(QString("tryStatement: success in line %1").arg(currentBlock.blockNumber()));
     }
     return indentation;
 }
@@ -639,7 +647,7 @@ QString IndentAlgCstyle::tryMatchedAnchor(const QTextBlock& block, bool autoInde
                 indentation = makeIndentAsColumn(foundPos.block, foundPos.column, width_, useTabs_, 0);
             }
 
-            // dbg("tryMatchedAnchor: success in line %d" % foundBlock.blockNumber())
+            dbg(QString("tryMatchedAnchor: success in line %1").arg(foundPos.block.blockNumber()));
             return indentation;
         }
     }
@@ -654,7 +662,7 @@ QString IndentAlgCstyle::tryMatchedAnchor(const QTextBlock& block, bool autoInde
     // indent closing brace
     setBlockIndent(block.next(), indentation);
 #endif
-    //dbg("tryMatchedAnchor: success in line %d" % foundBlock.blockNumber())
+    dbg(QString("tryMatchedAnchor: success in line %1").arg(foundPos.block.blockNumber()));
     return increaseIndent(indentation, indentText());
 }
 
@@ -706,7 +714,7 @@ QString IndentAlgCstyle::indentLine(const QTextBlock& block, bool autoIndent) co
         return indent;
     }
 
-    // dbg("Nothing matched")
+    dbg("Nothing matched");
     return prevNonEmptyBlockIndent(block);
 }
 

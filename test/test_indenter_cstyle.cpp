@@ -353,11 +353,11 @@ private slots:
                 "  ok\n";
 
         QTest::newRow("if10")
-            <<  "\"if () {}\"]"
+            <<  "if () {}"
             <<  std::make_pair(0, 5)
             <<  "\n"
             <<  "if ()\n"
-                "\"{}\"]\n";
+                "{}";
 
         QTest::newRow("if11")
             <<  "  if (0<x) {\n"
@@ -367,7 +367,7 @@ private slots:
                 "text;\n"
                 ""
             <<  std::make_pair(4, 0)
-            <<  "\n"
+            <<  "\n\t"
             <<  "  if (0<x) {\n"
                 "    x = 0;\n"
                 "  }\n"
@@ -378,13 +378,13 @@ private slots:
         QTest::newRow("if_qutepart1")
             <<  "  if (1)\n"
                 "  {\n"
-                "\"     a = 7;\"]"
-            <<  std::make_pair(3, 11)
+                "     a = 7;"
+            <<  std::make_pair(2, 11)
             <<  "\nx"
             <<  "  if (1)\n"
                 "  {\n"
                 "     a = 7;\n"
-                "\"     x\"]\n";
+                "     x";
     }
 
     void While() {
@@ -1133,12 +1133,12 @@ private slots:
 
         QTest::newRow("openpar6")
             <<  "int main()\n"
-                "\"{bla\"]"
+                "{bla"
             <<  std::make_pair(1, 1)
             <<  "\n"
             <<  "int main()\n"
                 "{\n"
-                "\"  bla\"]\n";
+                "  bla\n";
 
         QTest::newRow("openpar7")
             <<  "int main()\n"
@@ -1611,21 +1611,21 @@ private slots:
 
         QTest::newRow("normal1")
             <<  "int main() {\n"
-                "\"    bla;\"]"
+                "    bla;"
             <<  std::make_pair(1, 8)
             <<  "\nok;"
             <<  "int main() {\n"
                 "    bla;\n"
-                "\"    ok;\"]\n";
+                "    ok;\n";
 
         QTest::newRow("normal2")
             <<  "int main() {\n"
-                "\"    bla;blu;\"]"
+                "    bla;blu;"
             <<  std::make_pair(1, 8)
             <<  "\n"
             <<  "int main() {\n"
                 "    bla;\n"
-                "\"    blu;\"]\n";
+                "    blu;\n";
 
         QTest::newRow("normal3")
             <<  "int main() {\n"
@@ -1904,7 +1904,7 @@ private slots:
                 "do {\n"
                 "}\n"
                 " while (0);\n"
-                "\" \"]"
+                " "
             <<  std::make_pair(4, 1)
             <<  "\nok"
             <<  "# 1\n"
@@ -1912,7 +1912,7 @@ private slots:
                 "}\n"
                 " while (0);\n"
                 " \n"
-                "\" ok\"]\n";
+                " ok\n";
     }
 };
 

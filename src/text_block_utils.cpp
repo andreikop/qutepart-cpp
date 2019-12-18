@@ -30,7 +30,7 @@ QString stripLeftWhitespace(const QString& line) {
 }
 
 QString stripRightWhitespace(const QString& line) {
-    return line.left(lastNonSpaceColumn(line));
+    return line.left(lastNonSpaceColumn(line) + 1);
 }
 
 QTextBlock prevNonEmptyBlock(QTextBlock block) {
