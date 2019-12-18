@@ -91,7 +91,7 @@ Now try to find the right line for indentation for constructs like:
 Returns input params, if no success, otherwise block and column of '('
 */
 TextPosition IndentAlgCstyle::tryParenthesisBeforeBrace(const TextPosition& pos) const {
-    QString text = stripRightWhitespace(pos.block.text().mid(pos.column - 1));
+    QString text = stripRightWhitespace(pos.block.text().left(pos.column - 1));
     if ( ! text.endsWith(')')) {
         return TextPosition();
     }
@@ -718,16 +718,20 @@ QString IndentAlgCstyle::indentLine(const QTextBlock& block, bool autoIndent) co
     return prevNonEmptyBlockIndent(block);
 }
 
-#if 0 // TODO
+QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c) const {
+    QString currentBlockIndent = blockIndent(block);
 
-QString IndentAlgCstyle::processChar(const QTextBlock& block, c) {
     if (c == ';' || ( ! (triggerCharacters().contains(c)))) {
-        return blockIndent(block);
+        return currentBlockIndent;
     }
 
+#if 0  // FIXME port to C++ properly
     int column = qpart.cursorPosition[1];
-    QString blockIndent = blockIndent(block);
-    bool firstCharAfterIndent = (column == (blockIndent.length() + 1));
+    bool firstCharAfterIndent = (column == (currentBlockIndent.length() + 1));
+#else
+    int column = block.text().length();
+    bool firstCharAfterIndent = block.text().trimmed().isEmpty();
+#endif
 
     if (firstCharAfterIndent && c == '{') {
         // todo: maybe look for if etc.
@@ -742,67 +746,81 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, c) {
             indent = tryStatement(block);
         }
         if (indent.isNull()) {
-            indent = blockIndent;
+            indent = currentBlockIndent;
         }
 
         return indent;
     } else if (firstCharAfterIndent && c == '}') {
         QString indentation = findLeftBrace(block, firstNonSpaceColumn(block.text()));
         if (indentation.isNull()) {
-            return blockIndent;
+            return currentBlockIndent;
         } else {
             return indentation;
         }
-    } else if (CFG_SNAP_SLASH && c == '/' && block.text().endsWith(' /')) {
+    } else if (CFG_SNAP_SLASH && c == '/' && block.text().endsWith(" /")) {
         // try to snap the string "* /" to "*/"
         static const QRegularExpression rx("^(\\s*)\\*\\s+\\/\\s*$");
         QRegularExpressionMatch match = rx.match(block.text());
+#if 0  // FIXME port to C++
         if (match.hasMatch()) {
             qpart.lines[block.blockNumber()] = match.captured(1) + "*/";
         }
-        // dbg("snapSlash at block %d" % block.blockNumber())
-        return blockIndent;
+#endif
+        dbg(QString("snapSlash at block %1").arg(block.blockNumber()));
+        return currentBlockIndent;
     } else if (c == ':') {
         // todo: handle case, default, signals, private, public, protected, Q_SIGNALS
-        indent = trySwitchStatement(block);
+        QString indent = trySwitchStatement(block);
         if (indent.isNull()) {
             indent = tryAccessModifiers(block);
         }
         if (indent.isNull()) {
-            indent = blockIndent;
+            indent = currentBlockIndent;
         }
         return indent;
     } else if (c == ')' && firstCharAfterIndent) {
         // align on start of identifier of function call
         TextPosition foundPos = findBracketBackward('(', TextPosition(block, column - 1));
         if (foundPos.isValid()) {
-            QString text = foundBlock.text().left(foundPos.column);
+            QString text = foundPos.block.text().left(foundPos.column);
             static const QRegularExpression rx("\\b(\\w+)\\s*$");
             QRegularExpressionMatch match = rx.match(text);
             if (match.hasMatch()) {
-                return makeIndentAsColumn(foundPos.block, match.capturedStart());
+                return makeIndentAsColumn(foundPos.block, match.capturedStart(), width_, useTabs_, 0);
             }
         }
     } else if (firstCharAfterIndent &&
                c == '#' &&
-               (qpart.language() == "C" || qpart.language() == "C++")) {
+#if 0  // FIXME port to C++ properly
+               (qpart.language() == "C" || qpart.language() == "C++")
+#else
+                true
+#endif
+               ){
         // always put preprocessor stuff upfront
         return "";
     }
 
-    return blockIndent;
+    return currentBlockIndent;
 }
-#endif
 
 QString IndentAlgCstyle::computeSmartIndent(QTextBlock block) const {
-#if 0  // FIXME
-    bool autoIndent = ch == "";
+    QChar ch = '\n';
+
+    QString blockText = block.text();
+    if ( ! blockText.isEmpty()) {
+        ch = blockText[blockText.length() - 1];
+    }
+
+    bool autoIndent = ch.isNull();  // TODO proper condition
 
     if (ch != '\n' && ( ! autoIndent)) {
-        return processChar(block, ch);
+        QString res = processChar(block, ch);
+        return res;
+    } else {
+        QString res = indentLine(block, false);
+        return res;
     }
-#endif
-    return indentLine(block, false);
 }
 
 };  // namespace Qutepart

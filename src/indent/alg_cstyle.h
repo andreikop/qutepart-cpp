@@ -28,6 +28,7 @@ private:
     QString tryStatement(const QTextBlock& block) const;
     QString tryMatchedAnchor(const QTextBlock& block, bool autoIndent) const;
     QString indentLine(const QTextBlock& block, bool autoIndent) const;
+    QString processChar(const QTextBlock& block, QChar c) const;
 };
 
 };  // namespace Qutepart
