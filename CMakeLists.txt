@@ -40,6 +40,7 @@ set(qutepart_SRCS
     src/indent/alg_scheme.cpp
     src/indent/alg_python.cpp
     src/indent/alg_ruby.cpp
+    src/indent/alg_cstyle.cpp
     )
 
 include_directories(include)

@@ -93,5 +93,23 @@ QString textWithCommentsWiped(const QTextBlock& block) {
     return text;
 }
 
+QChar firstNonSpaceChar(const QTextBlock& block) {
+    QString textStripped = stripLeftWhitespace(block.text());
+    if (textStripped.isEmpty()) {
+        return QChar();
+    } else {
+        return textStripped[0];
+    }
+}
+
+QChar lastNonSpaceChar(const QTextBlock& block) {
+    QString textStripped = stripRightWhitespace(block.text());
+    if (textStripped.isEmpty()) {
+        return QChar();
+    } else {
+        return textStripped[textStripped.length() - 1];
+    }
+}
+
 };  // namespace Qutepart
 

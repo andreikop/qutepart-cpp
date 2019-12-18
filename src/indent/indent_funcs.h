@@ -36,4 +36,7 @@ QString prevNonEmptyBlockIndent(const QTextBlock& block);
 // Block text with comments replaced with space
 QString textWithCommentsWiped(const QTextBlock& block);
 
+QChar firstNonSpaceChar(const QTextBlock& block);
+QChar lastNonSpaceChar(const QTextBlock& block);
+
 };  // namespace Qutepart

@@ -8,6 +8,7 @@
 #include "alg_xml.h"
 #include "alg_python.h"
 #include "alg_ruby.h"
+#include "alg_cstyle.h"
 
 #include "indenter.h"
 
@@ -87,6 +88,9 @@ void Indenter::setAlgorithm(IndentAlg alg) {
         break;
         case INDENT_ALG_RUBY:
             alg_ = std::make_unique<IndentAlgRuby>();
+        break;
+        case INDENT_ALG_CSTYLE:
+            alg_ = std::make_unique<IndentAlgCstyle>();
         break;
         default:
             qWarning() << "Wrong indentation algorithm requested" << alg;
