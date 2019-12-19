@@ -813,10 +813,12 @@ QString IndentAlgCstyle::computeSmartIndent(QTextBlock block, int cursorPos) con
 #endif
 
     if (ch != '\n' && ( ! autoIndent)) {
-        QString res = processChar(block, ch);
+        QString res = processChar(block, ch, cursorPos);
+        //qDebug() << "~ processChar()" << ch << res;
         return res;
     } else {
         QString res = indentLine(block, false);
+        //qDebug() << "~ indentLine()" << ch << res;
         return res;
     }
 }
