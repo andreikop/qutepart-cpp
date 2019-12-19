@@ -806,18 +806,14 @@ QString IndentAlgCstyle::computeSmartIndent(QTextBlock block, int cursorPos) con
         ch = blockText[cursorPos - 1];
     }
 
-#if 0
-    bool autoIndent = ch.isNull();  // TODO proper condition
-#else
-    bool autoIndent = false;
-#endif
+    bool autoIndent = (cursorPos == -1);
 
     if (ch != '\n' && ( ! autoIndent)) {
         QString res = processChar(block, ch, cursorPos);
         //qDebug() << "~ processChar()" << ch << res;
         return res;
     } else {
-        QString res = indentLine(block, false);
+        QString res = indentLine(block, autoIndent);
         //qDebug() << "~ indentLine()" << ch << res;
         return res;
     }

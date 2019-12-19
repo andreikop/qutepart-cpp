@@ -164,6 +164,7 @@ void Indenter::indentBlock(QTextBlock block, int cursorPos, QChar typedKey) cons
     }
 }
 
+// Tab pressed
 void Indenter::onShortcutIndent(QTextCursor cursor) const {
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
@@ -184,6 +185,7 @@ void Indenter::onShortcutIndent(QTextCursor cursor) const {
     }
 }
 
+// Backspace pressed
 void Indenter::onShortcutUnindentWithBackspace(QTextCursor& cursor) const {
     int charsToRemove = textBeforeCursor(cursor).length() % indentText().length();
 
