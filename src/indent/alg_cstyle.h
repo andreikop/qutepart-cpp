@@ -13,6 +13,7 @@ namespace Qutepart {
 class IndentAlgCstyle: public IndentAlgImpl {
 public:
     const QString& triggerCharacters() const override;
+    QString indentLine(QTextBlock block, int cursorPos) const override;
     QString computeSmartIndent(QTextBlock block, int cursorPos) const override;
 
 private:

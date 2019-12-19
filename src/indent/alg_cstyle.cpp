@@ -751,17 +751,6 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c, int curso
         } else {
             return indentation;
         }
-    } else if (CFG_SNAP_SLASH && c == '/' && block.text().endsWith(" /")) {
-        // try to snap the string "* /" to "*/"
-        static const QRegularExpression rx("^(\\s*)\\*\\s+\\/\\s*$");
-        QRegularExpressionMatch match = rx.match(block.text());
-#if 0  // FIXME port to C++
-        if (match.hasMatch()) {
-            qpart.lines[block.blockNumber()] = match.captured(1) + "*/";
-        }
-#endif
-        dbg(QString("snapSlash at block %1").arg(block.blockNumber()));
-        return currentBlockIndent;
     } else if (c == ':') {
         // todo: handle case, default, signals, private, public, protected, Q_SIGNALS
         QString indent = trySwitchStatement(block);
@@ -817,6 +806,20 @@ QString IndentAlgCstyle::computeSmartIndent(QTextBlock block, int cursorPos) con
         //qDebug() << "~ indentLine()" << ch << res;
         return res;
     }
+}
+
+QString IndentAlgCstyle::indentLine(QTextBlock block, int cursorPos) const {
+    if (CFG_SNAP_SLASH &&
+        cursorPos != -1 &&
+        cursorPos > 0 &&
+        block.text()[cursorPos - 1] == '/' &&
+        stripLeftWhitespace(block.text()) == "* /") {
+        // special case. Closing comment with autoinserted asterisk + space. Remove the space.
+        dbg(QString("snapSlash at block %1").arg(block.blockNumber()));
+        return lineIndent(block.text()) + "*/";
+    }
+
+    return IndentAlgImpl::indentLine(block, cursorPos);
 }
 
 };  // namespace Qutepart

@@ -21,6 +21,7 @@ public:
     /* Compute line with proper indentation
      * and other formatting.
      * i.e. split line onto multiple lines.
+     * This method is called on autoindentation shortcut.
      *
      * Default implementation indents the line with computeSmartIndent()
 
@@ -28,11 +29,20 @@ public:
      */
     virtual QString autoFormatLine(QTextBlock block) const;
 
+    /* Indent line after Enter or trigger character pressed
+     * Default implementation calls computeSmartIndent()
+     *
+     * Return whole line contents
+     */
+    virtual QString indentLine(QTextBlock block, int cursorPos) const;
+
     /* Compute indent for line.
      * The majority of algorithms should override this method.
      *
      * cursorPos is -1 if autoIndent shortcut is triggered,
      * actual position if text is being typed
+     *
+     * This method is called by default implementation of autoFormatLine()
      *
      * Default implementation returns empty string
      */

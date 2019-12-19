@@ -44,6 +44,15 @@ QString IndentAlgImpl::autoFormatLine(QTextBlock block) const {
     return computeSmartIndent(block, -1) + stripLeftWhitespace(block.text());
 }
 
+QString IndentAlgImpl::indentLine(QTextBlock block, int cursorPos) const {
+    QString indent = computeSmartIndent(block, cursorPos);
+    if ( ! indent.isNull()) {
+        return indent + stripLeftWhitespace(block.text());
+    } else {
+        return block.text();
+    }
+}
+
 QString IndentAlgImpl::computeSmartIndent(QTextBlock block, int cursorPos) const {
     return "";
 }
@@ -149,10 +158,7 @@ void Indenter::indentBlock(QTextBlock block, int cursorPos, QChar typedKey) cons
         if (typedKey == QChar::Null) {  // format line on shortcut
             indentedLine = alg_->autoFormatLine(block);
         } else {
-            QString indent = alg_->computeSmartIndent(block, cursorPos);
-            if ( ! indent.isNull()) {
-                indentedLine = indent + stripLeftWhitespace(block.text());
-            }
+            indentedLine = alg_->indentLine(block, cursorPos);
         }
 
         if ( (! indentedLine.isNull()) &&
