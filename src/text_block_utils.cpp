@@ -70,13 +70,13 @@ void setPositionInBlock(QTextCursor* cursor, int positionInBlock, QTextCursor::M
     return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);
 }
 
-BackwardCharIterator::BackwardCharIterator(const TextPosition& position):
+CharIterator::CharIterator(const TextPosition& position):
         position_(position)
 {}
 
-QChar BackwardCharIterator::step() {
+QChar CharIterator::step() {
     if ( ! atEnd()) {
-        movePositionBack();
+        movePosition();
         QChar retVal = position_.block.text()[position_.column];
         return retVal;
     } else {
@@ -84,16 +84,38 @@ QChar BackwardCharIterator::step() {
     }
 }
 
-TextPosition BackwardCharIterator::currentPosition() const {
+TextPosition CharIterator::currentPosition() const {
     return position_;
 }
 
-bool BackwardCharIterator::atEnd() const {
+bool CharIterator::atEnd() const {
     return position_.column == 0 &&
            ( ! position_.block.isValid());
 }
 
-void BackwardCharIterator::movePositionBack() {
+void ForwardCharIterator::movePosition() {
+    int blockLength = position_.block.text().length();
+
+    while (1) {
+        if (position_.column < (blockLength - 1)) {
+            position_.column++;
+            break;
+        } else {
+            position_.block = position_.block.next();
+            if ( ! position_.block.isValid()) {
+                break;
+            }
+
+            position_.column = -1;
+            /* move block backward, but the block might be empty
+               Go to next while loop iteration and move back
+               more blocks if necessary
+             */
+        }
+    }
+}
+
+void BackwardCharIterator::movePosition() {
     while (1) {
         if (position_.column > 0) {
             position_.column--;
@@ -111,6 +133,42 @@ void BackwardCharIterator::movePositionBack() {
              */
         }
     }
+}
+
+TextPosition findBracketForward(QChar bracket, const TextPosition& position) {
+    QChar opening = bracket;
+    QChar closing;
+
+    if (bracket == '(') {
+        closing = ')';
+    } else if (bracket == '[') {
+        closing = ']';
+    } else if (bracket == '{') {
+        closing = '}';
+    } else {
+        qDebug() << "Invalid bracket" << bracket;
+        return TextPosition();
+    }
+
+    int depth = 1;
+
+    ForwardCharIterator it(position);
+    while ( ! it.atEnd()) {
+        QChar ch = it.step();
+        // TODO if not self._qpart.isComment(foundBlock.blockNumber(), foundColumn):
+        if (ch == opening) {
+            depth--;
+        }
+        else if (ch == closing) {
+            depth++;
+        }
+
+        if (depth == 0) {
+            return it.currentPosition();
+        }
+    }
+
+    return TextPosition();
 }
 
 TextPosition findBracketBackward(QChar bracket, const TextPosition& position) {

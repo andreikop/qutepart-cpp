@@ -40,20 +40,38 @@ void setPositionInBlock(
     int positionInBlock,
     QTextCursor::MoveMode anchor=QTextCursor::MoveAnchor);
 
-class BackwardCharIterator {
+class CharIterator {
 public:
-    // create iterator and make first step back
-    BackwardCharIterator(const TextPosition& position);
+    // create iterator and make first step
+    CharIterator(const TextPosition& position);
 
     QChar step();  // return current character and then make step back
     TextPosition currentPosition() const;
     bool atEnd() const;
 
-private:
+protected:
     TextPosition position_;
 
-    void movePositionBack();
+    virtual void movePosition() = 0;
 };
+
+class ForwardCharIterator: public CharIterator {
+    using CharIterator::CharIterator;
+private:
+    virtual void movePosition() override;
+};
+
+class BackwardCharIterator: public CharIterator {
+    using CharIterator::CharIterator;
+private:
+    virtual void movePosition() override;
+};
+
+/* find bracket forward from position (not including position)
+   Return invalid position if not found
+   NOTE this function ignores comments
+ */
+TextPosition findBracketForward(QChar bracket, const TextPosition& position);
 
 /* find bracket backward from position (not including position)
    Return invalid position if not found

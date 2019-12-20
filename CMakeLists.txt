@@ -18,6 +18,7 @@ set(qutepart_SRCS
     qutepart-syntax-files.qrc
     src/qutepart.cpp
     src/text_block_utils.cpp
+    src/bracket_highlighter.cpp
     src/hl_factory.cpp
     src/hl/context.cpp
     src/hl/language.cpp
