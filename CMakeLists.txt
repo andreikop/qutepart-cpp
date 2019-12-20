@@ -17,6 +17,8 @@ find_package(Qt5Test CONFIG REQUIRED)
 set(qutepart_SRCS
     qutepart-syntax-files.qrc
     src/qutepart.cpp
+    src/text_pos.cpp
+    src/char_iterator.cpp
     src/text_block_utils.cpp
     src/bracket_highlighter.cpp
     src/hl_factory.cpp
