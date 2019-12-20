@@ -628,7 +628,7 @@ void makeKeywordsLowerCase(QHash<QString, QStringList>& keywordLists) {
 }
 
 // Load keyword lists, contexts, attributes
-QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywordDeliminators, QString& error) {
+QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywordDeliminators, QString& indenter, QString& error) {
     QHash<QString, QStringList> keywordLists = loadKeywordLists(xmlReader, error);
     if ( ! error.isNull()) {
         return QList<ContextPtr>();
@@ -659,6 +659,10 @@ QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywo
             // Convert all list items to lowercase
             if ( ! keywordsKeySensitive) {
                 makeKeywordsLowerCase(keywordLists);
+            }
+        } else if (xmlReader.name() == "indentation") {
+            if (xmlReader.attributes().hasAttribute("mode")) {
+                indenter = getAttribute(xmlReader.attributes(), "mode", QString::null);
             }
         }
     }
@@ -731,7 +735,7 @@ QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamRead
     }
 
     QString keywordDeliminators;
-    QList<ContextPtr> contexts = loadLanguageSytnax(xmlReader, keywordDeliminators, error);
+    QList<ContextPtr> contexts = loadLanguageSytnax(xmlReader, keywordDeliminators, indenter, error);
     if ( ! error.isNull()) {
         return QSharedPointer<Language>();
     }
