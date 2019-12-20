@@ -8,53 +8,10 @@
 #include <QKeyEvent>
 
 #include "qutepart.h"
+#include "alg_impl.h"
 
 
 namespace Qutepart {
-
-class IndentAlgImpl {
-public:
-    void setConfig(int width, bool useTabs);
-
-    virtual const QString& triggerCharacters() const;
-
-    /* Compute line with proper indentation
-     * and other formatting.
-     * i.e. split line onto multiple lines.
-     * This method is called on autoindentation shortcut.
-     *
-     * Default implementation indents the line with computeSmartIndent()
-
-     * Return value QString::null means 'do not modify the string'
-     */
-    virtual QString autoFormatLine(QTextBlock block) const;
-
-    /* Indent line after Enter or trigger character pressed
-     * Default implementation calls computeSmartIndent()
-     *
-     * Return whole line contents
-     */
-    virtual QString indentLine(QTextBlock block, int cursorPos) const;
-
-    /* Compute indent for line.
-     * The majority of algorithms should override this method.
-     *
-     * cursorPos is -1 if autoIndent shortcut is triggered,
-     * actual position if text is being typed
-     *
-     * This method is called by default implementation of autoFormatLine()
-     *
-     * Default implementation returns empty string
-     */
-    virtual QString computeSmartIndent(QTextBlock block, int cursorPos) const;
-
-protected:
-    int width_;
-    bool useTabs_;
-
-    QString indentText() const;
-};
-
 
 class Indenter: public QObject {
 public:
@@ -69,6 +26,8 @@ public:
 
     bool useTabs() const;
     void setUseTabs(bool);
+
+    void setLanguage(const QString& language);
 
     bool shouldAutoIndentOnEvent(QKeyEvent* event) const;
     bool shouldUnindentWithBackspace(const QTextCursor& cursor) const;
@@ -85,5 +44,6 @@ private:
     std::unique_ptr<IndentAlgImpl> alg_;
     bool useTabs_;
     int width_;
+    QString language_;
 };
 };

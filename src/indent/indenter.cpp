@@ -35,44 +35,13 @@ public:
 }  // namespace
 
 
-void IndentAlgImpl::setConfig(int width, bool useTabs) {
-    width_ = width;
-    useTabs_ = useTabs;
-}
-
-QString IndentAlgImpl::autoFormatLine(QTextBlock block) const {
-    return computeSmartIndent(block, -1) + stripLeftWhitespace(block.text());
-}
-
-QString IndentAlgImpl::indentLine(QTextBlock block, int cursorPos) const {
-    QString indent = computeSmartIndent(block, cursorPos);
-    if ( ! indent.isNull()) {
-        return indent + stripLeftWhitespace(block.text());
-    } else {
-        return block.text();
-    }
-}
-
-QString IndentAlgImpl::computeSmartIndent(QTextBlock block, int cursorPos) const {
-    return "";
-}
-
-
-const QString& IndentAlgImpl::triggerCharacters() const {
-    static const QString NULL_STRING = QString::null;
-    return NULL_STRING;
-}
-
-QString IndentAlgImpl::indentText() const {
-    return makeIndent(width_, useTabs_);
-}
-
 Indenter::Indenter():
     alg_(std::make_unique<IndentAlgNormal>()),
     useTabs_(false),
     width_(4)
 {
     alg_->setConfig(width_, useTabs_);
+    alg_->setLanguage(language_);
 }
 
 void Indenter::setAlgorithm(IndentAlg alg) {
@@ -106,6 +75,7 @@ void Indenter::setAlgorithm(IndentAlg alg) {
         break;
     }
     alg_->setConfig(width_, useTabs_);
+    alg_->setLanguage(language_);
 }
 
 QString Indenter::indentText() const {
@@ -128,6 +98,11 @@ bool Indenter::useTabs() const {
 void Indenter::setUseTabs(bool use) {
     useTabs_ = use;
     alg_->setConfig(width_, useTabs_);
+}
+
+void Indenter::setLanguage(const QString& language) {
+    language_ = language;
+    alg_->setLanguage(language_);
 }
 
 bool Indenter::shouldAutoIndentOnEvent(QKeyEvent* event) const {

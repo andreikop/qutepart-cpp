@@ -228,6 +228,7 @@ QString IndentAlgCstyle::tryCComment(const QTextBlock& block) const {
     return QString::null;
 }
 
+#if 0  // disabled while porting to C++
 /* C++ comment checking. when we want to insert slashes:
 #, #/, #! #/<, #!< and ##...
 return: filler string or null, if not in a star comment
@@ -272,11 +273,9 @@ QString IndentAlgCstyle::tryCppComment(const QTextBlock& block) const {
                 match = rx.match(prevLineText);
             }
 
-#if 0  // FIXME
             if (match.hasMatch()) {
                 qpart.insertText((block.blockNumber(), 0), match.captured(1));
             }
-#endif
         }
     }
 
@@ -286,6 +285,7 @@ QString IndentAlgCstyle::tryCppComment(const QTextBlock& block) const {
 
     return indentation;
 }
+#endif
 
 namespace {
 
@@ -456,11 +456,7 @@ QString IndentAlgCstyle::tryStatement(const QTextBlock& block) const {
         return increaseIndent(lineIndent(currentBlockText), indentText());
     }
 
-#if 0  // FIXME
-    bool alignOnSingleQuote = language_ == "PHP/PHP" || language_ == "JavaScript";
-#else
-    bool alignOnSingleQuote = false;
-#endif
+    bool alignOnSingleQuote = language_ == "php.xml" || language_ == "javascript.xml";
 
     // align on strings "..."\n => below the opening quote
     // multi-language support: [\.+] for javascript or php
@@ -632,7 +628,12 @@ QString IndentAlgCstyle::tryMatchedAnchor(const QTextBlock& block, bool autoInde
             if (lastChar == ',') {
                 // use indentation of last line instead and place closing anchor
                 // in same column of the opening anchor
-#if 0  // FIXME
+#if 0  // FIXME  disabled while porting to C++
+new code:
+                QTextCursor cursor(block);
+                setPositionInBlock(&cursor, firstNonSpaceColumn(block.text()));
+                cursor.insertText("\n" + makeIndentAsColumn(foundPos.block, foundPos.column, width_, useTabs_, 0));
+old code
                 qpart.insertText((block.blockNumber(), firstNonSpaceColumn(block.text())), '\n');
                 qpart.cursorPosition = (block.blockNumber(), actualIndentation.length());
                 // indent closing anchor
@@ -647,7 +648,7 @@ QString IndentAlgCstyle::tryMatchedAnchor(const QTextBlock& block, bool autoInde
                 indentation = makeIndentAsColumn(foundPos.block, foundPos.column, width_, useTabs_, 0);
             }
 
-            dbg(QString("tryMatchedAnchor: success in line %1").arg(foundPos.block.blockNumber()));
+            dbg(QString("tryMatchedAnchor: success 0 in line %1").arg(foundPos.block.blockNumber()));
             return indentation;
         }
     }
@@ -656,12 +657,16 @@ QString IndentAlgCstyle::tryMatchedAnchor(const QTextBlock& block, bool autoInde
     // increase indentation and place closing anchor on the next line
     indentation = blockIndent(foundPos.block);
 
-#if 0  // FIXME
+#if 0  // FIXME disabled while porting to C++
+new code:
+    indentation += ("\n" + indentation);
+old code:
     qpart.replaceText((block.blockNumber(), 0), blockIndent(block).length(), "\n");
     qpart.cursorPosition = (block.blockNumber(), indentation.length()));
     // indent closing brace
     setBlockIndent(block.next(), indentation);
 #endif
+
     dbg(QString("tryMatchedAnchor: success in line %1").arg(foundPos.block.blockNumber()));
     return increaseIndent(indentation, indentText());
 }
@@ -682,12 +687,14 @@ QString IndentAlgCstyle::indentLine(const QTextBlock& block, bool autoIndent) co
         return indent;
     }
 
+#if 0  // disabled while porting to C++
     if ( ! autoIndent) {
         indent = tryCppComment(block);
         if ( ! indent.isNull()) {
             return indent;
         }
     }
+#endif
 
     indent = trySwitchStatement(block);
     if ( ! indent.isNull()) {
@@ -774,11 +781,7 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c, int curso
         }
     } else if (firstCharAfterIndent &&
                c == '#' &&
-#if 0  // FIXME port to C++ properly
-               (qpart.language() == "C" || qpart.language() == "C++")
-#else
-                true
-#endif
+               (language_ == "c.xml" || language_ == "cpp.xml")
                ){
         // always put preprocessor stuff upfront
         return "";

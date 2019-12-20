@@ -73,8 +73,18 @@ IndentAlg convertIndenter(const QString& stringVal) {
         return INDENT_ALG_NONE;
     } else if (stringVal == "normal") {
         return INDENT_ALG_NORMAL;
+    } else if (stringVal == "cstyle") {
+        return INDENT_ALG_CSTYLE;
     } else if (stringVal == "lisp") {
         return INDENT_ALG_LISP;
+    } else if (stringVal == "scheme") {
+        return INDENT_ALG_SCHEME;
+    } else if (stringVal == "xml") {
+        return INDENT_ALG_XML;
+    } else if (stringVal == "python") {
+        return INDENT_ALG_PYTHON;
+    } else if (stringVal == "ruby") {
+        return INDENT_ALG_RUBY;
     } else if  (stringVal.isNull()) {
         return INDENT_ALG_NORMAL;  // default
     } else {

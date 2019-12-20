@@ -75,6 +75,7 @@ void Qutepart::setFont(const QFont& font) {
 
 void Qutepart::setHighlighter(const QString& languageId) {
     highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), languageId));
+    indenter_->setLanguage(languageId);
 }
 
 void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
