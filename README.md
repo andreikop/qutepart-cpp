@@ -19,6 +19,12 @@ All features are configurable
     * XML
     * Lisp
     * Scheme
+    * C, C++
+    * JavaScript
+    * Java
+    * PHP
+    * Go
+    * And many others
 * Visible witespaces
 * Marker for too long lines
 
