@@ -52,6 +52,7 @@ LangInfo chooseLanguage(
     const QString& firstLine=QString::null);
 
 class Indenter;
+class BracketHighlighter;
 
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
@@ -104,6 +105,9 @@ public:
     QColor lineLengthEdgeColor() const;
     void setLineLengthEdgeColor(QColor);
 
+    bool bracketHighlightingEnabled() const;
+    void setBracketHighlightingEnabled(bool value);
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event);
@@ -129,8 +133,13 @@ private:
 
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 
+private slots:
+    void updateExtraSelections();
+
+private:
     QSharedPointer<QSyntaxHighlighter> highlighter_;
     std::unique_ptr<Indenter> indenter_;
+    std::unique_ptr<BracketHighlighter> bracketHighlighter_;
 
     bool drawIndentations_;
     bool drawAnyWhitespace_;

@@ -25,6 +25,7 @@ All features are configurable
     * PHP
     * Go
     * And many others
+* Bracket highlighting
 * Visible witespaces
 * Marker for too long lines
 

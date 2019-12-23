@@ -4,6 +4,7 @@
 
 #include "qutepart.h"
 #include "hl_factory.h"
+#include "bracket_highlighter.h"
 #include "indent/indenter.h"
 
 #include "hl/loader.h"
@@ -50,6 +51,9 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
 
     setDrawSolidEdge(drawSolidEdge_);
     updateTabStopWidth();
+    connect(this, &Qutepart::cursorPositionChanged, this, &Qutepart::updateExtraSelections);
+
+    setBracketHighlightingEnabled(true);
 }
 
 Qutepart::~Qutepart() {
@@ -154,6 +158,19 @@ QColor Qutepart::lineLengthEdgeColor() const {
 
 void Qutepart::setLineLengthEdgeColor(QColor color) {
     lineLengthEdgeColor_ = color;
+}
+
+bool Qutepart::bracketHighlightingEnabled() const {
+    return bool(bracketHighlighter_);
+}
+
+void Qutepart::setBracketHighlightingEnabled(bool value) {
+    if (value && ( ! bracketHighlighter_)) {
+        bracketHighlighter_ = std::make_unique<BracketHighlighter>();
+    } else if ( ( ! value) && bool(bracketHighlighter_)) {
+        bracketHighlighter_.reset();
+    }
+    updateExtraSelections();
 }
 
 void Qutepart::keyPressEvent(QKeyEvent *event) {
@@ -455,4 +472,17 @@ QRect Qutepart::cursorRect(QTextBlock block, int column, int offset) const {
     return QPlainTextEdit::cursorRect(cursor).translated(offset, 0);
 }
 
+void Qutepart::updateExtraSelections() {
+    QTextCursor cursor = textCursor();
+    QList<QTextEdit::ExtraSelection> bracketSelections;
+
+    if (bracketHighlighter_) {
+        bracketSelections = bracketHighlighter_->extraSelections(
+                TextPosition(textCursor().block(),
+                             cursor.positionInBlock()));
+    }
+
+    setExtraSelections(bracketSelections);
 }
+
+}  // namespace Qutepart

@@ -94,10 +94,10 @@ TextPosition findBracketForward(QChar bracket, const TextPosition& position) {
         QChar ch = it.step();
         // TODO if not self._qpart.isComment(foundBlock.blockNumber(), foundColumn):
         if (ch == opening) {
-            depth--;
+            depth++;
         }
         else if (ch == closing) {
-            depth++;
+            depth--;
         }
 
         if (depth == 0) {

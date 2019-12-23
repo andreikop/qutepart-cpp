@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "text_block_utils.h"
 
 #include "bracket_highlighter.h"

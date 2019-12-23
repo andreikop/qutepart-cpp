@@ -8,6 +8,7 @@
 namespace Qutepart {
 
 class BracketHighlighter {
+public:
     QList<QTextEdit::ExtraSelection> extraSelections(const TextPosition& pos);
 
 private:

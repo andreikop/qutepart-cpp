@@ -21,8 +21,7 @@ TextPosition CharIterator::currentPosition() const {
 }
 
 bool CharIterator::atEnd() const {
-    return position_.column == 0 &&
-           ( ! position_.block.isValid());
+    return ( ! position_.block.isValid());
 }
 
 void ForwardCharIterator::movePosition() {
