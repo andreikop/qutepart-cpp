@@ -38,6 +38,7 @@ private:
 Qutepart::Qutepart(QWidget *parent, const QString& text):
     QPlainTextEdit(text, parent),
     indenter_(std::make_unique<Indenter>()),
+    markArea_(std::make_unique<MarkArea>(this)),
     drawIndentations_(true),
     drawAnyWhitespace_(false),
     drawIncorrectIndentation_(true),
@@ -444,7 +445,12 @@ void Qutepart::updateViewport() {
         totalMarginWidth += width;
     }
 
-    // TODO the same for bookmarks
+    {
+        int width = markArea_->widthHint();
+        markArea_->setGeometry(QRect(currentX, top, width, height));
+        currentX += width;
+        totalMarginWidth += width;
+    }
 
     if (totalMarginWidth_ != totalMarginWidth) {
         totalMarginWidth_ = totalMarginWidth;

@@ -53,6 +53,7 @@ LangInfo chooseLanguage(
 class Indenter;
 class BracketHighlighter;
 class LineNumberArea;
+class MarkArea;
 
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
@@ -144,6 +145,7 @@ private:
     std::unique_ptr<Indenter> indenter_;
     std::unique_ptr<BracketHighlighter> bracketHighlighter_;
     std::unique_ptr<LineNumberArea> lineNumberArea_;
+    std::unique_ptr<MarkArea> markArea_;
 
     bool drawIndentations_;
     bool drawAnyWhitespace_;
@@ -154,9 +156,8 @@ private:
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;
 
-    QList<QWidget*> sideAreas_;
-
     friend class LineNumberArea;
+    friend class MarkArea;
 };
 
 }; // namespace Qutepart
