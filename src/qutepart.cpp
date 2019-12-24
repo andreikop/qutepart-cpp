@@ -5,6 +5,7 @@
 #include "qutepart.h"
 #include "hl_factory.h"
 #include "bracket_highlighter.h"
+#include "side_areas.h"
 #include "indent/indenter.h"
 
 #include "hl/loader.h"
@@ -54,6 +55,7 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
     connect(this, &Qutepart::cursorPositionChanged, this, &Qutepart::updateExtraSelections);
 
     setBracketHighlightingEnabled(true);
+    setLineNumbersVisible(true);
 }
 
 Qutepart::~Qutepart() {
@@ -171,6 +173,20 @@ void Qutepart::setBracketHighlightingEnabled(bool value) {
         bracketHighlighter_.reset();
     }
     updateExtraSelections();
+}
+
+bool Qutepart::lineNumbersVisible() const {
+    return bool(lineNumberArea_);
+}
+
+void Qutepart::setLineNumbersVisible(bool value) {
+    if ( ( ! value) && bool(lineNumberArea_)) {
+        lineNumberArea_.reset();
+        updateViewport();
+    } else if (value && (! bool(lineNumberArea_))) {
+        lineNumberArea_ = std::make_unique<LineNumberArea>(this);
+        connect(lineNumberArea_.get(), &LineNumberArea::widthChanged, this, &Qutepart::updateViewport);
+    }
 }
 
 void Qutepart::keyPressEvent(QKeyEvent *event) {
@@ -420,14 +436,15 @@ void Qutepart::updateViewport() {
     int height = cr.height();
 
     int totalMarginWidth = 0;
-#if 0
-    for margin in self._margins:
-        if not margin.isHidden():
-            width = margin.width()
-            margin.setGeometry(QRect(currentX, top, width, height))
-            currentX += width
-            totalMarginWidth += width
-#endif
+
+    if(lineNumberArea_) {
+        int width = lineNumberArea_->widthHint();
+        lineNumberArea_->setGeometry(QRect(currentX, top, width, height));
+        currentX += width;
+        totalMarginWidth += width;
+    }
+
+    // TODO the same for bookmarks
 
     if (totalMarginWidth_ != totalMarginWidth) {
         totalMarginWidth_ = totalMarginWidth;

@@ -21,6 +21,7 @@ set(qutepart_SRCS
     src/char_iterator.cpp
     src/text_block_utils.cpp
     src/bracket_highlighter.cpp
+    src/side_areas.cpp
     src/hl_factory.cpp
     src/hl/context.cpp
     src/hl/language.cpp

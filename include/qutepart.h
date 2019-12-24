@@ -10,7 +10,6 @@
 
 namespace Qutepart {
 
-
 enum IndentAlg {
     INDENT_ALG_NONE = 0,
     INDENT_ALG_NORMAL,
@@ -53,6 +52,7 @@ LangInfo chooseLanguage(
 
 class Indenter;
 class BracketHighlighter;
+class LineNumberArea;
 
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
@@ -108,6 +108,9 @@ public:
     bool bracketHighlightingEnabled() const;
     void setBracketHighlightingEnabled(bool value);
 
+    bool lineNumbersVisible() const;
+    void setLineNumbersVisible(bool value);
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event);
@@ -125,7 +128,6 @@ private:
     int effectiveEdgePos(const QString& text);
     void chooseVisibleWhitespace(const QString& text, QVector<bool>* result);
     void setSolidEdgeGeometry();
-    void updateViewport();
     void updateViewportMargins();
     void resizeEvent(QResizeEvent* event) override;
 
@@ -134,12 +136,14 @@ private:
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 
 private slots:
+    void updateViewport();
     void updateExtraSelections();
 
 private:
     QSharedPointer<QSyntaxHighlighter> highlighter_;
     std::unique_ptr<Indenter> indenter_;
     std::unique_ptr<BracketHighlighter> bracketHighlighter_;
+    std::unique_ptr<LineNumberArea> lineNumberArea_;
 
     bool drawIndentations_;
     bool drawAnyWhitespace_;
@@ -149,6 +153,10 @@ private:
     QColor lineLengthEdgeColor_;
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;
+
+    QList<QWidget*> sideAreas_;
+
+    friend class LineNumberArea;
 };
 
 }; // namespace Qutepart
