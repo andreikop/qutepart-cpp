@@ -20,6 +20,7 @@ set(qutepart_SRCS
     src/text_pos.cpp
     src/char_iterator.cpp
     src/text_block_utils.cpp
+    src/text_block_flags.cpp
     src/bracket_highlighter.cpp
     src/side_areas.cpp
     src/hl_factory.cpp

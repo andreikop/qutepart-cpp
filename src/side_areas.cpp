@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "qutepart.h"
+#include "text_block_flags.h"
 
 #include "side_areas.h"
 
@@ -15,13 +16,6 @@ const int LEFT_LINE_NUM_MARGIN = 5;
 const int RIGHT_LINE_NUM_MARGIN = 3;
 
 const int MARK_MARGIN = 1;
-
-const int BOOMARK_BIT = 0x1;
-
-bool isBookmarked(const QTextBlock& block) {
-    int state = block.userState();
-    return state != -1 && state & BOOMARK_BIT;
-}
 
 }
 

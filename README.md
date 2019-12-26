@@ -1,4 +1,4 @@
-# Code editor component for C++/Qt5
+# Code editor widget for C++/Qt5
 
 Written in pure C++/Qt5. No any dependencies.
 
@@ -29,6 +29,7 @@ All features are configurable
 * Bracket highlighting
 * Visible witespaces
 * Marker for too long lines
+* Bookmarks
 
 ## Build dependencies
 * C++ compiler

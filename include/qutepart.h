@@ -112,6 +112,10 @@ public:
     bool lineNumbersVisible() const;
     void setLineNumbersVisible(bool value);
 
+    QAction* toggleBookmarkAction() const;
+    QAction* prevBookmarkAction() const;
+    QAction* nextBookmarkAction() const;
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event);
@@ -135,10 +139,15 @@ private:
     void updateTabStopWidth();
 
     QRect cursorRect(QTextBlock block, int column, int offset) const;
+    void gotoBlock(const QTextBlock& block);
 
 private slots:
     void updateViewport();
     void updateExtraSelections();
+
+    void onShortcutToggleBookmark();
+    void onShortcutPrevBookmark();
+    void onShortcutNextBookmark();
 
 private:
     QSharedPointer<QSyntaxHighlighter> highlighter_;
@@ -155,6 +164,10 @@ private:
     QColor lineLengthEdgeColor_;
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;
+
+    QAction* toggleBookmarkAction_;
+    QAction* prevBookmarkAction_;
+    QAction* nextBookmarkAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;

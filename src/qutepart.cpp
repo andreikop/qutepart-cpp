@@ -12,6 +12,7 @@
 #include "hl/syntax_highlighter.h"
 
 #include "text_block_utils.h"
+#include "text_block_flags.h"
 
 
 namespace Qutepart {
@@ -190,6 +191,18 @@ void Qutepart::setLineNumbersVisible(bool value) {
     }
 }
 
+QAction* Qutepart::toggleBookmarkAction() const {
+    return toggleBookmarkAction_;
+}
+
+QAction* Qutepart::prevBookmarkAction() const {
+    return prevBookmarkAction_;
+}
+
+QAction* Qutepart::nextBookmarkAction() const {
+    return nextBookmarkAction_;
+}
+
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
     if (event->key() == Qt::Key_Backspace &&
@@ -225,11 +238,26 @@ void Qutepart::paintEvent(QPaintEvent *event) {
 }
 
 void Qutepart::initActions() {
+    QAction* increaseIndentAction = createAction(
+        "Increase indentation", QKeySequence(Qt::Key_Tab));
     connect(
-        createAction( "Increase indentation", QKeySequence(Qt::Key_Tab)),
+        increaseIndentAction,
         &QAction::triggered,
         [=]{indenter_->onShortcutIndent(textCursor());}
     );
+
+    toggleBookmarkAction_ = createAction(
+        "Toggle bookmark", QKeySequence(Qt::CTRL | Qt::Key_B));
+    connect(toggleBookmarkAction_, &QAction::triggered,
+            this, &Qutepart::onShortcutToggleBookmark);
+
+    prevBookmarkAction_ = createAction("Previous bookmark", QKeySequence(Qt::ALT | Qt::Key_Up));
+    connect(prevBookmarkAction_, &QAction::triggered,
+            this, &Qutepart::onShortcutPrevBookmark);
+
+    nextBookmarkAction_ = createAction("Next bookmark", QKeySequence(Qt::ALT | Qt::Key_Down));
+    connect(nextBookmarkAction_, &QAction::triggered,
+            this, &Qutepart::onShortcutNextBookmark);
 }
 
 QAction* Qutepart::createAction(
@@ -495,6 +523,11 @@ QRect Qutepart::cursorRect(QTextBlock block, int column, int offset) const {
     return QPlainTextEdit::cursorRect(cursor).translated(offset, 0);
 }
 
+void Qutepart::gotoBlock(const QTextBlock& block) {
+    QTextCursor cursor(block);
+    setTextCursor(cursor);
+}
+
 void Qutepart::updateExtraSelections() {
     QTextCursor cursor = textCursor();
     QList<QTextEdit::ExtraSelection> bracketSelections;
@@ -506,6 +539,56 @@ void Qutepart::updateExtraSelections() {
     }
 
     setExtraSelections(bracketSelections);
+}
+
+void Qutepart::onShortcutToggleBookmark() {
+    QTextBlock block = textCursor().block();
+    bool value = ! isBookmarked(block);
+    setBookmarked(block, value);
+    markArea_->update();
+}
+
+void Qutepart::onShortcutPrevBookmark() {
+    QTextBlock currentBlock = textCursor().block();
+    QTextBlock block = currentBlock.previous();
+
+    while(block.isValid()) {
+        if (isBookmarked(block)) {
+            gotoBlock(block);
+            return;
+        }
+        block = block.previous();
+    }
+    block = document()->lastBlock();
+    while (block != currentBlock) {
+        if (isBookmarked(block)) {
+            gotoBlock(block);
+            return;
+        }
+        block = block.previous();
+    }
+}
+
+void Qutepart::onShortcutNextBookmark() {
+    QTextBlock currentBlock = textCursor().block();
+    QTextBlock block = currentBlock.next();
+
+    while(block.isValid()) {
+        if (isBookmarked(block)) {
+            gotoBlock(block);
+            return;
+        }
+        block = block.next();
+    }
+
+    block = document()->firstBlock();
+    while (block != currentBlock) {
+        if (isBookmarked(block)) {
+            gotoBlock(block);
+            return;
+        }
+        block = block.next();
+    }
 }
 
 }  // namespace Qutepart
