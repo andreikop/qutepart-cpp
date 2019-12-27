@@ -13,6 +13,7 @@
 
 #include "text_block_utils.h"
 #include "text_block_flags.h"
+#include "indent/indent_funcs.h"
 
 
 namespace Qutepart {
@@ -191,6 +192,14 @@ void Qutepart::setLineNumbersVisible(bool value) {
     }
 }
 
+QAction* Qutepart::increaseIndentAction() const {
+    return increaseIndentAction_;
+}
+
+QAction* Qutepart::decreaseIndentAction() const {
+    return decreaseIndentAction_;
+}
+
 QAction* Qutepart::toggleBookmarkAction() const {
     return toggleBookmarkAction_;
 }
@@ -238,13 +247,15 @@ void Qutepart::paintEvent(QPaintEvent *event) {
 }
 
 void Qutepart::initActions() {
-    QAction* increaseIndentAction = createAction(
-        "Increase indentation", QKeySequence(Qt::Key_Tab));
-    connect(
-        increaseIndentAction,
-        &QAction::triggered,
-        [=]{indenter_->onShortcutIndent(textCursor());}
-    );
+    increaseIndentAction_ = createAction(
+        "Increase indent", QKeySequence(Qt::Key_Tab), "format-indent-more");
+    connect(increaseIndentAction_, &QAction::triggered,
+            this, [this](){this->changeSelectedBlocksIndent(true, false);});
+
+    decreaseIndentAction_ = createAction(
+        "Decrease indent", QKeySequence(Qt::SHIFT | Qt::Key_Tab), "format-indent-less");
+    connect(decreaseIndentAction_, &QAction::triggered,
+            this, [this](){this->changeSelectedBlocksIndent(false, false);});
 
     toggleBookmarkAction_ = createAction(
         "Toggle bookmark", QKeySequence(Qt::CTRL | Qt::Key_B));
@@ -526,6 +537,102 @@ QRect Qutepart::cursorRect(QTextBlock block, int column, int offset) const {
 void Qutepart::gotoBlock(const QTextBlock& block) {
     QTextCursor cursor(block);
     setTextCursor(cursor);
+}
+
+namespace {
+QTextCursor cursorAtSpaceEnd(const QTextBlock& block) {
+    QTextCursor cursor(block);
+    setPositionInBlock(&cursor, blockIndent(block).length());
+    return cursor;
+}
+
+};  // anonymous namespace
+
+void Qutepart::indentBlock(const QTextBlock& block, bool withSpace) const {
+    QTextCursor cursor(cursorAtSpaceEnd(block));
+    if (withSpace) {
+        cursor.insertText(" ");
+    } else {
+        cursor.insertText(indenter_->indentText());
+    }
+}
+
+void Qutepart::unIndentBlock(const QTextBlock& block, bool withSpace) const {
+    QString currentIndent = blockIndent(block);
+
+    int charsToRemove = -1;
+
+    if (currentIndent.endsWith('\t')) {
+        charsToRemove = 1;
+    } else if (withSpace) {
+        charsToRemove = std::min(1, currentIndent.length());
+    } else {
+        if (indenter_->useTabs()) {
+            charsToRemove = std::min(spaceAtEndCount(currentIndent), indenter_->width());
+        } else {  // spaces
+            if (currentIndent.endsWith(indenter_->indentText())) {  // remove indent level
+                charsToRemove = indenter_->width();
+            } else {  // remove all spaces
+                charsToRemove = std::min(spaceAtEndCount(currentIndent), indenter_->width());
+            }
+        }
+    }
+
+    if (charsToRemove > 0) {
+        QTextCursor cursor(cursorAtSpaceEnd(block));
+        cursor.setPosition(cursor.position() - charsToRemove, QTextCursor::KeepAnchor);
+        cursor.removeSelectedText();
+    }
+}
+
+/* Tab or Space pressed and few blocks are selected, or Shift+Tab pressed
+Insert or remove text from the beginning of blocks
+*/
+void Qutepart::changeSelectedBlocksIndent(bool increase, bool withSpace) {
+    QTextCursor cursor = textCursor();
+
+    // Tab typed and no selection. Insert smart indentation
+    if (increase && (! cursor.hasSelection())) {
+        indenter_->onShortcutIndentAfterCursor(cursor);
+        return;
+    }
+
+    // Multiple lines selection or unindent shortcut pressed.
+    // Indent blocks
+
+    QTextBlock startBlock = document()->findBlock(cursor.selectionStart());
+    QTextBlock endBlock = document()->findBlock(cursor.selectionEnd());
+    if(cursor.selectionStart() != cursor.selectionEnd() &&
+       endBlock.position() == cursor.selectionEnd() &&
+       endBlock.previous().isValid()) {
+        endBlock = endBlock.previous();  // do not indent not selected line if indenting multiple lines
+    }
+
+    if (startBlock == endBlock) {  // indent single line
+        if (increase) {
+            indentBlock(startBlock, withSpace);
+        } else {
+            unIndentBlock(startBlock, withSpace);
+        }
+    } else {  // indent multiply lines
+        QTextBlock stopBlock = endBlock.next();
+        QTextBlock block = startBlock;
+
+        // TODO with self._qpart:
+        while (block != stopBlock) {
+            if (increase) {
+                indentBlock(block, withSpace);
+            } else {
+                unIndentBlock(block, withSpace);
+            }
+
+            block = block.next();
+        }
+
+        QTextCursor newCursor(startBlock);
+        newCursor.setPosition(endBlock.position() + endBlock.text().length(), QTextCursor::KeepAnchor);
+        setTextCursor(cursor);
+    }
 }
 
 void Qutepart::updateExtraSelections() {

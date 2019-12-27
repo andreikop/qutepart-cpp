@@ -146,9 +146,7 @@ void Indenter::indentBlock(QTextBlock block, int cursorPos, QChar typedKey) cons
 }
 
 // Tab pressed
-void Indenter::onShortcutIndent(QTextCursor cursor) const {
-    qDebug() << "shortcut indent";
-
+void Indenter::onShortcutIndentAfterCursor(QTextCursor cursor) const {
     if (cursor.positionInBlock() == 0) {  // if no any indent - indent smartly
         QTextBlock block = cursor.block();
         QString indentedLine = alg_->computeSmartIndent(block, -1);

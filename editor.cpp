@@ -44,8 +44,12 @@ QMainWindow* createMainWindow(Qutepart::Qutepart* qutepart) {
     window->setCentralWidget(qutepart);
 
     QMenuBar* menuBar = window->menuBar();
-    QMenu* navMenu = menuBar->addMenu("Navigation");
 
+    QMenu* editMenu = menuBar->addMenu("Edit");
+    editMenu->addAction(qutepart->increaseIndentAction());
+    editMenu->addAction(qutepart->decreaseIndentAction());
+
+    QMenu* navMenu = menuBar->addMenu("Navigation");
     navMenu->addAction(qutepart->toggleBookmarkAction());
     navMenu->addAction(qutepart->prevBookmarkAction());
     navMenu->addAction(qutepart->nextBookmarkAction());

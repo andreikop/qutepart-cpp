@@ -112,6 +112,9 @@ public:
     bool lineNumbersVisible() const;
     void setLineNumbersVisible(bool value);
 
+    QAction* increaseIndentAction() const;
+    QAction* decreaseIndentAction() const;
+
     QAction* toggleBookmarkAction() const;
     QAction* prevBookmarkAction() const;
     QAction* nextBookmarkAction() const;
@@ -141,6 +144,10 @@ private:
     QRect cursorRect(QTextBlock block, int column, int offset) const;
     void gotoBlock(const QTextBlock& block);
 
+    void indentBlock(const QTextBlock& block, bool withSpace) const;
+    void unIndentBlock(const QTextBlock& block, bool withSpace) const;
+    void changeSelectedBlocksIndent(bool increase, bool withSpace);
+
 private slots:
     void updateViewport();
     void updateExtraSelections();
@@ -164,6 +171,9 @@ private:
     QColor lineLengthEdgeColor_;
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;
+
+    QAction* increaseIndentAction_;
+    QAction* decreaseIndentAction_;
 
     QAction* toggleBookmarkAction_;
     QAction* prevBookmarkAction_;

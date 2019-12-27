@@ -37,7 +37,7 @@ public:
     void indentBlock(QTextBlock block, int column, QChar typedKey) const;
 
 public slots:
-    void onShortcutIndent(QTextCursor cursor) const;
+    void onShortcutIndentAfterCursor(QTextCursor cursor) const;
     void onShortcutUnindentWithBackspace(QTextCursor& cursor) const;
 
 private:

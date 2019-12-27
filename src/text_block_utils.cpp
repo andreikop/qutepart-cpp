@@ -27,6 +27,16 @@ int lastNonSpaceColumn(const QString& line) {
     return 0;
 }
 
+int spaceAtEndCount(const QString& text) {
+    int i = text.length() - 1;
+    while (i >= 0 &&
+           text[i] == ' ') {
+        i--;
+    }
+
+    return i + 1;
+}
+
 QString stripLeftWhitespace(const QString& line) {
     return line.mid(firstNonSpaceColumn(line));
 }

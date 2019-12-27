@@ -10,6 +10,9 @@ namespace Qutepart {
 int firstNonSpaceColumn(const QString& line);
 int lastNonSpaceColumn(const QString& line);
 
+// Calculate spaces ( ' ' but not other whitespace symbols ) at the end
+int spaceAtEndCount(const QString& text);
+
 QString stripLeftWhitespace(const QString& line);
 QString stripRightWhitespace(const QString& line);
 
