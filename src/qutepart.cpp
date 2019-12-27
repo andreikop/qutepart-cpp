@@ -492,7 +492,6 @@ void Qutepart::chooseVisibleWhitespace(const QString& text, QVector<bool>* resul
 }
 
 void Qutepart::setSolidEdgeGeometry() {
-    // TODO call when viewport resized
     // Sets the solid edge line geometry if needed
     if (lineLengthEdge_ > 0) {
         QRect cr = contentsRect();
@@ -533,15 +532,9 @@ void Qutepart::updateViewport() {
 
     if (totalMarginWidth_ != totalMarginWidth) {
         totalMarginWidth_ = totalMarginWidth;
-        updateViewportMargins();
-    } else {
-        setSolidEdgeGeometry();
+        setViewportMargins(totalMarginWidth_, 0, 0, 0);
     }
-}
 
-void Qutepart::updateViewportMargins() {
-    // Sets the viewport margins and the solid edge geometry
-    setViewportMargins(totalMarginWidth_, 0, 0, 0);
     setSolidEdgeGeometry();
 }
 

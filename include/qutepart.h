@@ -135,7 +135,6 @@ private:
     int effectiveEdgePos(const QString& text);
     void chooseVisibleWhitespace(const QString& text, QVector<bool>* result);
     void setSolidEdgeGeometry();
-    void updateViewportMargins();
     void resizeEvent(QResizeEvent* event) override;
 
     void updateTabStopWidth();
