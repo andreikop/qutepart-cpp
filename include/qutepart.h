@@ -129,9 +129,9 @@ public:
 
     QAction* invokeCompletionAction() const;
 
-    QRect cursorRect(QTextBlock block, int column, int offset) const;
 protected:
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void changeEvent(QEvent *event) override;
 
@@ -155,6 +155,7 @@ private:
 
     void updateTabStopWidth();
 
+    QRect cursorRect(QTextBlock block, int column, int offset) const;
     void gotoBlock(const QTextBlock& block);
 
     void indentBlock(const QTextBlock& block, bool withSpace) const;
@@ -186,7 +187,7 @@ private:
     QColor currentLineColor_;
 
     bool completionEnabled_;
-    bool completionThreshold_;
+    int completionThreshold_;
 
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;

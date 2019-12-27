@@ -21,6 +21,9 @@ public:
 
     void setKeywords(const QSet<QString>& keywords);
 
+    bool isVisible() const;
+    bool invokeCompletionIfAvailable(bool requestedByUser);
+
 public slots:
     void invokeCompletion();
 
@@ -32,11 +35,9 @@ private slots:
 
 private:
     void setCustomCompletions(const QSet<QString>& wordSet);
-    bool isVisible() const;
     void updateWordSet();
     bool shouldShowModel(CompletionModel* model, bool forceShow);
     CompletionList* createWidget(CompletionModel* model);
-    bool invokeCompletionIfAvailable(bool requestedByUser);
     void closeCompletion();
     QString getWordBeforeCursor() const;
     QString getWordAfterCursor() const;

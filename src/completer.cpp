@@ -1,9 +1,11 @@
 #include <QRegularExpression>
 #include <QAbstractItemModel>
 #include <QListView>
+#include <QDebug>
 
 #include "completer.h"
 #include "qutepart.h"
+#include "html_delegate.h"
 
 /* Autocompletion widget and logic
  */
@@ -20,41 +22,6 @@ const QRegularExpression wordAtStartRegExp("^" + wordPattern);
 
 // Maximum count of words, for which completion will be shown. Ignored, if completion invoked manually.
 const int MAX_VISIBLE_WORD_COUNT = 256;
-
-#if 0  // TODO
-class _GlobalUpdateWordSetTimer:
-    Timer updates word set, when editor is idle. (5 sec. after last change)
-    Timer is global, for avoid situation, when all instances
-    update set simultaneously
-
-    _IDLE_TIMEOUT_MS = 1000
-
-    def __init__(self):
-        self._timer = QTimer()
-        self._timer.setSingleShot(True)
-        self._timer.timeout.connect(self._onTimer)
-        self._scheduledMethods = []
-
-    def schedule(self, method):
-        if not method in self._scheduledMethods:
-            self._scheduledMethods.append(method)
-        self._timer.start(self._IDLE_TIMEOUT_MS)
-
-    def cancel(self, method):
-        Cancel scheduled method
-        Safe method, may be called with not-scheduled method
-        if method in self._scheduledMethods:
-            self._scheduledMethods.remove(method)
-
-        if not self._scheduledMethods:
-            self._timer.stop()
-
-    def _onTimer(self):
-        method = self._scheduledMethods.pop()
-        method()
-        if self._scheduledMethods:
-            self._timer.start(self._IDLE_TIMEOUT_MS)
-#endif
 
 const int MAX_VISIBLE_ROWS = 20;  // no any technical reason, just for better UI
 
@@ -83,7 +50,7 @@ public:
         typedText_ = wordBeforeCursor;
         words_ = makeListOfCompletions(wordBeforeCursor, wholeWord);
         QString commonStart = commonWordStart(words_);
-        canCompleteText_ = commonStart.right(wordBeforeCursor.length());
+        canCompleteText_ = commonStart.mid(wordBeforeCursor.length());
 
         emit(layoutChanged());
     }
@@ -105,16 +72,16 @@ public:
         if (role == Qt::DisplayRole && index.row() < words_.length()) {
             QString text = words_[index.row()];
             QString typed = text.left(typedText_.length());
-            QString canComplete = text.mid(typedText_.length(), typedText_.length() + canCompleteText_.length());
+            QString canComplete = text.mid(typedText_.length(), canCompleteText_.length());
             QString rest = text.mid(typedText_.length() + canCompleteText_.length());
             if ( ! canComplete.isEmpty()) {
                 // NOTE foreground colors are hardcoded, but I can't set background color of selected item (Qt bug?)
                 // might look bad on some color themes
                 return QString(
-                        "<html>\n"
-                            "%1\n"
-                            "<font color=\"#e80000\">%2</font>\n"
-                            "%3\n"
+                        "<html>"
+                            "%1"
+                            "<font color=\"#e80000\">%2</font>"
+                            "%3"
                         "</html>"
                             ).arg(typed, canComplete, rest);
             } else {
@@ -144,20 +111,17 @@ public:
             return "";
         }
 
-        int length = 0;
         QString firstWord = words[0];
-        QVector<QString> otherWords = words.mid(1);
-        for(int i = 0; i < firstWord.length(); i++) {
-            QChar ch = firstWord[i];
+        for(int chIndex = 0; chIndex < firstWord.length(); chIndex++) {
+            QChar ch = firstWord[chIndex];
             for(int wordIndex = 1; wordIndex < words.length(); wordIndex++) {
-                if (words[wordIndex][i] != ch) {
-                    break;
+                if (words[wordIndex][chIndex] != ch) {
+                    return firstWord.left(chIndex);
                 }
             }
-            length = i + 1;
         }
 
-        return firstWord.left(length);
+        return firstWord;
     }
 
     // Make list of completions, which shall be shown
@@ -227,9 +191,7 @@ public:
 
         setAttribute(Qt::WA_DeleteOnClose);
 
-#if 0 // TODO
-        //setItemDelegate(new HTMLDelegate(this));
-#endif
+        setItemDelegate(new HTMLDelegate(this));
 
         setFont(qpart_->font());
 
@@ -300,7 +262,7 @@ public:
         int width = hint.width();
         int height = hint.height();
 
-        QRect cursorRect = qpart_->cursorRect(qpart_->document()->firstBlock(), 0, 0);
+        QRect cursorRect = qpart_->QPlainTextEdit::cursorRect(qpart_->textCursor());
         QSize parentSize = parentWidget()->size();
 
         int spaceBelow = parentSize.height() - cursorRect.bottom() - WIDGET_BORDER_MARGIN;
