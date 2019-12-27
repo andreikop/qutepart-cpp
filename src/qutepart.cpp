@@ -47,6 +47,7 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
     drawSolidEdge_(true),
     lineLengthEdge_(80),
     lineLengthEdgeColor_(Qt::red),
+    currentLineColor_("#ffffa3"),
     solidEdgeLine_(new EdgeLine(this)),
     totalMarginWidth_(0)
 {
@@ -145,6 +146,14 @@ QColor Qutepart::lineLengthEdgeColor() const {
 
 void Qutepart::setLineLengthEdgeColor(QColor color) {
     lineLengthEdgeColor_ = color;
+}
+
+QColor Qutepart::currentLineColor() const {
+    return currentLineColor_;
+}
+
+void Qutepart::setCurrentLineColor(QColor color) {
+    currentLineColor_ = color;
 }
 
 bool Qutepart::bracketHighlightingEnabled() const {
@@ -491,6 +500,17 @@ void Qutepart::chooseVisibleWhitespace(const QString& text, QVector<bool>* resul
     }
 }
 
+QTextEdit::ExtraSelection Qutepart::currentLineExtraSelection() const {
+    QTextEdit::ExtraSelection selection;
+
+    selection.format.setBackground(currentLineColor_);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    selection.cursor = textCursor();
+    selection.cursor.clearSelection();
+
+    return selection;
+}
+
 void Qutepart::setSolidEdgeGeometry() {
     // Sets the solid edge line geometry if needed
     if (lineLengthEdge_ > 0) {
@@ -672,15 +692,19 @@ void Qutepart::changeSelectedBlocksIndent(bool increase, bool withSpace) {
 
 void Qutepart::updateExtraSelections() {
     QTextCursor cursor = textCursor();
-    QList<QTextEdit::ExtraSelection> bracketSelections;
+    QList<QTextEdit::ExtraSelection> selections;
 
     if (bracketHighlighter_) {
-        bracketSelections = bracketHighlighter_->extraSelections(
+        selections +=  bracketHighlighter_->extraSelections(
                 TextPosition(textCursor().block(),
                              cursor.positionInBlock()));
     }
 
-    setExtraSelections(bracketSelections);
+    if (currentLineColor_ != QColor()) {
+        selections << currentLineExtraSelection();
+    }
+
+    setExtraSelections(selections);
 }
 
 void Qutepart::onShortcutToggleBookmark() {

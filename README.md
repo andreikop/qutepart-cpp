@@ -30,6 +30,7 @@ All features are configurable
 * Visible witespaces
 * Marker for too long lines
 * Bookmarks
+* Current line highlighting
 
 ## Build dependencies
 * C++ compiler

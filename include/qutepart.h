@@ -104,6 +104,9 @@ public:
     QColor lineLengthEdgeColor() const;
     void setLineLengthEdgeColor(QColor);
 
+    QColor currentLineColor() const;
+    void setCurrentLineColor(QColor);
+
     bool bracketHighlightingEnabled() const;
     void setBracketHighlightingEnabled(bool value);
 
@@ -134,6 +137,9 @@ private:
     void drawWhiteSpace(QPainter* painter, QTextBlock block, int column, QChar ch);
     int effectiveEdgePos(const QString& text);
     void chooseVisibleWhitespace(const QString& text, QVector<bool>* result);
+
+    QTextEdit::ExtraSelection currentLineExtraSelection() const;
+
     void setSolidEdgeGeometry();
     void resizeEvent(QResizeEvent* event) override;
 
@@ -167,6 +173,9 @@ private:
     bool drawSolidEdge_;
     int lineLengthEdge_;
     QColor lineLengthEdgeColor_;
+    QColor currentLineColor_;
+
+
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;
 
