@@ -23,6 +23,7 @@ set(qutepart_SRCS
     src/text_block_flags.cpp
     src/bracket_highlighter.cpp
     src/side_areas.cpp
+    src/completer.cpp
     src/hl_factory.cpp
     src/hl/context.cpp
     src/hl/language.cpp

@@ -113,6 +113,12 @@ public:
     bool lineNumbersVisible() const;
     void setLineNumbersVisible(bool value);
 
+    void setCompletionEnabled(bool);
+    bool completionEnabled() const;
+
+    void setCompletionThreshold(int);
+    int completionThreshold() const;
+
     QAction* increaseIndentAction() const;
     QAction* decreaseIndentAction() const;
 
@@ -120,6 +126,7 @@ public:
     QAction* prevBookmarkAction() const;
     QAction* nextBookmarkAction() const;
 
+    QRect cursorRect(QTextBlock block, int column, int offset) const;
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
@@ -145,7 +152,6 @@ private:
 
     void updateTabStopWidth();
 
-    QRect cursorRect(QTextBlock block, int column, int offset) const;
     void gotoBlock(const QTextBlock& block);
 
     void indentBlock(const QTextBlock& block, bool withSpace) const;
@@ -175,6 +181,8 @@ private:
     QColor lineLengthEdgeColor_;
     QColor currentLineColor_;
 
+    bool completionEnabled_;
+    bool completionThreshold_;
 
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;

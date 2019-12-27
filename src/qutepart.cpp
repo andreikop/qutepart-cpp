@@ -48,6 +48,8 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
     lineLengthEdge_(80),
     lineLengthEdgeColor_(Qt::red),
     currentLineColor_("#ffffa3"),
+    completionEnabled_(true),
+    completionThreshold_(3),
     solidEdgeLine_(new EdgeLine(this)),
     totalMarginWidth_(0)
 {
@@ -181,6 +183,22 @@ void Qutepart::setLineNumbersVisible(bool value) {
         lineNumberArea_ = std::make_unique<LineNumberArea>(this);
         connect(lineNumberArea_.get(), &LineNumberArea::widthChanged, this, &Qutepart::updateViewport);
     }
+}
+
+bool Qutepart::completionEnabled() const {
+    return completionEnabled_;
+}
+
+void Qutepart::setCompletionEnabled(bool val) {
+    completionEnabled_ = val;
+}
+
+int Qutepart::completionThreshold() const {
+    return completionThreshold_;
+}
+
+void Qutepart::setCompletionThreshold(int val) {
+    completionThreshold_ = val;
 }
 
 QAction* Qutepart::increaseIndentAction() const {
