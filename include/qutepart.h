@@ -69,8 +69,6 @@ public:
 
     virtual ~Qutepart();
 
-    void setFont(const QFont&); // NOTE this method is not virtual in QWidget
-
     // Set highlighter. Use chooseLanguage() to get the id
     void setHighlighter(const QString& languageId);
 
@@ -121,7 +119,8 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event) override;
+    void changeEvent(QEvent *event) override;
 
 private:
     void initActions();

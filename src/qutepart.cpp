@@ -64,24 +64,6 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
 Qutepart::~Qutepart() {
 }
 
-void Qutepart::setFont(const QFont& font) {
-    // Set font and update tab stop width
-    QPlainTextEdit::setFont(font);
-    updateTabStopWidth();
-
-    /* text on line numbers may overlap, if font is bigger, than code font
-       Note: the line numbers margin recalculates its width and if it has
-           been changed then it calls updateViewport() which in turn will
-           update the solid edge line geometry. So there is no need of an
-           explicit call self._setSolidEdgeGeometry() here.
-     */
-#if 0  // TODO
-    lineNumbersMargin = self.getMargin("line_numbers")
-    if lineNumbersMargin:
-        lineNumbersMargin.setFont(font)
-#endif
-}
-
 void Qutepart::setHighlighter(const QString& languageId) {
     highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), languageId));
     indenter_->setLanguage(languageId);
@@ -284,6 +266,24 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
 void Qutepart::paintEvent(QPaintEvent *event) {
     QPlainTextEdit::paintEvent(event);
     drawIndentMarkersAndEdge(event->rect());
+}
+
+void Qutepart::changeEvent(QEvent *event) {
+    QPlainTextEdit::changeEvent(event);
+    if (event->type() == QEvent::FontChange) {
+        updateTabStopWidth();
+
+        /* text on line numbers may overlap, if font is bigger, than code font
+           Note: the line numbers margin recalculates its width and if it has
+               been changed then it calls updateViewport() which in turn will
+               update the solid edge line geometry. So there is no need of an
+               explicit call self._setSolidEdgeGeometry() here.
+         */
+
+        if (bool(lineNumberArea_)) {
+            lineNumberArea_->setFont(font());
+        }
+    }
 }
 
 void Qutepart::initActions() {
