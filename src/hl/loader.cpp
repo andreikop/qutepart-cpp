@@ -628,7 +628,10 @@ void makeKeywordsLowerCase(QHash<QString, QStringList>& keywordLists) {
 }
 
 // Load keyword lists, contexts, attributes
-QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywordDeliminators, QString& indenter, QString& error) {
+QList<ContextPtr> loadLanguageSytnax(
+        QXmlStreamReader& xmlReader, QString& keywordDeliminators,
+        QString& indenter, QSet<QString>& allLanguageKeywords,
+        QString& error) {
     QHash<QString, QStringList> keywordLists = loadKeywordLists(xmlReader, error);
     if ( ! error.isNull()) {
         return QList<ContextPtr>();
@@ -676,6 +679,12 @@ QList<ContextPtr> loadLanguageSytnax(QXmlStreamReader& xmlReader, QString& keywo
         context->setStyles(styles, error);
         if ( ! error.isNull()) {
             return QList<ContextPtr>();
+        }
+    }
+
+    foreach(const QStringList& kwList, keywordLists) {
+        foreach(const QString& word, kwList) {
+            allLanguageKeywords += word;
         }
     }
 
@@ -735,13 +744,18 @@ QSharedPointer<Language> parseXmlFile(const QString& xmlFileName, QXmlStreamRead
     }
 
     QString keywordDeliminators;
-    QList<ContextPtr> contexts = loadLanguageSytnax(xmlReader, keywordDeliminators, indenter, error);
+    QSet<QString> allLanguageKeywords;
+    QList<ContextPtr> contexts = loadLanguageSytnax(
+            xmlReader, keywordDeliminators,
+            indenter, allLanguageKeywords,
+            error);
     if ( ! error.isNull()) {
         return QSharedPointer<Language>();
     }
 
     Language* language = new Language(name, extensions, mimetypes,
-                                      priority, hidden, indenter, contexts);
+                                      priority, hidden, indenter,
+                                      allLanguageKeywords, contexts);
 
     QSharedPointer<Language> languagePtr(language);
 

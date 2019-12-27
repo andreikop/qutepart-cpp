@@ -54,6 +54,7 @@ class Indenter;
 class BracketHighlighter;
 class LineNumberArea;
 class MarkArea;
+class Completer;
 
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
@@ -126,6 +127,8 @@ public:
     QAction* prevBookmarkAction() const;
     QAction* nextBookmarkAction() const;
 
+    QAction* invokeCompletionAction() const;
+
     QRect cursorRect(QTextBlock block, int column, int offset) const;
 protected:
     void keyPressEvent(QKeyEvent *event) override;
@@ -172,6 +175,7 @@ private:
     std::unique_ptr<BracketHighlighter> bracketHighlighter_;
     std::unique_ptr<LineNumberArea> lineNumberArea_;
     std::unique_ptr<MarkArea> markArea_;
+    std::unique_ptr<Completer> completer_;
 
     bool drawIndentations_;
     bool drawAnyWhitespace_;
@@ -193,6 +197,8 @@ private:
     QAction* toggleBookmarkAction_;
     QAction* prevBookmarkAction_;
     QAction* nextBookmarkAction_;
+
+    QAction* invokeCompletionAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;

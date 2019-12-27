@@ -7,6 +7,7 @@
 #include "bracket_highlighter.h"
 #include "side_areas.h"
 #include "indent/indenter.h"
+#include "completer.h"
 
 #include "hl/loader.h"
 #include "hl/syntax_highlighter.h"
@@ -41,6 +42,7 @@ Qutepart::Qutepart(QWidget *parent, const QString& text):
     QPlainTextEdit(text, parent),
     indenter_(std::make_unique<Indenter>()),
     markArea_(std::make_unique<MarkArea>(this)),
+    completer_(std::make_unique<Completer>(this)),
     drawIndentations_(true),
     drawAnyWhitespace_(false),
     drawIncorrectIndentation_(true),
@@ -70,6 +72,7 @@ Qutepart::~Qutepart() {
 void Qutepart::setHighlighter(const QString& languageId) {
     highlighter_ = QSharedPointer<QSyntaxHighlighter>(makeHighlighter(document(), languageId));
     indenter_->setLanguage(languageId);
+    completer_->setKeywords(loadLanguage(languageId)->allLanguageKeywords());
 }
 
 void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
@@ -221,6 +224,10 @@ QAction* Qutepart::nextBookmarkAction() const {
     return nextBookmarkAction_;
 }
 
+QAction* Qutepart::invokeCompletionAction() const {
+    return invokeCompletionAction_;
+}
+
 namespace {
 // Check if an event may be a typed character
 bool isCharEvent(QKeyEvent* ev) {
@@ -336,6 +343,10 @@ void Qutepart::initActions() {
     nextBookmarkAction_ = createAction("Next bookmark", QKeySequence(Qt::ALT | Qt::Key_Down));
     connect(nextBookmarkAction_, &QAction::triggered,
             this, &Qutepart::onShortcutNextBookmark);
+
+    invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space));
+    connect(invokeCompletionAction_, &QAction::triggered,
+            completer_.get(), &Completer::invokeCompletion);
 }
 
 QAction* Qutepart::createAction(

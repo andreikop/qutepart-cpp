@@ -17,7 +17,7 @@ public:
     SyntaxHighlighter(QTextDocument *parent, QSharedPointer<Language> language);
 
 protected:
-    void  highlightBlock(const QString &text) override;
+    void highlightBlock(const QString &text) override;
     QSharedPointer<Language> language;
 };
 

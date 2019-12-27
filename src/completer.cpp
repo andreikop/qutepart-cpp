@@ -507,7 +507,7 @@ bool Completer::invokeCompletionIfAvailable(bool requestedByUser) {
         bool forceShow = requestedByUser || completionOpenedManually_;
         if ( ! wordBeforeCursor.isEmpty()) {
             if (wordBeforeCursor.length() >= qpart_->completionThreshold() || forceShow) {
-                if (widget_ != nullptr) {
+                if (widget_ == nullptr) {
                     CompletionModel* model = new CompletionModel(wordSet_);
                     model->setData(wordBeforeCursor, wholeWord);
                     if (shouldShowModel(model, forceShow)) {

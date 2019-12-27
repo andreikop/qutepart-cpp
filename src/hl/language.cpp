@@ -15,6 +15,7 @@ Language::Language(const QString& name,
                    int priority,
                    bool hidden,
                    const QString& indenter,
+                   const QSet<QString>& allLanguageKeywords,
                    const QList<ContextPtr>& contexts)
   : name(name),
     extensions(extensions),
@@ -22,6 +23,7 @@ Language::Language(const QString& name,
     priority(priority),
     hidden(hidden),
     indenter(indenter),
+    allLanguageKeywords_(allLanguageKeywords),
     contexts(contexts),
     defaultContextStack(contexts[0].data())
 {
@@ -81,6 +83,10 @@ ContextPtr Language::getContext(const QString& name) const {
     }
 
     return ContextPtr();
+}
+
+QSet<QString> Language::allLanguageKeywords() const {
+    return allLanguageKeywords_;
 }
 
 ContextStack Language::getContextStack(QTextBlock block) {

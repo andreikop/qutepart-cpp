@@ -19,6 +19,11 @@ public:
     Completer(Qutepart* qpart);
     ~Completer();
 
+    void setKeywords(const QSet<QString>& keywords);
+
+public slots:
+    void invokeCompletion();
+
 private slots:
     void onTextChanged();
     void onModificationChanged(bool modified);
@@ -26,11 +31,9 @@ private slots:
     void onCompletionListTabPressed();
 
 private:
-    void setKeywords(const QSet<QString>& keywords);
     void setCustomCompletions(const QSet<QString>& wordSet);
     bool isVisible() const;
     void updateWordSet();
-    void invokeCompletion();
     bool shouldShowModel(CompletionModel* model, bool forceShow);
     CompletionList* createWidget(CompletionModel* model);
     bool invokeCompletionIfAvailable(bool requestedByUser);
