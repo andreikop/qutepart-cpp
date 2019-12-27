@@ -212,6 +212,33 @@ QAction* Qutepart::nextBookmarkAction() const {
     return nextBookmarkAction_;
 }
 
+namespace {
+// Check if an event may be a typed character
+bool isCharEvent(QKeyEvent* ev) {
+    QString text = ev->text();
+    if (text.length() != 1) {
+        return false;
+    }
+
+    if (ev->modifiers() != Qt::ShiftModifier &&
+        ev->modifiers() != Qt::KeypadModifier &&
+        ev->modifiers() != Qt::NoModifier) {
+        return false;
+    }
+
+    QChar code = text[0];
+    if (code <= 31 || code == 0x7f) {  // control characters
+        return false;
+    }
+
+    if (code == ' ' && ev->modifiers() == Qt::ShiftModifier) {
+        return false;  // Shift+Space is a shortcut, not a text
+    }
+
+    return true;
+}
+
+};  // anonymous namespace
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
     if (event->key() == Qt::Key_Backspace &&
@@ -220,6 +247,7 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
         indenter_->onShortcutUnindentWithBackspace(cursor);
     } else if (event->matches(QKeySequence::InsertParagraphSeparator)) {
         // Enter pressed. Indent new empty line
+        AtomicEditOperation op(this);
         QPlainTextEdit::keyPressEvent(event);
         indenter_->indentBlock(cursor.block(), cursor.positionInBlock(), event->text()[0]);
     } else if (cursor.positionInBlock() == (cursor.block().length() - 1) &&
@@ -227,6 +255,18 @@ void Qutepart::keyPressEvent(QKeyEvent *event) {
         // Indentation on special characters. Like closing bracket in XML
         QPlainTextEdit::keyPressEvent(event);
         indenter_->indentBlock(cursor.block(), cursor.positionInBlock(), event->text()[0]);
+    } else if (event->key() == Qt::Key_Insert && event->modifiers() == Qt::NoModifier) {
+        // toggle Overwrite mode
+        setOverwriteMode( ! overwriteMode());
+    } else if (overwriteMode() &&
+               ( ! event->text().isEmpty()) &&
+               isCharEvent(event) &&
+               ( ! cursor.hasSelection()) &&
+               cursor.positionInBlock() < cursor.block().length()) {
+        // Qt records character replacement in Overwrite mode as 2 overations.
+        // but single operation is more preferable.
+        AtomicEditOperation op(this);
+        QPlainTextEdit::keyPressEvent(event);
     } else {
         // make action shortcuts override keyboard events (non-default Qt behaviour)
         foreach(QAction* action, actions()) {
