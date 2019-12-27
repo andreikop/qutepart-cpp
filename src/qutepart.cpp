@@ -618,15 +618,17 @@ void Qutepart::changeSelectedBlocksIndent(bool increase, bool withSpace) {
         QTextBlock stopBlock = endBlock.next();
         QTextBlock block = startBlock;
 
-        // TODO with self._qpart:
-        while (block != stopBlock) {
-            if (increase) {
-                indentBlock(block, withSpace);
-            } else {
-                unIndentBlock(block, withSpace);
-            }
+        {
+            AtomicEditOperation op(this);
+            while (block != stopBlock) {
+                if (increase) {
+                    indentBlock(block, withSpace);
+                } else {
+                    unIndentBlock(block, withSpace);
+                }
 
-            block = block.next();
+                block = block.next();
+            }
         }
 
         QTextCursor newCursor(startBlock);
@@ -696,6 +698,15 @@ void Qutepart::onShortcutNextBookmark() {
         }
         block = block.next();
     }
+}
+
+AtomicEditOperation::AtomicEditOperation(Qutepart* qutepart):
+    qutepart_(qutepart) {
+    qutepart->textCursor().beginEditBlock();
+}
+
+AtomicEditOperation::~AtomicEditOperation() {
+    qutepart_->textCursor().endEditBlock();
 }
 
 }  // namespace Qutepart

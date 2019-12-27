@@ -183,4 +183,23 @@ private:
     friend class MarkArea;
 };
 
+/*
+A helper class which allows to group edit operations on Qutepart using RAII approach
+Operations are undo-redoble as single change.
+Example
+    {
+        AtomicOperation op(qutepart);
+        qutepart.editText();
+        qutepart.editMoreText();
+    }
+ */
+class AtomicEditOperation {
+public:
+    AtomicEditOperation(Qutepart* qutepart);
+    ~AtomicEditOperation();
+
+private:
+    Qutepart* qutepart_;
+};
+
 }; // namespace Qutepart
