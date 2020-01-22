@@ -114,12 +114,14 @@ public:
     bool lineNumbersVisible() const;
     void setLineNumbersVisible(bool value);
 
+    // Autocompletion
     void setCompletionEnabled(bool);
     bool completionEnabled() const;
 
     void setCompletionThreshold(int);
     int completionThreshold() const;
 
+    // Actions
     QAction* increaseIndentAction() const;
     QAction* decreaseIndentAction() const;
 
@@ -128,6 +130,9 @@ public:
     QAction* nextBookmarkAction() const;
 
     QAction* invokeCompletionAction() const;
+
+    // Convenience functions
+    void resetSelection();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

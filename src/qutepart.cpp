@@ -228,6 +228,12 @@ QAction* Qutepart::invokeCompletionAction() const {
     return invokeCompletionAction_;
 }
 
+void Qutepart::resetSelection() {
+    QTextCursor cursor = textCursor();
+    cursor.setPosition(cursor.position());
+    setTextCursor(cursor);
+}
+
 namespace {
 // Check if an event may be a typed character
 bool isCharEvent(QKeyEvent* ev) {
