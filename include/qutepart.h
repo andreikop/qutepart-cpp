@@ -229,4 +229,4 @@ private:
     Qutepart* qutepart_;
 };
 
-}; // namespace Qutepart
+} // namespace Qutepart

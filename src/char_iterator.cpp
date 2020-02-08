@@ -66,4 +66,4 @@ void BackwardCharIterator::movePosition() {
     }
 }
 
-}; // namespace Qutepart
+}  // namespace Qutepart

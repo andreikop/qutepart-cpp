@@ -13,4 +13,4 @@ public:
     QString computeSmartIndent(QTextBlock block, int cursorPos) const override;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

@@ -160,7 +160,7 @@ def write_syntax_db(out_file_path, syntax_db):
             print('\treturn {};'.format(key), file=out_file)
             print('}}'.format(key), file=out_file)
             print('QMap<QString,QString> {} = create_{}();'.format(key, key), file=out_file)
-        print ('}; // namespace Qutepart', file=out_file)
+        print ('}  // namespace Qutepart', file=out_file)
 
 
 def parse_args():

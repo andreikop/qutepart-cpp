@@ -50,4 +50,4 @@ protected:
     QString indentText() const;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

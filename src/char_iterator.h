@@ -31,4 +31,4 @@ private:
     virtual void movePosition() override;
 };
 
-}; // namespace Qutepart
+}  // namespace Qutepart

@@ -110,6 +110,6 @@ LangInfo chooseLanguage(const QString& mimeType,
         IndentAlg indentAlg = convertIndenter(xmlFileNameToIndenter[xmlName]);
         return LangInfo(xmlName, langNames, indentAlg);
     }
-};
+}
 
 }  // namespace Qutepart

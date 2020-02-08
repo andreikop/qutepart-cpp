@@ -111,5 +111,5 @@ QChar lastNonSpaceChar(const QTextBlock& block) {
     }
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart
 

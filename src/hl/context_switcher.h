@@ -31,4 +31,4 @@ protected:
     QString contextOperation;
 };
 
-};
+}  // namespace Qutepart

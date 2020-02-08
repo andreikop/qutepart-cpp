@@ -56,9 +56,11 @@ TextPosition findTextBackward(const QTextBlock& block, const QString& needle) {
         }
         currentBlock = currentBlock.previous();
     }
+
+    return TextPosition();
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 
 const QString& IndentAlgCstyle::triggerCharacters() const {
@@ -158,7 +160,7 @@ QString IndentAlgCstyle::tryAccessModifiers(const QTextBlock& block) const {
     return indentation;
 }
 
-/* C comment checking. If the previous line begins with a "/*" or a "* ", then
+/* C comment checking. If the previous line begins with a "\/\*" or a "* ", then
 return its leading white spaces + ' *' + the white spaces after the *
 return: filler string or null, if not in a C comment
 */
@@ -299,7 +301,7 @@ bool isNamespace(QTextBlock block) {
     return rx.match(block.text()).hasMatch();
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 QString IndentAlgCstyle::tryBrace(const QTextBlock& block) const {
     QTextBlock currentBlock = prevNonEmptyNonCommentBlock(block);
@@ -825,4 +827,4 @@ QString IndentAlgCstyle::indentLine(QTextBlock block, int cursorPos) const {
     return IndentAlgImpl::indentLine(block, cursorPos);
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

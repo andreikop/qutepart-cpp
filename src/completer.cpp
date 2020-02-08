@@ -28,10 +28,7 @@ const int MAX_VISIBLE_ROWS = 20;  // no any technical reason, just for better UI
 const int WIDGET_BORDER_MARGIN = 5;
 const int SCROLLBAR_WIDTH = 30;  // just a guess
 
-
-double WORD_SET_UPDATE_MAX_TIME_SEC = 0.4;
-
-}; // anonymous namespace
+}  // anonymous namespace
 
 /* QAbstractItemModel implementation for a list of completion variants
 
@@ -93,7 +90,7 @@ public:
     }
 
     // QAbstractItemModel method implementation
-    int rowCount(const QModelIndex& index = QModelIndex()) const override {
+    int rowCount(const QModelIndex& = QModelIndex()) const override {
         return words_.length();
     }
 
@@ -140,23 +137,23 @@ public:
     }
 
     // Trivial QAbstractItemModel methods implementation
-    Qt::ItemFlags flags(const QModelIndex& index) const override {
+    Qt::ItemFlags flags(const QModelIndex&) const override {
         return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     }
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override {
+    QVariant headerData(int , Qt::Orientation , int = Qt::DisplayRole) const override {
         return QVariant();
     }
 
-    int columnCount(const QModelIndex& index) const override {
+    int columnCount(const QModelIndex&) const override {
         return 1;
     }
 
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override {
+    QModelIndex index(int row, int column, const QModelIndex& = QModelIndex()) const override {
         return createIndex(row, column);
     }
 
-    QModelIndex parent(const QModelIndex& index) const override {
+    QModelIndex parent(const QModelIndex&) const override {
         return QModelIndex();
     }
 
@@ -322,7 +319,7 @@ private:
     /* Catch events from qpart
     Move selection, select item, or close themselves
     */
-    bool eventFilter(QObject* object, QEvent* event) override {
+    bool eventFilter(QObject* /*object*/, QEvent* event) override {
         if (event->type() == QEvent::KeyPress &&
             dynamic_cast<QKeyEvent*>(event)->modifiers() == Qt::NoModifier) {
             switch(dynamic_cast<QKeyEvent*>(event)->key()) {
@@ -345,6 +342,7 @@ private:
                         emit(itemSelected(selectedIndex_));
                         return true;
                     }
+                    return false;
                 case Qt::Key_Tab:
                     emit(tabPressed());
                     return true;
@@ -451,7 +449,7 @@ bool Completer::shouldShowModel(CompletionModel* model, bool forceShow) {
            ( ! model->tooManyWords());
 }
 
-CompletionList* Completer::createWidget(CompletionModel* model) {
+void Completer::createWidget(CompletionModel* model) {
     widget_ = std::make_unique<CompletionList>(qpart_, model);
     connect(widget_.get(), &CompletionList::closeMe, this, &Completer::closeCompletion);
     connect(widget_.get(), &CompletionList::itemSelected, this, &Completer::onCompletionListItemSelected);
@@ -546,6 +544,6 @@ void Completer::onCompletionListTabPressed() {
     }
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart
 
 #include "completer.moc"

@@ -68,4 +68,4 @@ QString TextToMatch::word(const QString& deliminatorSet) const {
     return QString::null;
 }
 
-};
+}  // namespace Qutepart

@@ -29,4 +29,4 @@ QSyntaxHighlighter* makeHighlighter(
     return nullptr;
 }
 
-};
+}  // namespace Qutepart

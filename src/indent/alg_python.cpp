@@ -108,11 +108,11 @@ QString IndentAlgPython::computeSmartIndent(
     return blockIndent(pos.block);
 }
 
-QString IndentAlgPython::computeSmartIndent(QTextBlock block, int cursorPos) const {
+QString IndentAlgPython::computeSmartIndent(QTextBlock block, int /*cursorPos*/) const {
     QTextBlock nonEmpty = prevNonEmptyBlock(block);
     int column = nonEmpty.text().length();
     return computeSmartIndent(TextPosition(nonEmpty, column));
 }
 
 
-};  // namespace Qutepart
+}  // namespace Qutepart

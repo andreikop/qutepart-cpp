@@ -168,4 +168,4 @@ void Style::updateTextType(const QString& attribute) {
     _textType = detectTextType(attribute, defStyleName);
 }
 
-};
+}  // namespace Qutepart

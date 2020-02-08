@@ -47,4 +47,4 @@ protected:
     ContextStack switchAtEndOfLine(ContextStack contextStack);
 };
 
-};
+}  // namespace Qutepart

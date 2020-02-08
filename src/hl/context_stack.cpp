@@ -78,4 +78,4 @@ ContextStack ContextStack::switchContext(
     return ContextStack(newItems);
 }
 
-};
+}  // namespace Qutepart

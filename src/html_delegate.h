@@ -22,4 +22,4 @@ public:
                    const QModelIndex &index) const;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

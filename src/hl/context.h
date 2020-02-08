@@ -78,4 +78,4 @@ protected:
     Style style;
 };
 
-};
+}  // namespace Qutepart

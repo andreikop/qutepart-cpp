@@ -37,7 +37,7 @@ private:
     void setCustomCompletions(const QSet<QString>& wordSet);
     void updateWordSet();
     bool shouldShowModel(CompletionModel* model, bool forceShow);
-    CompletionList* createWidget(CompletionModel* model);
+    void createWidget(CompletionModel* model);
     void closeCompletion();
     QString getWordBeforeCursor() const;
     QString getWordAfterCursor() const;
@@ -51,4 +51,4 @@ private:
     QTimer updateWordSetTimer_;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

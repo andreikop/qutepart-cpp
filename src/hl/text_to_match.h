@@ -29,4 +29,4 @@ public:
     const QStringList* contextData;
 };
 
-};
+}  // namespace Qutepart

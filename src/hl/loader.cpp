@@ -855,4 +855,4 @@ ContextPtr loadExternalContext(const QString& externalCtxName) {
     }
 }
 
-};
+}  // namespace Qutepart

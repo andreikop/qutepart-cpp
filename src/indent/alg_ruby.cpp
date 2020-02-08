@@ -36,7 +36,7 @@ int nextNonSpaceColumn(QTextBlock block, int column) {
     }
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 
 RubyStatement::RubyStatement(QTextBlock startBlock, QTextBlock endBlock):
@@ -225,7 +225,7 @@ RubyStatement IndentAlgRuby::findBlockStart(QTextBlock block) const {
     }
 }
 
-QString IndentAlgRuby::computeSmartIndent(QTextBlock block, int cursorPos) const {
+QString IndentAlgRuby::computeSmartIndent(QTextBlock block, int /*cursorPos*/) const {
     if ( ! isValidTrigger(block)) {
         return QString::null;
     }
@@ -320,4 +320,4 @@ QString IndentAlgRuby::computeSmartIndent(QTextBlock block, int cursorPos) const
     return prevStmtIndent;
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

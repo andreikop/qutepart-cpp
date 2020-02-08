@@ -124,4 +124,4 @@ ContextStack Language::switchAtEndOfLine(ContextStack contextStack) {
     return contextStack;
 }
 
-};
+}  // namespace Qutepart

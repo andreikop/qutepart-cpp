@@ -22,4 +22,4 @@ void setBookmarked(QTextBlock& block, bool value) {
     block.setUserState(state);
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

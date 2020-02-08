@@ -17,4 +17,4 @@ private:
     TextPosition cachedMatchingBracket_;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

@@ -337,4 +337,4 @@ private:
     MatchResult* tryMatchImpl(const TextToMatch& textToMatch) const override;
 };
 
-};
+}  // namespace Qutepart

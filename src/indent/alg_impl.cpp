@@ -27,7 +27,7 @@ QString IndentAlgImpl::indentLine(QTextBlock block, int cursorPos) const {
     }
 }
 
-QString IndentAlgImpl::computeSmartIndent(QTextBlock block, int cursorPos) const {
+QString IndentAlgImpl::computeSmartIndent(QTextBlock /*block*/, int /*cursorPos*/) const {
     return "";
 }
 
@@ -41,4 +41,4 @@ QString IndentAlgImpl::indentText() const {
     return makeIndent(width_, useTabs_);
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

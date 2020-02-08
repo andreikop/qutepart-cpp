@@ -226,4 +226,4 @@ MatchResult* Context::tryMatch(const TextToMatch& textToMatch) const {
     return nullptr;
 }
 
-};
+}  // namespace Qutepart

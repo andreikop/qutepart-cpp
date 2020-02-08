@@ -7,4 +7,4 @@ TextBlockUserData::TextBlockUserData(const QString& textTypeMap, const ContextSt
     _contexts(contexts)
 {}
 
-};
+}  // namespace Qutepart

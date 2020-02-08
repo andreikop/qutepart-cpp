@@ -19,7 +19,7 @@ namespace {
 
 class IndentAlgNone: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block, int cursorPos) const override {
+    QString computeSmartIndent(QTextBlock /*block*/, int /*cursorPos*/) const override {
         return QString::null;
     }
 };
@@ -27,7 +27,7 @@ public:
 
 class IndentAlgNormal: public IndentAlgImpl {
 public:
-    QString computeSmartIndent(QTextBlock block, int cursorPos) const override {
+    QString computeSmartIndent(QTextBlock block, int /*cursorPos*/) const override {
         return prevNonEmptyBlockIndent(block);
     }
 };

@@ -58,4 +58,4 @@ private:
     RubyStatement findBlockStart(QTextBlock block) const;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

@@ -27,4 +27,4 @@ public:
     Style style;
 };
 
-};
+}  // match result

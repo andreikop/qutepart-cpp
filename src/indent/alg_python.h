@@ -18,4 +18,4 @@ private:
     QString computeSmartIndent(const TextPosition& pos) const;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

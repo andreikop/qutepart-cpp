@@ -32,4 +32,4 @@ private:
     QString processChar(const QTextBlock& block, QChar c, int cursorPos) const;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

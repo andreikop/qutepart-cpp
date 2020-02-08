@@ -17,7 +17,6 @@ find_package(Qt5Test CONFIG REQUIRED)
 set(qutepart_SRCS
     qutepart-syntax-files.qrc
     src/qutepart.cpp
-    src/text_pos.cpp
     src/char_iterator.cpp
     src/text_block_utils.cpp
     src/text_block_flags.cpp
@@ -61,6 +60,8 @@ add_library(qutepart ${qutepart_SRCS} include/qutepart.h)
 
 # Use the Widgets module from Qt 5
 target_link_libraries(qutepart Qt5::Core Qt5::Widgets)
+
+target_compile_options(qutepart PRIVATE -Wall -Wextra -pedantic -Werror)
 
 # Build example executable
 add_executable(editor editor.cpp)

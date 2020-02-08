@@ -23,4 +23,4 @@ public:
     int column;
 };
 
-}; // namespace Qutepart
+} // namespace Qutepart

@@ -695,4 +695,4 @@ MatchResult* DetectIdentifierRule::tryMatchImpl(const TextToMatch& textToMatch) 
     }
 }
 
-};
+}  // namespace Qutepart

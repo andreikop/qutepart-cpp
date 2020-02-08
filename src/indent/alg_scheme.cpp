@@ -58,11 +58,11 @@ TextPosition findExpressionStart(QTextBlock block) {
     }
 }
 
-}; // anonymous namespace
+}  // anonymous namespace
 
 
 QString IndentAlgScheme::computeSmartIndent(
-        QTextBlock block, int cursorPos) const {
+        QTextBlock block, int /*cursorPos*/) const {
     TextPosition expStart = findExpressionStart(block.previous());
 
     if (! expStart.isValid()) {
@@ -84,4 +84,4 @@ QString IndentAlgScheme::computeSmartIndent(
     }
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

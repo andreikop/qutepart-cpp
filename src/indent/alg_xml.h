@@ -15,4 +15,4 @@ private:
     QString indentForLine(const QString& lineText, const QString& prevLineText) const;
 };
 
-};  // namespace Qutepart
+}  // namespace Qutepart

@@ -41,4 +41,4 @@ void ContextSwitcher::resolveContextReferences(const QHash<QString, ContextPtr>&
     _context = contexts[contextName];
 }
 
-};
+}  // namespace Qutepart

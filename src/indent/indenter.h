@@ -46,4 +46,5 @@ private:
     int width_;
     QString language_;
 };
-};
+
+}  // namespace Qutepart

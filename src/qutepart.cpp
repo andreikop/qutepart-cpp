@@ -260,7 +260,9 @@ bool isCharEvent(QKeyEvent* ev) {
     return true;
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
+
+
 void Qutepart::keyPressEvent(QKeyEvent *event) {
     QTextCursor cursor = textCursor();
     if (event->key() == Qt::Key_Backspace &&
@@ -375,11 +377,14 @@ void Qutepart::initActions() {
 
 QAction* Qutepart::createAction(
     const QString& text, QKeySequence shortcut,
-    const QString& iconFileName) {
+    const QString& /*iconFileName*/) {
 
     QAction* action = new QAction(text, this);
-    // if iconFileName is not None:
-    //     action.setIcon(getIcon(iconFileName))
+
+#if 0  // TODO
+    if iconFileName is not None:
+         action.setIcon(getIcon(iconFileName))
+#endif
 
     action->setShortcut(shortcut);
     action->setShortcutContext(Qt::WidgetShortcut);
@@ -652,7 +657,8 @@ QTextCursor cursorAtSpaceEnd(const QTextBlock& block) {
     return cursor;
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
+
 
 void Qutepart::indentBlock(const QTextBlock& block, bool withSpace) const {
     QTextCursor cursor(cursorAtSpaceEnd(block));

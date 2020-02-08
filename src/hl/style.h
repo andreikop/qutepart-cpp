@@ -33,4 +33,4 @@ Style makeStyle(
         const QHash<QString, bool>& flags,
         QString& error);
 
-};
+}  // namespace Qutepart

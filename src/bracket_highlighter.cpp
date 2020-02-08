@@ -31,7 +31,7 @@ QTextEdit::ExtraSelection makeMatchSelection(const TextPosition& pos, bool match
     return selection;
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 
 QList<QTextEdit::ExtraSelection> BracketHighlighter::highlightBracket(QChar bracket, const TextPosition& pos) {
@@ -82,4 +82,4 @@ QList<QTextEdit::ExtraSelection> BracketHighlighter::extraSelections(
     }
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

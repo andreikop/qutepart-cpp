@@ -18,4 +18,4 @@ private:
     ContextStack _contexts;
 };
 
-};
+}

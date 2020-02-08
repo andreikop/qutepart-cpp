@@ -29,4 +29,4 @@ QSyntaxHighlighter* makeHighlighter(
     QTextDocument* parent,
     const QString& id);
 
-};
+}

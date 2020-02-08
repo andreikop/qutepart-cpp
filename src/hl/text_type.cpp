@@ -25,7 +25,7 @@ QChar getTextType(const QTextBlock& block, int column) {
     }
 }
 
-};  // anonymous workspace
+}  // anonymous workspace
 
 QString textTypeMap(const QTextBlock& block) {
     TextBlockUserData* data = getData(block);
@@ -54,4 +54,4 @@ bool isHereDoc(const QTextBlock& block, int column) {
     return getTextType(block, column) == 'h';
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart

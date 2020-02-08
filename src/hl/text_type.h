@@ -19,4 +19,4 @@ bool isHereDoc(const QTextBlock& block, int column);
 
 QString textTypeMap(const QTextBlock& block);
 
-};  // namespace Qutepart
+}  // namespace Qutepart

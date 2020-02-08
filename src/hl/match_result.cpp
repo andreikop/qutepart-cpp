@@ -22,4 +22,4 @@ MatchResult::MatchResult():
     lineContinue(false)
 {}
 
-};
+}  // namespace Qutepart

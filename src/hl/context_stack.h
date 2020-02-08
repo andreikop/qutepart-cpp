@@ -47,4 +47,4 @@ private:
     QVector<ContextStackItem> items;
 };
 
-};
+}  // namespace Qutepart

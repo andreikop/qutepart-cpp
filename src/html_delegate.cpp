@@ -23,6 +23,7 @@ std::map<QChar, QString> HTML_ESCAPE_TABLE = {
     {'\t', "&nbsp;&nbsp;&nbsp;&nbsp;"},
 };
 
+#if 0  // FIXME not used. Remove?
 // Replace special HTML symbols with escase sequences
 QString htmlEscape(const QString& text) {
     QString result;
@@ -37,8 +38,9 @@ QString htmlEscape(const QString& text) {
 
     return result;
 }
+#endif
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 
 void HTMLDelegate::paint(
@@ -107,4 +109,4 @@ QSize HTMLDelegate::sizeHint(
                  QStyledItemDelegate::sizeHint(option, index).height());
 }
 
-};  // namespace Qutepart
+}  // namespace Qutepart
