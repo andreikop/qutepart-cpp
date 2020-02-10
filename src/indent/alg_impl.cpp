@@ -5,6 +5,9 @@
 
 namespace Qutepart {
 
+IndentAlgImpl::~IndentAlgImpl() {
+}
+
 void IndentAlgImpl::setConfig(int width, bool useTabs) {
     width_ = width;
     useTabs_ = useTabs;

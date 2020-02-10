@@ -7,6 +7,8 @@ namespace Qutepart {
 
 class IndentAlgImpl {
 public:
+    virtual ~IndentAlgImpl();
+
     void setConfig(int width, bool useTabs);
     void setLanguage(const QString& language);
 
