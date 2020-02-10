@@ -50,13 +50,13 @@ set(qutepart_SRCS
     src/indent/alg_cstyle.cpp
     )
 
-include_directories(include)
+include_directories(include/qutepart)
 include_directories(src)
 include_directories(test)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Tell CMake to create the qutepart library
-add_library(qutepart ${qutepart_SRCS} include/qutepart.h)
+add_library(qutepart ${qutepart_SRCS} include/qutepart/qutepart.h)
 
 # Use the Widgets module from Qt 5
 target_link_libraries(qutepart Qt5::Core Qt5::Widgets)
@@ -69,7 +69,7 @@ target_link_libraries(editor Qt5::Core Qt5::Widgets qutepart)
 
 # Install only library, not binaries
 install(TARGETS qutepart DESTINATION lib)
-install(FILES include/hl_factory.h include/qutepart.h DESTINATION include/qutepart)
+install(FILES include/qutepart/hl_factory.h include/qutepart/qutepart.h DESTINATION include/qutepart)
 
 # Tests
 enable_testing()
