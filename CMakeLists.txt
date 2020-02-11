@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(qutepart)
 
+set(QUTEPART_VERSION_MAJOR 0)
+set(QUTEPART_VERSION_MINOR 1)
+set(QUTEPART_VERSION_PATCH 0)
+set(QUTEPART_VERSION
+    ${QUTEPART_VERSION_MAJOR}.${QUTEPART_VERSION_MINOR}.${QUTEPART_VERSION_PATCH}
+    PARENT_SCOPE)
+
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
