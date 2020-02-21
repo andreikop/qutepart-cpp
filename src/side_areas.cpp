@@ -1,6 +1,7 @@
 #include <QPainter>
 #include <QTextBlock>
 #include <QIcon>
+#include <QPaintEvent>
 #include <QDebug>
 
 #include "qutepart.h"
@@ -21,11 +22,13 @@ const int MARK_MARGIN = 1;
 
 LineNumberArea::LineNumberArea(Qutepart* textEdit):
     QWidget(textEdit),
-    textEdit_(textEdit) {
+    textEdit_(textEdit)
+{
     resize(widthHint(), height());
-
     connect(textEdit->document(), &QTextDocument::blockCountChanged, this, &LineNumberArea::updateWidth);
     updateWidth();
+
+    textEdit->installEventFilter(this);
 }
 
 int LineNumberArea::widthHint() const {
@@ -43,6 +46,18 @@ void LineNumberArea::updateWidth() {
     }
 
     update();
+}
+
+bool LineNumberArea::eventFilter(QObject*, QEvent *event) {
+    // NOTE PyQt Qutepart works without this method. Why???
+    if (event->type() == QEvent::Paint) {
+        // If code is repainted - also repaint the line numbers
+        // Otherwise the numbers are not updated when widget is scrolled
+        QPaintEvent* pe = dynamic_cast<QPaintEvent*>(event);
+        update(0, pe->rect().y() - pos().y(), width(), pe->rect().bottom() - pos().y());
+    }
+
+    return false;
 }
 
 void LineNumberArea::paintEvent(QPaintEvent* event) {

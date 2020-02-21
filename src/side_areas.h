@@ -19,6 +19,9 @@ signals:
 private slots:
     void updateWidth();
 
+protected:
+      bool eventFilter(QObject *obj, QEvent *event) override;
+
 private:
     void paintEvent(QPaintEvent* event) override;
     void changeEvent(QEvent* event) override;

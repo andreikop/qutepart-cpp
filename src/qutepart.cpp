@@ -181,11 +181,11 @@ bool Qutepart::lineNumbersVisible() const {
 void Qutepart::setLineNumbersVisible(bool value) {
     if ( ( ! value) && bool(lineNumberArea_)) {
         lineNumberArea_.reset();
-        updateViewport();
     } else if (value && (! bool(lineNumberArea_))) {
         lineNumberArea_ = std::make_unique<LineNumberArea>(this);
         connect(lineNumberArea_.get(), &LineNumberArea::widthChanged, this, &Qutepart::updateViewport);
     }
+    updateViewport();
 }
 
 bool Qutepart::completionEnabled() const {
