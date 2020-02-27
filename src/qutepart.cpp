@@ -1,5 +1,6 @@
 #include <QAction>
 #include <QPainter>
+#include <QScrollBar>
 #include <QDebug>
 
 #include "qutepart.h"
@@ -228,6 +229,14 @@ QAction* Qutepart::invokeCompletionAction() const {
     return invokeCompletionAction_;
 }
 
+QAction* Qutepart::scrollDownAction() const {
+    return scrollDownAction_;
+}
+
+QAction* Qutepart::scrollUpAction() const {
+    return scrollUpAction_;
+}
+
 void Qutepart::resetSelection() {
     QTextCursor cursor = textCursor();
     cursor.setPosition(cursor.position());
@@ -373,6 +382,14 @@ void Qutepart::initActions() {
     invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space));
     connect(invokeCompletionAction_, &QAction::triggered,
             completer_.get(), &Completer::invokeCompletion);
+
+    scrollDownAction_ = createAction("Scroll down", QKeySequence(Qt::CTRL | Qt::Key_Down));
+    connect(scrollDownAction_, &QAction::triggered,
+            [this] {this->scrollByOffset(1);});
+
+    scrollUpAction_ = createAction("Scroll up", QKeySequence(Qt::CTRL | Qt::Key_Up));
+    connect(scrollUpAction_, &QAction::triggered,
+            [this] {this->scrollByOffset(-1);});
 }
 
 QAction* Qutepart::createAction(
@@ -747,6 +764,12 @@ void Qutepart::changeSelectedBlocksIndent(bool increase, bool withSpace) {
         newCursor.setPosition(endBlock.position() + endBlock.text().length(), QTextCursor::KeepAnchor);
         setTextCursor(cursor);
     }
+}
+
+void Qutepart::scrollByOffset(int offset) {
+    int value = verticalScrollBar()->value();
+    value += offset;
+    verticalScrollBar()->setValue(value);
 }
 
 void Qutepart::updateExtraSelections() {

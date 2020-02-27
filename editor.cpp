@@ -37,14 +37,7 @@ bool openFile(const QString& filePath, Qutepart::Qutepart* qutepart) {
     return true;
 }
 
-QMainWindow* createMainWindow(Qutepart::Qutepart* qutepart) {
-    QMainWindow* window = new QMainWindow();
-    window->resize(800, 600);
-
-    window->setCentralWidget(qutepart);
-
-    QMenuBar* menuBar = window->menuBar();
-
+void initMenuBar(QMenuBar* menuBar, Qutepart::Qutepart* qutepart) {
     QMenu* editMenu = menuBar->addMenu("Edit");
     editMenu->addAction(qutepart->increaseIndentAction());
     editMenu->addAction(qutepart->decreaseIndentAction());
@@ -53,6 +46,20 @@ QMainWindow* createMainWindow(Qutepart::Qutepart* qutepart) {
     navMenu->addAction(qutepart->toggleBookmarkAction());
     navMenu->addAction(qutepart->prevBookmarkAction());
     navMenu->addAction(qutepart->nextBookmarkAction());
+
+    navMenu->addSeparator();
+    navMenu->addAction(qutepart->scrollDownAction());
+    navMenu->addAction(qutepart->scrollUpAction());
+}
+
+QMainWindow* createMainWindow(Qutepart::Qutepart* qutepart) {
+    QMainWindow* window = new QMainWindow();
+    window->resize(800, 600);
+
+    window->setCentralWidget(qutepart);
+
+    QMenuBar* menuBar = window->menuBar();
+    initMenuBar(menuBar, qutepart);
 
     return window;
 }

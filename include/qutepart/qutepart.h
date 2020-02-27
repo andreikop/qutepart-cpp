@@ -131,6 +131,9 @@ public:
 
     QAction* invokeCompletionAction() const;
 
+    QAction* scrollDownAction() const;
+    QAction* scrollUpAction() const;
+
     // Convenience functions
     void resetSelection();
 
@@ -166,6 +169,8 @@ private:
     void indentBlock(const QTextBlock& block, bool withSpace) const;
     void unIndentBlock(const QTextBlock& block, bool withSpace) const;
     void changeSelectedBlocksIndent(bool increase, bool withSpace);
+
+    void scrollByOffset(int offset);
 
 private slots:
     void updateViewport();
@@ -205,6 +210,9 @@ private:
     QAction* nextBookmarkAction_;
 
     QAction* invokeCompletionAction_;
+
+    QAction* scrollDownAction_;
+    QAction* scrollUpAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;
