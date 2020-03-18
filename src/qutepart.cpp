@@ -782,14 +782,14 @@ void Qutepart::updateExtraSelections() {
     QTextCursor cursor = textCursor();
     QList<QTextEdit::ExtraSelection> selections;
 
+    if (currentLineColor_ != QColor()) {
+        selections << currentLineExtraSelection();
+    }
+
     if (bracketHighlighter_) {
         selections +=  bracketHighlighter_->extraSelections(
                 TextPosition(textCursor().block(),
                              cursor.positionInBlock()));
-    }
-
-    if (currentLineColor_ != QColor()) {
-        selections << currentLineExtraSelection();
     }
 
     setExtraSelections(selections);
