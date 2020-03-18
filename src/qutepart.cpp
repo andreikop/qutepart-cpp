@@ -80,6 +80,12 @@ void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
     indenter_->setAlgorithm(indentAlg);
 }
 
+void Qutepart::goToLine(int line) {
+    QTextBlock block = document()->findBlockByNumber(line);
+    QTextCursor cursor(block);
+    setTextCursor(cursor);
+}
+
 void Qutepart::autoIndentCurrentLine() {
     QTextCursor cursor = textCursor();
     indenter_->indentBlock(cursor.block(), 0, QChar::Null);

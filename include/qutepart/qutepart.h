@@ -76,6 +76,9 @@ public:
     // Set indenter algorithm. Use chooseLanguage() to choose algorithm
     void setIndentAlgorithm(IndentAlg indentAlg);
 
+    // Go to specified line. First line is 0
+    void goToLine(int line);
+
     // Indent current line using current smart indentation algorithm
     void autoIndentCurrentLine();
 
