@@ -825,7 +825,8 @@ ContextPtr loadExternalContext(const QString& externalCtxName) {
     } else {
         QStringList parts = externalCtxName.split("##");
         if (parts.length() != 2) {
-            qWarning() << "Invalid external context" << externalCtxName;
+            // This message is not a warning because it happens often because of mistakes in XMLs
+            qDebug() << "Invalid external context" << externalCtxName;
             return ContextPtr();
         }
         langName = parts[1];
