@@ -39,49 +39,6 @@ private:
 };
 
 
-LineIterator::LineIterator(const QTextBlock& block):
-    block_(block)
-{}
-
-bool LineIterator::operator!=(const LineIterator& other) {
-    if (block_.isValid()) {
-        return block_ != other.block_;
-    } else {
-        return other.block_.isValid();
-    }
-}
-
-bool LineIterator::operator==(const LineIterator& other) {
-    if (block_.isValid()) {
-        return block_ == other.block_;
-    } else {
-        return ( ! other.block_.isValid());
-    }
-}
-
-LineIterator LineIterator::operator++() {
-    LineIterator retVal = *this;
-    block_ = block_.next();
-    return retVal;
-}
-
-QTextBlock LineIterator::operator*() {
-    return block_;
-}
-
-Lines::Lines(QTextDocument* document):
-    document_(document)
-{}
-
-LineIterator Lines::begin() {
-    return LineIterator(document_->firstBlock());
-}
-
-LineIterator Lines::end() {
-    return LineIterator(QTextBlock());
-}
-
-
 Qutepart::Qutepart(QWidget *parent, const QString& text):
     QPlainTextEdit(text, parent),
     indenter_(std::make_unique<Indenter>()),

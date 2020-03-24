@@ -57,6 +57,15 @@ class LineNumberArea;
 class MarkArea;
 class Completer;
 
+class Line {
+public:
+    Line(const QTextBlock& block);
+    QString text() const;
+
+private:
+    QTextBlock block_;
+};
+
 /* STL-compatible iterator implementation to work with document lines (blocks)
 */
 class LineIterator {
@@ -66,7 +75,7 @@ public:
     bool operator!=(const LineIterator& other);
     bool operator==(const LineIterator& other);
     LineIterator operator++();
-    QTextBlock operator*();
+    Line operator*();
 
 private:
     QTextBlock block_;

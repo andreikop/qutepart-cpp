@@ -46,8 +46,8 @@ private slots:
 
         QStringList expectedLines = {"a", "b", "c"};
         QStringList actualLines;
-        for(const auto& block: qpart.lines()) {
-            actualLines << block.text();
+        for(const auto& line: qpart.lines()) {
+            actualLines << line.text();
         }
 
         QCOMPARE(actualLines, expectedLines);

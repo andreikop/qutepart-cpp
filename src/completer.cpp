@@ -421,8 +421,8 @@ void Completer::updateWordSet() {
     wordSet_ = keywords_.unite(customCompletions_);
 
     // TODO check for timeout
-    for(const QTextBlock& block: qpart_->lines()) {
-        QRegularExpressionMatchIterator it = wordRegExp.globalMatch(block.text());
+    for(const Line& line: qpart_->lines()) {
+        QRegularExpressionMatchIterator it = wordRegExp.globalMatch(line.text());
 
         while (it.hasNext()) {
             QRegularExpressionMatch match = it.next();
