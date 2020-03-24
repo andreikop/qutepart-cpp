@@ -107,3 +107,4 @@ function(api_test name)
 endfunction()
 
 api_test(line_iterator)
+api_test(line)

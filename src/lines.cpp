@@ -15,6 +15,23 @@ QString Line::text() const {
 	return block_.text();
 }
 
+void Line::remove(int pos, int count) {
+    int blockLen = block_.length();
+
+    if (pos < 0 || pos > blockLen) {
+        qFatal("Wrong Line::remove(pos) %d", pos);
+    }
+
+    if (count < 0 || pos + count > blockLen) {
+        qFatal("Wrong Line::remove(count) %d", count);
+    }
+
+    QTextCursor cursor(block_);
+    cursor.setPosition(block_.position() + pos);
+    cursor.setPosition(block_.position() + pos + count, QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
+}
+
 LineIterator::LineIterator(const QTextBlock& block):
     block_(block)
 {}

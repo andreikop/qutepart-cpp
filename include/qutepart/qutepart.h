@@ -62,6 +62,8 @@ public:
     Line(const QTextBlock& block);
     QString text() const;
 
+    void remove(int pos, int count);
+
 private:
     QTextBlock block_;
 };
