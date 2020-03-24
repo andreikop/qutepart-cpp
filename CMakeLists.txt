@@ -6,8 +6,8 @@ set(QUTEPART_VERSION_MAJOR 0)
 set(QUTEPART_VERSION_MINOR 1)
 set(QUTEPART_VERSION_PATCH 0)
 set(QUTEPART_VERSION
-    ${QUTEPART_VERSION_MAJOR}.${QUTEPART_VERSION_MINOR}.${QUTEPART_VERSION_PATCH}
-    PARENT_SCOPE)
+    ${QUTEPART_VERSION_MAJOR}.${QUTEPART_VERSION_MINOR}.${QUTEPART_VERSION_PATCH})
+set(QUTEPART_VERSION ${QUTEPART_VERSION} PARENT_SCOPE)
 
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
@@ -82,9 +82,10 @@ install(FILES include/qutepart/hl_factory.h include/qutepart/qutepart.h DESTINAT
 enable_testing()
 
 function(indent_test name)
-    add_executable(test-indenter-${name} test/base_test.cpp test/test_indenter_${name}.cpp)
-    target_link_libraries(test-indenter-${name} Qt5::Test Qt5::Core Qt5::Widgets qutepart)
-    add_test(NAME test-indenter-${name} COMMAND test-indenter-${name})
+    set(full_name test_indenter_${name})
+    add_executable(${full_name} test/base_indenter_test.cpp test/${full_name}.cpp)
+    target_link_libraries(${full_name} Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+    add_test(NAME ${name} COMMAND ${full_name})
 endfunction()
 
 indent_test(normal)
@@ -94,4 +95,14 @@ indent_test(cstyle)
 indent_test(xml)
 indent_test(scheme)
 indent_test(lisp)
-indent_test(haskel)
+# indent_test(haskel)
+
+
+function(api_test name)
+    set(full_name test_${name})
+    add_executable(${full_name} test/${full_name}.cpp)
+    target_link_libraries(${full_name} Qt5::Test Qt5::Core Qt5::Widgets qutepart)
+    add_test(NAME ${name} COMMAND ${full_name})
+endfunction()
+
+api_test(line_iterator)

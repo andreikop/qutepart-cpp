@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <QColor>
+#include <QDebug>
 #include <QPlainTextEdit>
 #include <QSharedPointer>
 #include <QSyntaxHighlighter>
@@ -56,6 +57,34 @@ class LineNumberArea;
 class MarkArea;
 class Completer;
 
+/* STL-compatible iterator implementation to work with document lines (blocks)
+*/
+class LineIterator {
+public:
+    LineIterator(const QTextBlock& block);
+
+    bool operator!=(const LineIterator& other);
+    bool operator==(const LineIterator& other);
+    LineIterator operator++();
+    QTextBlock operator*();
+
+private:
+    QTextBlock block_;
+};
+
+/* A convenience class which provides high level interface to work with
+the document lines
+*/
+class Lines {
+public:
+    Lines(QTextDocument* document);
+    LineIterator begin();
+    LineIterator end();
+
+private:
+    QTextDocument* document_;
+};
+
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
 
@@ -69,6 +98,8 @@ public:
     Qutepart& operator=(Qutepart&&) = delete;
 
     virtual ~Qutepart();
+
+    Lines lines() const;
 
     // Set highlighter. Use chooseLanguage() to get the id
     void setHighlighter(const QString& languageId);
@@ -239,5 +270,6 @@ public:
 private:
     Qutepart* qutepart_;
 };
+
 
 } // namespace Qutepart

@@ -1,4 +1,4 @@
-#include "base_test.h"
+#include "base_indenter_test.h"
 
 #include <QtTest/QtTest>
 #include <QTextCursor>

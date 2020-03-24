@@ -421,15 +421,13 @@ void Completer::updateWordSet() {
     wordSet_ = keywords_.unite(customCompletions_);
 
     // TODO check for timeout
-    QTextBlock block = qpart_->document()->firstBlock();
-    while(block.isValid()) {
+    for(const QTextBlock& block: qpart_->lines()) {
         QRegularExpressionMatchIterator it = wordRegExp.globalMatch(block.text());
 
         while (it.hasNext()) {
             QRegularExpressionMatch match = it.next();
             wordSet_ += match.captured();
         }
-        block = block.next();
     }
 }
 

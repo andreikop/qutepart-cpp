@@ -1,6 +1,6 @@
 #include <QtTest/QtTest>
 
-#include "base_test.h"
+#include "base_indenter_test.h"
 
 
 class Test: public BaseTest
@@ -9,8 +9,8 @@ class Test: public BaseTest
 
 private slots:
     void test() {
-        // qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_HASKEL);
-        qpart.setHighlighter("haskel.xml");
+        qpart.setIndentAlgorithm(Qutepart::INDENT_ALG_HASKEL);
+        qpart.setHighlighter("haskell.xml");
         runDataDrivenTest();
     }
 

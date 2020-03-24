@@ -1,6 +1,6 @@
 #include <QtTest/QtTest>
 
-#include "base_test.h"
+#include "base_indenter_test.h"
 
 
 class Test: public BaseTest
