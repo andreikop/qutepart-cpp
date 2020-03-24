@@ -79,6 +79,14 @@ LineIterator Lines::end() {
     return LineIterator(QTextBlock());
 }
 
+Line Lines::first() const {
+    return Line(document_->firstBlock());
+}
+
+Line Lines::last() const {
+    return Line(document_->lastBlock());
+}
+
 void Lines::append(const QString& lineText) {
     QTextCursor cursor(document_->lastBlock());
     cursor.movePosition(QTextCursor::End);

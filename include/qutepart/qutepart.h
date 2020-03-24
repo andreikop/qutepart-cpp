@@ -90,9 +90,13 @@ the document lines
 class Lines {
 public:
     Lines(QTextDocument* document);
+
+    // STR iteration support
     LineIterator begin();
     LineIterator end();
 
+    Line first() const;
+    Line last() const;
     void append(const QString& lineText);
 private:
     QTextDocument* document_;
