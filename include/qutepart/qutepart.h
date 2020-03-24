@@ -61,6 +61,7 @@ class Line {
 public:
     Line(const QTextBlock& block);
     QString text() const;
+    int length() const;
 
     void remove(int pos, int count);
 
@@ -92,6 +93,7 @@ public:
     LineIterator begin();
     LineIterator end();
 
+    void append(const QString& lineText);
 private:
     QTextDocument* document_;
 };

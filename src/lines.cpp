@@ -15,6 +15,10 @@ QString Line::text() const {
 	return block_.text();
 }
 
+int Line::length() const {
+    return block_.length() - 1;
+}
+
 void Line::remove(int pos, int count) {
     int blockLen = block_.length();
 
@@ -31,6 +35,7 @@ void Line::remove(int pos, int count) {
     cursor.setPosition(block_.position() + pos + count, QTextCursor::KeepAnchor);
     cursor.removeSelectedText();
 }
+
 
 LineIterator::LineIterator(const QTextBlock& block):
     block_(block)
@@ -72,6 +77,18 @@ LineIterator Lines::begin() {
 
 LineIterator Lines::end() {
     return LineIterator(QTextBlock());
+}
+
+void Lines::append(const QString& lineText) {
+    QTextCursor cursor(document_->lastBlock());
+    cursor.movePosition(QTextCursor::End);
+
+    cursor.beginEditBlock();
+
+    cursor.insertBlock();
+    cursor.insertText(lineText);
+
+    cursor.endEditBlock();
 }
 
 }

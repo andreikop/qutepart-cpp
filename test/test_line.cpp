@@ -9,7 +9,7 @@ class Test: public QObject {
     Q_OBJECT
 
 private slots:
-    void doTest(const QString& text, int pos, int count, const QString& expected) {
+    void doRemoveTest(const QString& text, int pos, int count, const QString& expected) {
         Qutepart::Qutepart qpart(nullptr, text);
 
         Qutepart::Line line(qpart.document()->firstBlock());
@@ -20,24 +20,33 @@ private slots:
     }
 
     void RemoveAll() {
-        doTest("asdfghjkl", 0, 9, "");
+        doRemoveTest("asdfghjkl", 0, 9, "");
     }
 
     void RemoveFirst() {
-        doTest("asdfghjkl", 0, 1, "sdfghjkl");
+        doRemoveTest("asdfghjkl", 0, 1, "sdfghjkl");
     }
 
     void RemoveLast() {
-        doTest("asdfghjkl", 8, 1, "asdfghjk");
+        doRemoveTest("asdfghjkl", 8, 1, "asdfghjk");
     }
 
     void RemoveMid() {
-        doTest("asdfghjkl", 2, 5, "askl");
+        doRemoveTest("asdfghjkl", 2, 5, "askl");
     }
 
     void RemoveZero() {
-        doTest("asdfghjkl", 9, 0, "asdfghjkl");
-        doTest("asdfghjkl", 0, 0, "asdfghjkl");
+        doRemoveTest("asdfghjkl", 9, 0, "asdfghjkl");
+        doRemoveTest("asdfghjkl", 0, 0, "asdfghjkl");
+    }
+
+    void Length() {
+        Qutepart::Qutepart qpart(nullptr, "asdf\nfd");
+        Qutepart::Line first(qpart.document()->firstBlock());
+        QCOMPARE(first.length(), 4);
+
+        Qutepart::Line last(qpart.document()->lastBlock());
+        QCOMPARE(last.length(), 2);
     }
 };
 
