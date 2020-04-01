@@ -530,6 +530,10 @@ int Qutepart::effectiveEdgePos(const QString& text) {
 }
 
 void Qutepart::chooseVisibleWhitespace(const QString& text, QVector<bool>* result) {
+    if (text.isEmpty()) {
+        return;
+    }
+    
     int lastNonSpaceColumn = text.length() - 1;
     while (text[lastNonSpaceColumn].isSpace()) {
         lastNonSpaceColumn--;
