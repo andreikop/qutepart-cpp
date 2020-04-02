@@ -185,6 +185,15 @@ public:
     QAction* scrollDownAction() const;
     QAction* scrollUpAction() const;
 
+    QAction* moveLineUpAction() const;
+    QAction* moveLineDownAction() const;
+    QAction* deleteLineAction() const;
+
+    QAction* cutLineAction() const;
+    QAction* copyLineAction() const;
+    QAction* pasteLineAction() const;
+    QAction* duplicateLineAction() const;
+
     // Convenience functions
     void resetSelection();
 
@@ -197,7 +206,8 @@ protected:
 private:
     void initActions();
     QAction* createAction(const QString& text, QKeySequence shortcut,
-                          const QString& iconFileName=QString::null);
+                          const QString& iconFileName,
+                          std::function<void()> const& handler);
 
     // whitespace and edge drawing
     void drawIndentMarkersAndEdge(const QRect& rect);
@@ -264,6 +274,15 @@ private:
 
     QAction* scrollDownAction_;
     QAction* scrollUpAction_;
+
+    QAction* moveLineUpAction_;
+    QAction* moveLineDownAction_;
+    QAction* deleteLineAction_;
+
+    QAction* cutLineAction_;
+    QAction* copyLineAction_;
+    QAction* pasteLineAction_;
+    QAction* duplicateLineAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;

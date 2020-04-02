@@ -239,6 +239,34 @@ QAction* Qutepart::invokeCompletionAction() const {
     return invokeCompletionAction_;
 }
 
+QAction* Qutepart::moveLineUpAction() const {
+    return moveLineUpAction_;
+}
+
+QAction* Qutepart::moveLineDownAction() const {
+    return moveLineDownAction_;
+}
+
+QAction* Qutepart::deleteLineAction() const {
+    return deleteLineAction_;
+}
+
+QAction* Qutepart::cutLineAction() const {
+    return cutLineAction_;
+}
+
+QAction* Qutepart::copyLineAction() const {
+    return copyLineAction_;
+}
+
+QAction* Qutepart::pasteLineAction() const {
+    return pasteLineAction_;
+}
+
+QAction* Qutepart::duplicateLineAction() const {
+    return duplicateLineAction_;
+}
+
 QAction* Qutepart::scrollDownAction() const {
     return scrollDownAction_;
 }
@@ -367,44 +395,47 @@ void Qutepart::changeEvent(QEvent *event) {
 
 void Qutepart::initActions() {
     increaseIndentAction_ = createAction(
-        "Increase indent", QKeySequence(Qt::Key_Tab), "format-indent-more");
-    connect(increaseIndentAction_, &QAction::triggered,
-            this, [this](){this->changeSelectedBlocksIndent(true, false);});
+        "Increase indent", QKeySequence(Qt::Key_Tab), "format-indent-more",
+        [this](){this->changeSelectedBlocksIndent(true, false);});
 
     decreaseIndentAction_ = createAction(
-        "Decrease indent", QKeySequence(Qt::SHIFT | Qt::Key_Tab), "format-indent-less");
-    connect(decreaseIndentAction_, &QAction::triggered,
-            this, [this](){this->changeSelectedBlocksIndent(false, false);});
+        "Decrease indent", QKeySequence(Qt::SHIFT | Qt::Key_Tab), "format-indent-less",
+        [this](){this->changeSelectedBlocksIndent(false, false);});
 
     toggleBookmarkAction_ = createAction(
-        "Toggle bookmark", QKeySequence(Qt::CTRL | Qt::Key_B));
-    connect(toggleBookmarkAction_, &QAction::triggered,
-            this, &Qutepart::onShortcutToggleBookmark);
+        "Toggle bookmark", QKeySequence(Qt::CTRL | Qt::Key_B), QString::null,
+        [this](){this->onShortcutToggleBookmark();});
 
-    prevBookmarkAction_ = createAction("Previous bookmark", QKeySequence(Qt::ALT | Qt::Key_Up));
-    connect(prevBookmarkAction_, &QAction::triggered,
-            this, &Qutepart::onShortcutPrevBookmark);
+    prevBookmarkAction_ = createAction("Previous bookmark", QKeySequence(Qt::ALT | Qt::Key_Up), QString::null,
+        [this](){this->onShortcutPrevBookmark();});
 
-    nextBookmarkAction_ = createAction("Next bookmark", QKeySequence(Qt::ALT | Qt::Key_Down));
-    connect(nextBookmarkAction_, &QAction::triggered,
-            this, &Qutepart::onShortcutNextBookmark);
+    nextBookmarkAction_ = createAction("Next bookmark", QKeySequence(Qt::ALT | Qt::Key_Down), QString::null,
+        [this](){this->onShortcutNextBookmark();});
 
-    invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space));
-    connect(invokeCompletionAction_, &QAction::triggered,
-            completer_.get(), &Completer::invokeCompletion);
+    invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space), QString::null,
+        [this](){this->completer_->invokeCompletion();});
 
-    scrollDownAction_ = createAction("Scroll down", QKeySequence(Qt::CTRL | Qt::Key_Down));
-    connect(scrollDownAction_, &QAction::triggered,
-            [this] {this->scrollByOffset(1);});
+    // moveLineUpAction_ = createAction('Move line up', QKeySequence(Qt::ALT | Qt::KeyUp));
+    //     self.moveLineDownAction = createAction('Move line down', 'Alt+Down',
+    //                                            lambda: self._onShortcutMoveLine(down = True), 'go-down')
+    //     self.deleteLineAction = createAction('Delete line', 'Alt+Del', self._onShortcutDeleteLine, 'edit-delete')
+    //     self.cutLineAction = createAction('Cut line', 'Alt+X', self._onShortcutCutLine, 'edit-cut')
+    //     self.copyLineAction = createAction('Copy line', 'Alt+C', self._onShortcutCopyLine, 'edit-copy')
+    //     self.pasteLineAction = createAction('Paste line', 'Alt+V', self._onShortcutPasteLine, 'edit-paste')
+    //     self.duplicateLineAction = createAction('Duplicate line', 'Alt+D', self._onShortcutDuplicateLine)
 
-    scrollUpAction_ = createAction("Scroll up", QKeySequence(Qt::CTRL | Qt::Key_Up));
-    connect(scrollUpAction_, &QAction::triggered,
-            [this] {this->scrollByOffset(-1);});
+
+    scrollDownAction_ = createAction("Scroll down", QKeySequence(Qt::CTRL | Qt::Key_Down), QString::null,
+        [this](){this->scrollByOffset(1);});
+
+    scrollUpAction_ = createAction("Scroll up", QKeySequence(Qt::CTRL | Qt::Key_Up), QString::null,
+        [this](){this->scrollByOffset(-1);});
 }
 
 QAction* Qutepart::createAction(
     const QString& text, QKeySequence shortcut,
-    const QString& /*iconFileName*/) {
+    const QString& /*iconFileName*/,
+    std::function<void()> const& handler) {
 
     QAction* action = new QAction(text, this);
 
@@ -416,10 +447,12 @@ QAction* Qutepart::createAction(
     action->setShortcut(shortcut);
     action->setShortcutContext(Qt::WidgetShortcut);
 
+    connect(action, &QAction::triggered, handler);
+
     addAction(action);
+
     return action;
 }
-
 
 void Qutepart::drawIndentMarkersAndEdge(const QRect& paintEventRect) {
     QPainter painter(viewport());
@@ -533,7 +566,7 @@ void Qutepart::chooseVisibleWhitespace(const QString& text, QVector<bool>* resul
     if (text.isEmpty()) {
         return;
     }
-    
+
     int lastNonSpaceColumn = text.length() - 1;
     while (text[lastNonSpaceColumn].isSpace()) {
         lastNonSpaceColumn--;
