@@ -50,6 +50,21 @@ void initMenuBar(QMenuBar* menuBar, Qutepart::Qutepart* qutepart) {
     navMenu->addSeparator();
     navMenu->addAction(qutepart->scrollDownAction());
     navMenu->addAction(qutepart->scrollUpAction());
+
+    QMenu* linesMenu = menuBar->addMenu("Lines");
+
+    linesMenu->addAction(qutepart->moveLineUpAction());
+    linesMenu->addAction(qutepart->moveLineDownAction());
+    linesMenu->addSeparator();
+
+    linesMenu->addAction(qutepart->deleteLineAction());
+    linesMenu->addAction(qutepart->duplicateLineAction());
+    linesMenu->addSeparator();
+
+    linesMenu->addAction(qutepart->cutLineAction());
+    linesMenu->addAction(qutepart->copyLineAction());
+    linesMenu->addAction(qutepart->pasteLineAction());
+
 }
 
 QMainWindow* createMainWindow(Qutepart::Qutepart* qutepart) {

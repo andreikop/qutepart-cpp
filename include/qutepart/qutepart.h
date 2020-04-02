@@ -187,12 +187,13 @@ public:
 
     QAction* moveLineUpAction() const;
     QAction* moveLineDownAction() const;
+
     QAction* deleteLineAction() const;
+    QAction* duplicateLineAction() const;
 
     QAction* cutLineAction() const;
     QAction* copyLineAction() const;
     QAction* pasteLineAction() const;
-    QAction* duplicateLineAction() const;
 
     // Convenience functions
     void resetSelection();

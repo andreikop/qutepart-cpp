@@ -415,19 +415,25 @@ void Qutepart::initActions() {
     invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space), QString::null,
         [this](){this->completer_->invokeCompletion();});
 
-    // moveLineUpAction_ = createAction('Move line up', QKeySequence(Qt::ALT | Qt::KeyUp));
-    //     self.moveLineDownAction = createAction('Move line down', 'Alt+Down',
-    //                                            lambda: self._onShortcutMoveLine(down = True), 'go-down')
-    //     self.deleteLineAction = createAction('Delete line', 'Alt+Del', self._onShortcutDeleteLine, 'edit-delete')
-    //     self.cutLineAction = createAction('Cut line', 'Alt+X', self._onShortcutCutLine, 'edit-cut')
-    //     self.copyLineAction = createAction('Copy line', 'Alt+C', self._onShortcutCopyLine, 'edit-copy')
-    //     self.pasteLineAction = createAction('Paste line', 'Alt+V', self._onShortcutPasteLine, 'edit-paste')
-    //     self.duplicateLineAction = createAction('Duplicate line', 'Alt+D', self._onShortcutDuplicateLine)
+    moveLineUpAction_ = createAction("Move line up", QKeySequence(Qt::ALT | Qt::Key_Up), QString::null,
+        [this]{;});
+    moveLineDownAction_ = createAction("Move line down", QKeySequence(Qt::ALT | Qt::Key_Down), QString::null,
+        [this]{;});
 
+    deleteLineAction_ = createAction("Delete line", QKeySequence(Qt::ALT | Qt::Key_Delete), QString::null,
+        [this]{;});
+    duplicateLineAction_ = createAction("Duplicate line", QKeySequence(Qt::ALT | Qt::Key_D), QString::null,
+        [this]{;});
+
+    cutLineAction_ = createAction("Cut line", QKeySequence(Qt::ALT | Qt::Key_X), QString::null,
+        [this]{;});
+    copyLineAction_ = createAction("Copy line", QKeySequence(Qt::ALT | Qt::Key_C), QString::null,
+        [this]{;});
+    pasteLineAction_ = createAction("Paste line", QKeySequence(Qt::ALT | Qt::Key_V), QString::null,
+        [this]{;});
 
     scrollDownAction_ = createAction("Scroll down", QKeySequence(Qt::CTRL | Qt::Key_Down), QString::null,
         [this](){this->scrollByOffset(1);});
-
     scrollUpAction_ = createAction("Scroll up", QKeySequence(Qt::CTRL | Qt::Key_Up), QString::null,
         [this](){this->scrollByOffset(-1);});
 }
