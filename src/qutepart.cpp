@@ -406,19 +406,19 @@ void Qutepart::initActions() {
         "Toggle bookmark", QKeySequence(Qt::CTRL | Qt::Key_B), QString::null,
         [this](){this->onShortcutToggleBookmark();});
 
-    prevBookmarkAction_ = createAction("Previous bookmark", QKeySequence(Qt::ALT | Qt::Key_Up), QString::null,
+    prevBookmarkAction_ = createAction("Previous bookmark", QKeySequence(Qt::SHIFT | Qt::Key_F2), QString::null,
         [this](){this->onShortcutPrevBookmark();});
 
-    nextBookmarkAction_ = createAction("Next bookmark", QKeySequence(Qt::ALT | Qt::Key_Down), QString::null,
+    nextBookmarkAction_ = createAction("Next bookmark", QKeySequence(Qt::Key_F2), QString::null,
         [this](){this->onShortcutNextBookmark();});
 
     invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space), QString::null,
         [this](){this->completer_->invokeCompletion();});
 
     moveLineUpAction_ = createAction("Move line up", QKeySequence(Qt::ALT | Qt::Key_Up), QString::null,
-        [this]{;});
+        [this]{this->moveLine(-1);});
     moveLineDownAction_ = createAction("Move line down", QKeySequence(Qt::ALT | Qt::Key_Down), QString::null,
-        [this]{;});
+        [this]{this->moveLine(+1);});
 
     deleteLineAction_ = createAction("Delete line", QKeySequence(Qt::ALT | Qt::Key_Delete), QString::null,
         [this]{;});
@@ -823,6 +823,38 @@ void Qutepart::scrollByOffset(int offset) {
     int value = verticalScrollBar()->value();
     value += offset;
     verticalScrollBar()->setValue(value);
+}
+
+void Qutepart::moveLine(int offsetLines) {
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection()) {
+        // TODO
+    } else {
+        int posInBlock = cursor.positionInBlock();
+
+        cursor.beginEditBlock();
+
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+        QString text = cursor.selectedText();
+
+
+        cursor.removeSelectedText();
+        if (offsetLines == -1) {
+            cursor.movePosition(QTextCursor::PreviousBlock);
+        } else {
+            cursor.movePosition(QTextCursor::NextBlock);
+        }
+        cursor.insertText(text);
+
+        // Restore position in block
+        cursor.setPosition(cursor.block().previous().position() + posInBlock);
+        setTextCursor(cursor);
+
+        // TODO properly move bookmarks
+
+        cursor.endEditBlock();
+    }
 }
 
 void Qutepart::updateExtraSelections() {
