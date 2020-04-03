@@ -416,9 +416,9 @@ void Qutepart::initActions() {
         [this](){this->completer_->invokeCompletion();});
 
     moveLineUpAction_ = createAction("Move line up", QKeySequence(Qt::ALT | Qt::Key_Up), QString::null,
-        [this]{this->moveLine(-1);});
+        [this]{this->moveSelectedLines(-1);});
     moveLineDownAction_ = createAction("Move line down", QKeySequence(Qt::ALT | Qt::Key_Down), QString::null,
-        [this]{this->moveLine(+1);});
+        [this]{this->moveSelectedLines(+1);});
 
     deleteLineAction_ = createAction("Delete line", QKeySequence(Qt::ALT | Qt::Key_Delete), QString::null,
         [this]{;});
@@ -825,57 +825,63 @@ void Qutepart::scrollByOffset(int offset) {
     verticalScrollBar()->setValue(value);
 }
 
-void Qutepart::moveLine(int offsetLines) {
+void Qutepart::moveBlock(int startNum, int endNum) {
+    QTextBlock startBlock = document()->findBlockByNumber(startNum);
+
+    QTextCursor cursor(startBlock);
+
+    cursor.beginEditBlock();
+
+    bool haveEolAtEnd = cursor.block().next().isValid();
+    if (haveEolAtEnd) {
+        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+    } else {
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    }
+
+    QString text = cursor.selectedText();
+    cursor.removeSelectedText();
+
+    bool insertedEol = false;
+    QTextBlock endBlock = document()->findBlockByNumber(endNum);
+    if (endBlock.isValid()) {
+        cursor.setPosition(endBlock.position());
+    } else {
+        // A special case. Moving TO line, which doesn't have EOL
+        cursor.movePosition(QTextCursor::End);
+        cursor.insertBlock();
+        insertedEol = true;
+    }
+
+    cursor.insertText(text);
+    if ( ! haveEolAtEnd) {
+        // A special case. Moving line which doesn't have EOL
+        cursor.insertBlock();
+        insertedEol = true;
+    }
+
+    if (insertedEol) {
+        cursor.movePosition(QTextCursor::End);
+        cursor.deletePreviousChar();
+    }
+
+    cursor.endEditBlock();
+}
+
+void Qutepart::moveSelectedLines(int offsetLines) {
     QTextCursor cursor = textCursor();
 
     if (cursor.hasSelection()) {
         // TODO
     } else {
         // Check if having block to swap
-        int newBlockNumber = cursor.blockNumber() + offsetLines;
+        int blockNumber = cursor.blockNumber();
+        int newBlockNumber = blockNumber + offsetLines;
         if ( ! cursor.document()->findBlockByNumber(newBlockNumber).isValid()) {
             return;  // it is the last (or the first) block. Don't have place to move
         }
-
-        int posInBlock = cursor.positionInBlock();
-
-        cursor.beginEditBlock();
-
-        cursor.movePosition(QTextCursor::StartOfBlock);
-        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        QString movedText = cursor.selectedText();
-
-        cursor.removeSelectedText();
-
-        if (offsetLines == -1) {
-            cursor.movePosition(QTextCursor::PreviousBlock);
-        } else {
-            cursor.movePosition(QTextCursor::NextBlock);
-        }
-
-        cursor.movePosition(QTextCursor::StartOfBlock);
-        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        QString replacedText = cursor.selectedText();
-
-        cursor.insertText(movedText);
-
-        if (offsetLines == -1) {
-            cursor.movePosition(QTextCursor::NextBlock);
-        } else {
-            cursor.movePosition(QTextCursor::PreviousBlock);
-        }
-
-        cursor.insertText(replacedText);
-
-        // Restore position in block
-        int newPos = cursor.document()->findBlockByNumber(newBlockNumber).position() + posInBlock;
-        cursor.setPosition(newPos);
-
-        setTextCursor(cursor);
-
-        // TODO properly move bookmarks
-
-        cursor.endEditBlock();
+        moveBlock(newBlockNumber, blockNumber);
+        markArea_->update();
     }
 }
 

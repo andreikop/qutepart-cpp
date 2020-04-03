@@ -234,7 +234,8 @@ private:
 
     void scrollByOffset(int offset);
 
-    void moveLine(int offsetLines);
+    void moveBlock(int startNum, int endNum);
+    void moveSelectedLines(int offsetLines);
 
 private slots:
     void updateViewport();
