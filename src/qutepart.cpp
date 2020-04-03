@@ -826,9 +826,10 @@ void Qutepart::scrollByOffset(int offset) {
 }
 
 void Qutepart::moveBlock(int startNum, int endNum) {
-    QTextBlock startBlock = document()->findBlockByNumber(startNum);
+    // TODO refactor this set of special cases
+    QTextBlock block = document()->findBlockByNumber(startNum);
 
-    QTextCursor cursor(startBlock);
+    QTextCursor cursor(block);
 
     cursor.beginEditBlock();
 
@@ -872,7 +873,26 @@ void Qutepart::moveSelectedLines(int offsetLines) {
     QTextCursor cursor = textCursor();
 
     if (cursor.hasSelection()) {
-        // TODO
+        int smallerPos = std::min(cursor.anchor(), cursor.position());
+        int biggerPos = std::max(cursor.anchor(), cursor.position());
+
+        if (offsetLines == 1) {  // move down
+            QTextBlock nextBlock = document()->findBlock(biggerPos).next();
+            if ( ! nextBlock.isValid()) {
+                return;
+            }
+            QTextBlock topBlock = document()->findBlock(smallerPos);
+            moveBlock(nextBlock.blockNumber(), topBlock.blockNumber());
+        } else if (offsetLines == -1) {  // move up
+            QTextBlock prevBlock = document()->findBlock(smallerPos).previous();
+            if ( ! prevBlock.isValid()) {
+                return;
+            }
+            QTextBlock bottomBlock = document()->findBlock(biggerPos);
+            moveBlock(prevBlock.blockNumber(), bottomBlock.blockNumber());
+        } else {
+            qFatal("Bad line move offset %d", offsetLines);
+        }
     } else {
         // Check if having block to swap
         int blockNumber = cursor.blockNumber();
@@ -881,8 +901,10 @@ void Qutepart::moveSelectedLines(int offsetLines) {
             return;  // it is the last (or the first) block. Don't have place to move
         }
         moveBlock(newBlockNumber, blockNumber);
-        markArea_->update();
     }
+
+    // TODO make sure bookmarks are saved on their place
+    markArea_->update();
 }
 
 void Qutepart::updateExtraSelections() {
