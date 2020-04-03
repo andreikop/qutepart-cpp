@@ -827,28 +827,50 @@ void Qutepart::scrollByOffset(int offset) {
 
 void Qutepart::moveLine(int offsetLines) {
     QTextCursor cursor = textCursor();
+
     if (cursor.hasSelection()) {
         // TODO
     } else {
+        // Check if having block to swap
+        int newBlockNumber = cursor.blockNumber() + offsetLines;
+        if ( ! cursor.document()->findBlockByNumber(newBlockNumber).isValid()) {
+            return;  // it is the last (or the first) block. Don't have place to move
+        }
+
         int posInBlock = cursor.positionInBlock();
 
         cursor.beginEditBlock();
 
         cursor.movePosition(QTextCursor::StartOfBlock);
-        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
-        QString text = cursor.selectedText();
-
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        QString movedText = cursor.selectedText();
 
         cursor.removeSelectedText();
+
         if (offsetLines == -1) {
             cursor.movePosition(QTextCursor::PreviousBlock);
         } else {
             cursor.movePosition(QTextCursor::NextBlock);
         }
-        cursor.insertText(text);
+
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        QString replacedText = cursor.selectedText();
+
+        cursor.insertText(movedText);
+
+        if (offsetLines == -1) {
+            cursor.movePosition(QTextCursor::NextBlock);
+        } else {
+            cursor.movePosition(QTextCursor::PreviousBlock);
+        }
+
+        cursor.insertText(replacedText);
 
         // Restore position in block
-        cursor.setPosition(cursor.block().previous().position() + posInBlock);
+        int newPos = cursor.document()->findBlockByNumber(newBlockNumber).position() + posInBlock;
+        cursor.setPosition(newPos);
+
         setTextCursor(cursor);
 
         // TODO properly move bookmarks
