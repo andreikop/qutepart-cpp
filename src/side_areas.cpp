@@ -102,6 +102,9 @@ MarkArea::MarkArea(Qutepart* qpart):
     // self._lintPixmaps = {qpart.LINT_ERROR: self._loadIcon('emblem-error'),
     //                      qpart.LINT_WARNING: self._loadIcon('emblem-warning'),
     //                      qpart.LINT_NOTE: self._loadIcon('emblem-information')}
+
+    connect(qpart->document(), &QTextDocument::blockCountChanged, [this] {this->update();});
+    connect(qpart->verticalScrollBar(), &QScrollBar::valueChanged, [this] {this->update();});
 }
 
 QPixmap MarkArea::loadIcon(const QString& name) const {
