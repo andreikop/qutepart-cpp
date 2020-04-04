@@ -70,7 +70,7 @@ const QString& IndentAlgCstyle::triggerCharacters() const {
 
 // Search for a corresponding '{' and return its indentation
 QString IndentAlgCstyle::findLeftBrace(const QTextBlock& block, int column) const {
-    TextPosition pos = findBracketBackward('{', TextPosition(block, column));
+    TextPosition pos = findOpeningBracketBackward('{', TextPosition(block, column));
     if ( ! pos.isValid()) {
         return QString::null;
     }
@@ -97,7 +97,7 @@ TextPosition IndentAlgCstyle::tryParenthesisBeforeBrace(const TextPosition& pos)
     if ( ! text.endsWith(')')) {
         return TextPosition();
     }
-    return findBracketBackward('(', TextPosition(pos.block, text.length() - 1));
+    return findOpeningBracketBackward('(', TextPosition(pos.block, text.length() - 1));
 }
 
 /* Check for default and case keywords and assume we are in a switch statement.
@@ -146,7 +146,7 @@ QString IndentAlgCstyle::tryAccessModifiers(const QTextBlock& block) const {
         return QString::null;
     }
 
-    TextPosition pos = findBracketBackward('{', TextPosition(block, 0));
+    TextPosition pos = findOpeningBracketBackward('{', TextPosition(block, 0));
     if ( ! pos.isValid()) {
         return QString::null;
     }
@@ -348,7 +348,7 @@ QString IndentAlgCstyle::tryCKeywords(const QTextBlock& block, bool isBrace) con
 
     // if line ends with ')', find the '(' and check this line then.
     if (stripRightWhitespace(currentBlock.text()).endsWith(')')) {
-        TextPosition foundPos = findBracketBackward('(', TextPosition(currentBlock, currentBlock.text().length()));
+        TextPosition foundPos = findOpeningBracketBackward('(', TextPosition(currentBlock, currentBlock.text().length()));
         if (foundPos.isValid()) {
             currentBlock = foundPos.block;
         }
@@ -379,7 +379,7 @@ QString IndentAlgCstyle::tryCKeywords(const QTextBlock& block, bool isBrace) con
         // for(int b;
         //     b < 10;
         //     --b)
-        TextPosition foundPos = findBracketBackward('(', TextPosition(currentBlock, currentBlock.text().length()));
+        TextPosition foundPos = findOpeningBracketBackward('(', TextPosition(currentBlock, currentBlock.text().length()));
         if (foundPos.isValid()) {
             dbg(QString("tryCKeywords: success 1 in line %1").arg(block.blockNumber()));
             return makeIndentAsColumn(foundPos.block, foundPos.column, width_, useTabs_, 1);
@@ -533,7 +533,7 @@ QString IndentAlgCstyle::tryStatement(const QTextBlock& block) const {
                - otherwise, use the '(' indentation + following white spaces
             */
             QString currentIndentation = blockIndent(currentBlock);
-            TextPosition foundPos = findBracketBackward(
+            TextPosition foundPos = findOpeningBracketBackward(
                 '(',
                 TextPosition(currentBlock, match.captured(1).length()));
 
@@ -548,7 +548,7 @@ QString IndentAlgCstyle::tryStatement(const QTextBlock& block) const {
                 indentation = currentIndentation;
             }
         } else {
-            TextPosition foundPos = findBracketBackward('(', TextPosition(currentBlock, match.captured(1).length()));
+            TextPosition foundPos = findOpeningBracketBackward('(', TextPosition(currentBlock, match.captured(1).length()));
             if (foundPos.isValid()) {
                 if (alignOnAnchor) {
                     if (match.captured(2) != "\"" && match.captured(2) != "'") {
@@ -601,7 +601,7 @@ QString IndentAlgCstyle::tryMatchedAnchor(const QTextBlock& block, bool autoInde
     }
 
     // we pressed enter in e.g. ()
-    TextPosition foundPos = findBracketBackward(oposite, TextPosition(block, 0));
+    TextPosition foundPos = findOpeningBracketBackward(oposite, TextPosition(block, 0));
     if ( ! foundPos.isValid()) {
         return QString::null;
     }
@@ -772,7 +772,7 @@ QString IndentAlgCstyle::processChar(const QTextBlock& block, QChar c, int curso
         return indent;
     } else if (c == ')' && firstCharAfterIndent) {
         // align on start of identifier of function call
-        TextPosition foundPos = findBracketBackward('(', TextPosition(block, cursorPos - 1));
+        TextPosition foundPos = findOpeningBracketBackward('(', TextPosition(block, cursorPos - 1));
         if (foundPos.isValid()) {
             QString text = foundPos.block.text().left(foundPos.column);
             static const QRegularExpression rx("\\b(\\w+)\\s*$");

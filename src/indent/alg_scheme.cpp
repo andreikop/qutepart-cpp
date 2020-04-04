@@ -52,7 +52,7 @@ TextPosition findExpressionStart(QTextBlock block) {
     QString text = expEnd.block.text().left(expEnd.column + 1);
 
     if (text.endsWith(")")) {
-        return findBracketBackward('(', expEnd);
+        return findOpeningBracketBackward('(', expEnd);
     } else {
         return TextPosition(expEnd.block, text.length() - lastWord(text).length());
     }

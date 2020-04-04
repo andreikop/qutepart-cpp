@@ -32,7 +32,7 @@ QString IndentAlgPython::computeSmartIndent(
     */
     if ( ( ! lineStripped.isEmpty()) &&
          CLOSING_BRACKETS.contains(last(lineStripped))) {
-        TextPosition foundPos = findBracketBackward(
+        TextPosition foundPos = findOpeningBracketBackward(
             last(lineStripped),
             TextPosition(pos.block,
                          spaceLen + lineStripped.length() - 1));
@@ -51,7 +51,7 @@ QString IndentAlgPython::computeSmartIndent(
     if (lineStripped.length() > 1 &&
         last(lineStripped) == ',' &&
         CLOSING_BRACKETS.contains(secondLast)) {
-        TextPosition foundPos = findBracketBackward(
+        TextPosition foundPos = findOpeningBracketBackward(
             secondLast,
             TextPosition(pos.block,
                          stripRightWhitespace(pos.block.text().left(pos.column)).length() - 2));

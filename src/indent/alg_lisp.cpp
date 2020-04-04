@@ -32,7 +32,7 @@ QString IndentAlgLisp::computeSmartIndent(QTextBlock block, int /*cursorPos*/) c
         }
     }
 
-    TextPosition pos = findBracketBackward('(', TextPosition(block, 0));
+    TextPosition pos = findOpeningBracketBackward('(', TextPosition(block, 0));
     if ( ! pos.isValid()) {
         return QString::null;
     }

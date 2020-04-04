@@ -38,9 +38,9 @@ QList<QTextEdit::ExtraSelection> BracketHighlighter::highlightBracket(QChar brac
     TextPosition matchingPos;
 
     if (START_BRACKETS.contains(bracket)) {
-        matchingPos = findBracketForward(bracket, pos);
+        matchingPos = findClosingBracketForward(bracket, pos);
     } else {
-        matchingPos = findBracketBackward(bracket, pos);
+        matchingPos = findOpeningBracketBackward(bracket, pos);
     }
 
 #if 0  // TODO timeout

@@ -10,10 +10,12 @@ public:
     CharIterator(const TextPosition& position);
 
     QChar step();  // return current character and then make step back
+    TextPosition previousPosition() const;
     TextPosition currentPosition() const;
     bool atEnd() const;
 
 protected:
+    TextPosition previousPosition_;
     TextPosition position_;
 
     virtual void movePosition() = 0;

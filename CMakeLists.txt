@@ -108,6 +108,7 @@ if(NOT DEFINED DISABLE_QUTEPART_TESTS)
     endfunction()
 
     qpart_test(char_iterator)
+    qpart_test(text_block_utils)
     qpart_test(line_iterator)
     qpart_test(line)
     qpart_test(lines)

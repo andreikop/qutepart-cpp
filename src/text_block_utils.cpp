@@ -82,7 +82,7 @@ void setPositionInBlock(QTextCursor* cursor, int positionInBlock, QTextCursor::M
     return cursor->setPosition(cursor->block().position() + positionInBlock, anchor);
 }
 
-TextPosition findBracketForward(QChar bracket, const TextPosition& position) {
+TextPosition findClosingBracketForward(QChar bracket, const TextPosition& position) {
     QChar opening = bracket;
     QChar closing;
 
@@ -100,6 +100,8 @@ TextPosition findBracketForward(QChar bracket, const TextPosition& position) {
     int depth = 1;
 
     ForwardCharIterator it(position);
+    it.step();
+
     while ( ! it.atEnd()) {
         QChar ch = it.step();
         // TODO if not self._qpart.isComment(foundBlock.blockNumber(), foundColumn):
@@ -111,14 +113,14 @@ TextPosition findBracketForward(QChar bracket, const TextPosition& position) {
         }
 
         if (depth == 0) {
-            return it.currentPosition();
+            return it.previousPosition();
         }
     }
 
     return TextPosition();
 }
 
-TextPosition findBracketBackward(QChar bracket, const TextPosition& position) {
+TextPosition findOpeningBracketBackward(QChar bracket, const TextPosition& position) {
     QChar opening = QChar::Null;
     QChar closing = QChar::Null;
 
@@ -139,6 +141,7 @@ TextPosition findBracketBackward(QChar bracket, const TextPosition& position) {
     int depth = 1;
 
     BackwardCharIterator it(position);
+    it.step();
     while ( ! it.atEnd()) {
         QChar ch = it.step();
         // TODO if not self._qpart.isComment(foundBlock.blockNumber(), foundColumn):
@@ -150,7 +153,7 @@ TextPosition findBracketBackward(QChar bracket, const TextPosition& position) {
         }
 
         if (depth == 0) {
-            return it.currentPosition();
+            return it.previousPosition();
         }
     }
 
@@ -165,6 +168,7 @@ TextPosition findAnyOpeningBracketBackward(const TextPosition& pos) {
     depth[std::make_pair('{', '}')] = 1;
 
     BackwardCharIterator it(pos);
+    it.step();
 
     while ( ! it.atEnd()) {
         QChar ch = it.step();
@@ -177,7 +181,7 @@ TextPosition findAnyOpeningBracketBackward(const TextPosition& pos) {
             if (ch == opening) {
                 mapIt->second--;
                 if (mapIt->second == 0) {
-                    return it.currentPosition();
+                    return it.previousPosition();
                 }
             } else if (ch == closing) {
                 mapIt->second++;

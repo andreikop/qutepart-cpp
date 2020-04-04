@@ -9,6 +9,7 @@ CharIterator::CharIterator(const TextPosition& position):
 QChar CharIterator::step() {
     if ( ! atEnd()) {
         QChar retVal = position_.block.text()[position_.column];
+        previousPosition_ = position_;
         movePosition();
         return retVal;
     } else {
@@ -18,6 +19,10 @@ QChar CharIterator::step() {
 
 TextPosition CharIterator::currentPosition() const {
     return position_;
+}
+
+TextPosition CharIterator::previousPosition() const {
+    return previousPosition_;
 }
 
 bool CharIterator::atEnd() const {

@@ -30,13 +30,13 @@ void setPositionInBlock(
    Return invalid position if not found
    NOTE this function ignores comments
  */
-TextPosition findBracketForward(QChar bracket, const TextPosition& position);
+TextPosition findClosingBracketForward(QChar bracket, const TextPosition& position);
 
 /* find bracket backward from position (not including position)
    Return invalid position if not found
    NOTE this function ignores comments
  */
-TextPosition findBracketBackward(QChar bracket, const TextPosition& position);
+TextPosition findOpeningBracketBackward(QChar bracket, const TextPosition& position);
 
 /* Search for opening bracket. Ignores balanced bracket pairs
 

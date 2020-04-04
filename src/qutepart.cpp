@@ -905,6 +905,7 @@ void Qutepart::moveSelectedLines(int offsetLines) {
 
     // TODO make sure bookmarks are saved on their place
     markArea_->update();
+    ensureCursorVisible();
 }
 
 void Qutepart::updateExtraSelections() {
