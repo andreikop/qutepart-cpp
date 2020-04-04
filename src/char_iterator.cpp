@@ -8,8 +8,8 @@ CharIterator::CharIterator(const TextPosition& position):
 
 QChar CharIterator::step() {
     if ( ! atEnd()) {
-        movePosition();
         QChar retVal = position_.block.text()[position_.column];
+        movePosition();
         return retVal;
     } else {
         return QChar::Null;
@@ -57,7 +57,7 @@ void BackwardCharIterator::movePosition() {
                 break;
             }
 
-            position_.column = position_.block.length();
+            position_.column = position_.block.length() - 1;
             /* move block backward, but the block might be empty
                Go to next while loop iteration and move back
                more blocks if necessary
