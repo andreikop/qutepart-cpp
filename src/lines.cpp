@@ -114,8 +114,23 @@ QString Lines::popAt(int lineNumber) {
     return result;
 }
 
-void Lines::insertAt(int /*lineNumber*/, const QString& /*text*/) {
-
+void Lines::insertAt(int lineNumber, const QString& text) {
+    if (lineNumber < document_->blockCount()) {
+        QTextCursor cursor(document_->findBlockByNumber(lineNumber));
+        cursor.beginEditBlock();
+        cursor.insertText(text);
+        cursor.insertBlock();
+        cursor.endEditBlock();
+    } else if (lineNumber == document_->blockCount()) {
+        QTextCursor cursor(document_);
+        cursor.movePosition(QTextCursor::End);
+        cursor.beginEditBlock();
+        cursor.insertBlock();
+        cursor.insertText(text);
+        cursor.endEditBlock();
+    } else {
+        qFatal("Wrong line number %d at Lines::insertAt(). Have only %d", lineNumber, document_->blockCount());
+    }
 }
 
 }
