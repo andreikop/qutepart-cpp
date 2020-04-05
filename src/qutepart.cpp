@@ -825,50 +825,6 @@ void Qutepart::scrollByOffset(int offset) {
     verticalScrollBar()->setValue(value);
 }
 
-void Qutepart::moveBlock(int startNum, int endNum) {
-    // TODO refactor this set of special cases
-    QTextBlock block = document()->findBlockByNumber(startNum);
-
-    QTextCursor cursor(block);
-
-    cursor.beginEditBlock();
-
-    bool haveEolAtEnd = cursor.block().next().isValid();
-    if (haveEolAtEnd) {
-        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
-    } else {
-        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    }
-
-    QString text = cursor.selectedText();
-    cursor.removeSelectedText();
-
-    bool insertedEol = false;
-    QTextBlock endBlock = document()->findBlockByNumber(endNum);
-    if (endBlock.isValid()) {
-        cursor.setPosition(endBlock.position());
-    } else {
-        // A special case. Moving TO line, which doesn't have EOL
-        cursor.movePosition(QTextCursor::End);
-        cursor.insertBlock();
-        insertedEol = true;
-    }
-
-    cursor.insertText(text);
-    if ( ! haveEolAtEnd) {
-        // A special case. Moving line which doesn't have EOL
-        cursor.insertBlock();
-        insertedEol = true;
-    }
-
-    if (insertedEol) {
-        cursor.movePosition(QTextCursor::End);
-        cursor.deletePreviousChar();
-    }
-
-    cursor.endEditBlock();
-}
-
 void Qutepart::moveSelectedLines(int offsetLines) {
     QTextCursor cursor = textCursor();
 
@@ -882,14 +838,16 @@ void Qutepart::moveSelectedLines(int offsetLines) {
                 return;
             }
             QTextBlock topBlock = document()->findBlock(smallerPos);
-            moveBlock(nextBlock.blockNumber(), topBlock.blockNumber());
+            QString text = lines().popAt(nextBlock.blockNumber());
+            lines().insertAt(topBlock.blockNumber(), text);
         } else if (offsetLines == -1) {  // move up
             QTextBlock prevBlock = document()->findBlock(smallerPos).previous();
             if ( ! prevBlock.isValid()) {
                 return;
             }
             QTextBlock bottomBlock = document()->findBlock(biggerPos);
-            moveBlock(prevBlock.blockNumber(), bottomBlock.blockNumber());
+            QString text = lines().popAt(prevBlock.blockNumber());
+            lines().insertAt(bottomBlock.blockNumber(), text);
         } else {
             qFatal("Bad line move offset %d", offsetLines);
         }
@@ -900,7 +858,9 @@ void Qutepart::moveSelectedLines(int offsetLines) {
         if ( ! cursor.document()->findBlockByNumber(newBlockNumber).isValid()) {
             return;  // it is the last (or the first) block. Don't have place to move
         }
-        moveBlock(newBlockNumber, blockNumber);
+
+        QString text = lines().popAt(newBlockNumber);
+        lines().insertAt(blockNumber, text);
     }
 
     // TODO make sure bookmarks are saved on their place
