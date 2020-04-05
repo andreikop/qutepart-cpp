@@ -99,4 +99,23 @@ void Lines::append(const QString& lineText) {
     cursor.endEditBlock();
 }
 
+QString Lines::popAt(int lineNumber) {
+    QTextCursor cursor(document_->findBlockByNumber(lineNumber));
+    QString result = cursor.block().text();
+
+    cursor.beginEditBlock();
+    cursor.select(QTextCursor::BlockUnderCursor);
+    cursor.removeSelectedText();
+    if (cursor.atStart()) {
+        cursor.deleteChar();  // remove \n after the line
+    }
+    cursor.endEditBlock();
+
+    return result;
+}
+
+void Lines::insertAt(int /*lineNumber*/, const QString& /*text*/) {
+
+}
+
 }

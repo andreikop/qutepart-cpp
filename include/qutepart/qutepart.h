@@ -98,6 +98,13 @@ public:
     Line first() const;
     Line last() const;
     void append(const QString& lineText);
+
+    // Remove and return line at number. Return the text wo \n
+    QString popAt(int lineNumber);
+
+    // Insert at given line number one or more lines.
+    // The text shoud be \n-separated. \n at end is interpreted as empty line.
+    void insertAt(int lineNumber, const QString& text);
 private:
     QTextDocument* document_;
 };
