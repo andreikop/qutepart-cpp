@@ -23,6 +23,11 @@ private slots:
 
         QTest::keyClick(&qpart, Qt::Key_Down, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("two\nthree\nfour\none"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("two\nthree\none\nfour"));
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("two\none\nthree\nfour"));
     }
 
     void MoveUpOneLine() {

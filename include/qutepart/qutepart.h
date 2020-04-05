@@ -303,7 +303,7 @@ A helper class which allows to group edit operations on Qutepart using RAII appr
 Operations are undo-redoble as single change.
 Example
     {
-        AtomicOperation op(qutepart);
+        AtomicEditOperation op(qutepart);
         qutepart.editText();
         qutepart.editMoreText();
     }

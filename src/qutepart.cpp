@@ -826,6 +826,7 @@ void Qutepart::scrollByOffset(int offset) {
 }
 
 void Qutepart::moveSelectedLines(int offsetLines) {
+    AtomicEditOperation op(this);
     QTextCursor cursor = textCursor();
 
     if (cursor.hasSelection()) {
