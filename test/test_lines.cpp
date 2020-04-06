@@ -42,6 +42,12 @@ private slots:
                 << 2
                 << "three"
                 << "one\ntwo";
+
+        QTest::newRow("empty line")
+                << "one\ntwo\nthree\n"
+                << 3
+                << ""
+                << "one\ntwo\nthree";
     }
 
     void PopAt() {

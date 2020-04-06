@@ -829,39 +829,27 @@ void Qutepart::moveSelectedLines(int offsetLines) {
     AtomicEditOperation op(this);
     QTextCursor cursor = textCursor();
 
-    if (cursor.hasSelection()) {
-        int smallerPos = std::min(cursor.anchor(), cursor.position());
-        int biggerPos = std::max(cursor.anchor(), cursor.position());
+    int smallerPos = std::min(cursor.anchor(), cursor.position());
+    int biggerPos = std::max(cursor.anchor(), cursor.position());
 
-        if (offsetLines == 1) {  // move down
-            QTextBlock nextBlock = document()->findBlock(biggerPos).next();
-            if ( ! nextBlock.isValid()) {
-                return;
-            }
-            QTextBlock topBlock = document()->findBlock(smallerPos);
-            QString text = lines().popAt(nextBlock.blockNumber());
-            lines().insertAt(topBlock.blockNumber(), text);
-        } else if (offsetLines == -1) {  // move up
-            QTextBlock prevBlock = document()->findBlock(smallerPos).previous();
-            if ( ! prevBlock.isValid()) {
-                return;
-            }
-            QTextBlock bottomBlock = document()->findBlock(biggerPos);
-            QString text = lines().popAt(prevBlock.blockNumber());
-            lines().insertAt(bottomBlock.blockNumber(), text);
-        } else {
-            qFatal("Bad line move offset %d", offsetLines);
+    if (offsetLines == 1) {  // move down
+        QTextBlock nextBlock = document()->findBlock(biggerPos).next();
+        if ( ! nextBlock.isValid()) {
+            return;
         }
+        QTextBlock topBlock = document()->findBlock(smallerPos);
+        QString text = lines().popAt(nextBlock.blockNumber());
+        lines().insertAt(topBlock.blockNumber(), text);
+    } else if (offsetLines == -1) {  // move up
+        QTextBlock prevBlock = document()->findBlock(smallerPos).previous();
+        if ( ! prevBlock.isValid()) {
+            return;
+        }
+        QTextBlock bottomBlock = document()->findBlock(biggerPos);
+        QString text = lines().popAt(prevBlock.blockNumber());
+        lines().insertAt(bottomBlock.blockNumber() + 1, text);
     } else {
-        // Check if having block to swap
-        int blockNumber = cursor.blockNumber();
-        int newBlockNumber = blockNumber + offsetLines;
-        if ( ! cursor.document()->findBlockByNumber(newBlockNumber).isValid()) {
-            return;  // it is the last (or the first) block. Don't have place to move
-        }
-
-        QString text = lines().popAt(newBlockNumber);
-        lines().insertAt(blockNumber, text);
+        qFatal("Bad line move offset %d", offsetLines);
     }
 
     // TODO make sure bookmarks are saved on their place

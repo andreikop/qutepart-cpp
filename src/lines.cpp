@@ -104,10 +104,15 @@ QString Lines::popAt(int lineNumber) {
     QString result = cursor.block().text();
 
     cursor.beginEditBlock();
+
     cursor.select(QTextCursor::BlockUnderCursor);
+    bool removedEolAtStart = cursor.selectedText().startsWith(0x2029);
     cursor.removeSelectedText();
+
     if (cursor.atStart()) {
         cursor.deleteChar();  // remove \n after the line
+    } else if (not removedEolAtStart) {
+        cursor.deletePreviousChar();  // remove \n before the line
     }
     cursor.endEditBlock();
 
