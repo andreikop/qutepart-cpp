@@ -192,11 +192,12 @@ public:
     QAction* scrollDownAction() const;
     QAction* scrollUpAction() const;
 
+    QAction* duplicateSelectionAction() const;
+
     QAction* moveLineUpAction() const;
     QAction* moveLineDownAction() const;
 
     QAction* deleteLineAction() const;
-    QAction* duplicateLineAction() const;
 
     QAction* cutLineAction() const;
     QAction* copyLineAction() const;
@@ -241,6 +242,7 @@ private:
 
     void scrollByOffset(int offset);
 
+    void duplicateSelection();
     void moveSelectedLines(int offsetLines);
 
 private slots:
@@ -285,6 +287,8 @@ private:
     QAction* scrollDownAction_;
     QAction* scrollUpAction_;
 
+    QAction* duplicateSelectionAction_;
+
     QAction* moveLineUpAction_;
     QAction* moveLineDownAction_;
     QAction* deleteLineAction_;
@@ -292,7 +296,6 @@ private:
     QAction* cutLineAction_;
     QAction* copyLineAction_;
     QAction* pasteLineAction_;
-    QAction* duplicateLineAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;

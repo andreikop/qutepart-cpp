@@ -239,6 +239,10 @@ QAction* Qutepart::invokeCompletionAction() const {
     return invokeCompletionAction_;
 }
 
+QAction* Qutepart::duplicateSelectionAction() const {
+    return duplicateSelectionAction_;
+}
+
 QAction* Qutepart::moveLineUpAction() const {
     return moveLineUpAction_;
 }
@@ -261,10 +265,6 @@ QAction* Qutepart::copyLineAction() const {
 
 QAction* Qutepart::pasteLineAction() const {
     return pasteLineAction_;
-}
-
-QAction* Qutepart::duplicateLineAction() const {
-    return duplicateLineAction_;
 }
 
 QAction* Qutepart::scrollDownAction() const {
@@ -415,14 +415,15 @@ void Qutepart::initActions() {
     invokeCompletionAction_ = createAction("Invoke completion", QKeySequence(Qt::CTRL | Qt::Key_Space), QString::null,
         [this](){this->completer_->invokeCompletion();});
 
+    duplicateSelectionAction_ = createAction("Duplicate selection or line", QKeySequence(Qt::ALT | Qt::Key_D), QString::null,
+        [this]{this->duplicateSelection();});
+
     moveLineUpAction_ = createAction("Move line up", QKeySequence(Qt::ALT | Qt::Key_Up), QString::null,
         [this]{this->moveSelectedLines(-1);});
     moveLineDownAction_ = createAction("Move line down", QKeySequence(Qt::ALT | Qt::Key_Down), QString::null,
         [this]{this->moveSelectedLines(+1);});
 
     deleteLineAction_ = createAction("Delete line", QKeySequence(Qt::ALT | Qt::Key_Delete), QString::null,
-        [this]{;});
-    duplicateLineAction_ = createAction("Duplicate line", QKeySequence(Qt::ALT | Qt::Key_D), QString::null,
         [this]{;});
 
     cutLineAction_ = createAction("Cut line", QKeySequence(Qt::ALT | Qt::Key_X), QString::null,
@@ -823,6 +824,24 @@ void Qutepart::scrollByOffset(int offset) {
     int value = verticalScrollBar()->value();
     value += offset;
     verticalScrollBar()->setValue(value);
+}
+
+void Qutepart::duplicateSelection() {
+    AtomicEditOperation op(this);
+    QTextCursor cursor = textCursor();
+
+    if (cursor.hasSelection()) {
+        // duplicate selection
+    } else {
+        // duplicate current line
+        QString text = cursor.block().text();
+        cursor.movePosition(QTextCursor::EndOfBlock);
+        cursor.insertBlock();
+        cursor.insertText(text);
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.setPosition(cursor.position() + firstNonSpaceColumn(cursor.block().text()));
+        setTextCursor(cursor);
+    }
 }
 
 void Qutepart::moveSelectedLines(int offsetLines) {

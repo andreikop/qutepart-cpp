@@ -53,12 +53,14 @@ void initMenuBar(QMenuBar* menuBar, Qutepart::Qutepart* qutepart) {
 
     QMenu* linesMenu = menuBar->addMenu("Lines");
 
+    linesMenu->addAction(qutepart->duplicateSelectionAction());
+    linesMenu->addSeparator();
+
     linesMenu->addAction(qutepart->moveLineUpAction());
     linesMenu->addAction(qutepart->moveLineDownAction());
     linesMenu->addSeparator();
 
     linesMenu->addAction(qutepart->deleteLineAction());
-    linesMenu->addAction(qutepart->duplicateLineAction());
     linesMenu->addSeparator();
 
     linesMenu->addAction(qutepart->cutLineAction());

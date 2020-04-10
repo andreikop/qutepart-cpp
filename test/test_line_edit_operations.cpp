@@ -128,6 +128,30 @@ private slots:
         qpart.undo();
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
     }
+
+    void DuplicateLine() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\n   three\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        qpart.goToLine(1);
+        QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\ntwo\n   three\nfour"));
+        QCOMPARE(qpart.textCursor().blockNumber(), 2);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 0);
+    }
+
+    void DuplicateIndentedLine() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\n   three\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        qpart.goToLine(2);
+        QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\n   three\n   three\nfour"));
+        QCOMPARE(qpart.textCursor().blockNumber(), 3);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 3);
+    }
 };
 
 QTEST_MAIN(Test)
