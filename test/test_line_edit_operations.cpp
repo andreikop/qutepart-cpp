@@ -152,6 +152,24 @@ private slots:
         QCOMPARE(qpart.textCursor().blockNumber(), 3);
         QCOMPARE(qpart.textCursor().positionInBlock(), 3);
     }
+
+    void DuplicateSelection() {  // TODO move from this file
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        cursor.setPosition(5);
+        cursor.setPosition(10, QTextCursor::KeepAnchor);
+        qpart.setTextCursor(cursor);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("wo\u2029th"));
+        QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("wo\u2029th"));
+
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthwo\nthree\nfour"));
+        QCOMPARE(qpart.textCursor().blockNumber(), 3);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 2);
+    }
+
 };
 
 QTEST_MAIN(Test)

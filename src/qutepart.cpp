@@ -832,6 +832,14 @@ void Qutepart::duplicateSelection() {
 
     if (cursor.hasSelection()) {
         // duplicate selection
+        QString text = cursor.selectedText();
+        cursor.setPosition(std::max(cursor.position(), cursor.anchor()));
+        int anchor = cursor.position();
+        cursor.insertText(text);
+        int pos = cursor.position();
+        cursor.setPosition(anchor);
+        cursor.setPosition(pos, QTextCursor::KeepAnchor);
+        setTextCursor(cursor);
     } else {
         // duplicate current line
         QString text = cursor.block().text();
