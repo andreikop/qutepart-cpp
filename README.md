@@ -32,6 +32,7 @@ All features are configurable
 * Bookmarks
 * Current line highlighting
 * Advanced edit operations:
+    - Delete selection or line
     - Duplicate selection or line
     - Move selected lines up or down
     - Copy-paste current or selected lines

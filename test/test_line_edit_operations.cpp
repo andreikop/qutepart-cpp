@@ -255,6 +255,29 @@ private slots:
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
     }
 
+    void DeleteLine() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        cursor.setPosition(7);
+        cursor.setPosition(10, QTextCursor::KeepAnchor);
+        qpart.setTextCursor(cursor);
+
+        QTest::keyClick(&qpart, Qt::Key_Delete, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\nfour"));
+        QCOMPARE(qpart.textCursor().block().text(), QString("four"));
+
+        QTest::keyClick(&qpart, Qt::Key_Delete, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\nfour"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+    }
+
 };
 
 QTEST_MAIN(Test)

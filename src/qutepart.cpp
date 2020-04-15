@@ -426,7 +426,7 @@ void Qutepart::initActions() {
         [this]{this->moveSelectedLines(+1);});
 
     deleteLineAction_ = createAction("Delete line", QKeySequence(Qt::ALT | Qt::Key_Delete), QString::null,
-        [this]{;});
+        [this]{this->deleteLine();});
 
     cutLineAction_ = createAction("Cut line", QKeySequence(Qt::ALT | Qt::Key_X), QString::null,
         [this]{this->cutLine();});
@@ -886,9 +886,7 @@ void Qutepart::moveSelectedLines(int offsetLines) {
     ensureCursorVisible();
 }
 
-void Qutepart::cutLine() {
-    copyLine();
-
+void Qutepart::deleteLine() {
     QTextCursor cursor = textCursor();
     int posBlock = cursor.block().blockNumber();
     int anchorBlock = document()->findBlock(cursor.anchor()).blockNumber();
@@ -899,6 +897,14 @@ void Qutepart::cutLine() {
     for(int i = endBlock; i >= startBlock; i--) {
         lines().popAt(i);
     }
+
+    cursor.movePosition(QTextCursor::NextBlock);
+    setTextCursor(cursor);
+}
+
+void Qutepart::cutLine() {
+    copyLine();
+    deleteLine();
 }
 
 void Qutepart::copyLine() {

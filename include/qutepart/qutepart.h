@@ -245,6 +245,8 @@ private:
     void duplicateSelection();
     void moveSelectedLines(int offsetLines);
 
+    void deleteLine();
+
     void cutLine();
     void copyLine();
     void pasteLine();
