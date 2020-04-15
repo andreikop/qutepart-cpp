@@ -245,6 +245,10 @@ private:
     void duplicateSelection();
     void moveSelectedLines(int offsetLines);
 
+    void cutLine();
+    void copyLine();
+    void pasteLine();
+
 private slots:
     void updateViewport();
     void updateExtraSelections();

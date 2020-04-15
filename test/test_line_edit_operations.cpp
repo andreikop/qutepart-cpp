@@ -170,6 +170,91 @@ private slots:
         QCOMPARE(qpart.textCursor().positionInBlock(), 2);
     }
 
+    void CutPasteLines() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        cursor.setPosition(1);
+        cursor.setPosition(5, QTextCursor::KeepAnchor);
+        qpart.setTextCursor(cursor);
+
+        QTest::keyClick(&qpart, Qt::Key_X, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("three\nfour"));
+
+        QTest::keyClick(&qpart, Qt::Key_Down);
+        QTest::keyClick(&qpart, Qt::Key_V, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("three\nfour\none\ntwo"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("three\nfour"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+    }
+
+    void CutPasteLastLines() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        cursor.setPosition(12);
+        cursor.setPosition(17, QTextCursor::KeepAnchor);
+        qpart.setTextCursor(cursor);
+
+        QTest::keyClick(&qpart, Qt::Key_X, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo"));
+
+        QTest::keyClick(&qpart, Qt::Key_Down);
+        QTest::keyClick(&qpart, Qt::Key_V, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+    }
+
+    void CopyPasteSingleLine() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        cursor.setPosition(2);
+        qpart.setTextCursor(cursor);
+
+        QTest::keyClick(&qpart, Qt::Key_C, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+
+        QTest::keyClick(&qpart, Qt::Key_Down);
+        QTest::keyClick(&qpart, Qt::Key_V, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\none\nthree\nfour"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+    }
+
+    void CopyPasteLastLine() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        cursor.setPosition(17);
+        qpart.setTextCursor(cursor);
+
+        QTest::keyClick(&qpart, Qt::Key_C, Qt::AltModifier);
+
+        QTest::keyClick(&qpart, Qt::Key_Up);
+        QTest::keyClick(&qpart, Qt::Key_Up);
+        QTest::keyClick(&qpart, Qt::Key_Up);
+        QTest::keyClick(&qpart, Qt::Key_V, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one\nfour\ntwo\nthree\nfour"));
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+    }
+
 };
 
 QTEST_MAIN(Test)

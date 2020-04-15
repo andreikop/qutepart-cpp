@@ -1,4 +1,6 @@
 #include <QAction>
+#include <QApplication>
+#include <QClipboard>
 #include <QPainter>
 #include <QScrollBar>
 #include <QDebug>
@@ -427,11 +429,11 @@ void Qutepart::initActions() {
         [this]{;});
 
     cutLineAction_ = createAction("Cut line", QKeySequence(Qt::ALT | Qt::Key_X), QString::null,
-        [this]{;});
+        [this]{this->cutLine();});
     copyLineAction_ = createAction("Copy line", QKeySequence(Qt::ALT | Qt::Key_C), QString::null,
-        [this]{;});
+        [this]{this->copyLine();});
     pasteLineAction_ = createAction("Paste line", QKeySequence(Qt::ALT | Qt::Key_V), QString::null,
-        [this]{;});
+        [this]{this->pasteLine();});
 
     scrollDownAction_ = createAction("Scroll down", QKeySequence(Qt::CTRL | Qt::Key_Down), QString::null,
         [this](){this->scrollByOffset(1);});
@@ -882,6 +884,55 @@ void Qutepart::moveSelectedLines(int offsetLines) {
     // TODO make sure bookmarks are saved on their place
     markArea_->update();
     ensureCursorVisible();
+}
+
+void Qutepart::cutLine() {
+    copyLine();
+
+    QTextCursor cursor = textCursor();
+    int posBlock = cursor.block().blockNumber();
+    int anchorBlock = document()->findBlock(cursor.anchor()).blockNumber();
+    int startBlock = std::min(posBlock, anchorBlock);
+    int endBlock = std::max(posBlock, anchorBlock);
+
+    AtomicEditOperation op(this);
+    for(int i = endBlock; i >= startBlock; i--) {
+        lines().popAt(i);
+    }
+}
+
+void Qutepart::copyLine() {
+    QTextCursor cursor = textCursor();
+
+    int smallerPos = std::min(cursor.anchor(), cursor.position());
+    int biggerPos = std::max(cursor.anchor(), cursor.position());
+
+    QTextBlock block = document()->findBlock(smallerPos);
+    QTextBlock lastBlock = document()->findBlock(biggerPos);
+
+    QStringList lines;
+    while(block.isValid() && block.blockNumber() <= lastBlock.blockNumber()) {
+        QString text = block.text();
+        if (text.endsWith("\u2029")) {
+            text = text.left(text.length() - 1);
+        }
+        lines << text;
+        block = block.next();
+    }
+
+    QString textToCopy = lines.join('\n');
+
+    QApplication::clipboard()->setText(textToCopy);
+}
+
+void Qutepart::pasteLine() {
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::EndOfBlock);
+
+    cursor.beginEditBlock();
+    cursor.insertBlock();
+    cursor.insertText(QApplication::clipboard()->text());
+    cursor.endEditBlock();
 }
 
 void Qutepart::updateExtraSelections() {

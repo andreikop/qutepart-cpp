@@ -31,6 +31,10 @@ All features are configurable
 * Marker for too long lines
 * Bookmarks
 * Current line highlighting
+* Advanced edit operations:
+    - Duplicate selection or line
+    - Move selected lines up or down
+    - Copy-paste current or selected lines
 
 ## Build dependencies
 * C++ compiler
