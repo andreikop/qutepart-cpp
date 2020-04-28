@@ -86,10 +86,31 @@ void Qutepart::setIndentAlgorithm(IndentAlg indentAlg) {
     indenter_->setAlgorithm(indentAlg);
 }
 
-void Qutepart::goToLine(int line) {
+TextCursorPosition Qutepart::textCursorPosition() const {
+    QTextCursor cursor = textCursor();
+    return TextCursorPosition{cursor.blockNumber(), cursor.positionInBlock()};
+}
+
+void Qutepart::goTo(int line, int column) {
     QTextBlock block = document()->findBlockByNumber(line);
     QTextCursor cursor(block);
+
+    if (column != 0) {
+        if (column < 0) {
+            qFatal("Qutepart::goTo got invalid column %d", column);
+        } else if (column > cursor.block().length()) {
+            qFatal("Qutepart::goTo got too big column %d. Line length only %d",
+                column, cursor.block().length());
+        } else {
+            cursor.setPosition(cursor.position() + column);
+        }
+    }
+
     setTextCursor(cursor);
+}
+
+void Qutepart::goTo(const TextCursorPosition& pos) {
+    return goTo(pos.line, pos.column);
 }
 
 void Qutepart::autoIndentCurrentLine() {

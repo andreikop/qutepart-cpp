@@ -57,7 +57,7 @@ private slots:
     void MoveUpOneLine() {
         Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
 
-        qpart.goToLine(3);
+        qpart.goTo(3);
 
         QTest::keyClick(&qpart, Qt::Key_Right);
         QCOMPARE(qpart.textCursor().positionInBlock(), 1);
@@ -134,7 +134,7 @@ private slots:
 
         QTextCursor cursor = qpart.textCursor();
 
-        qpart.goToLine(1);
+        qpart.goTo(1);
         QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\ntwo\n   three\nfour"));
         QCOMPARE(qpart.textCursor().blockNumber(), 2);
@@ -146,7 +146,7 @@ private slots:
 
         QTextCursor cursor = qpart.textCursor();
 
-        qpart.goToLine(2);
+        qpart.goTo(2);
         QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\n   three\n   three\nfour"));
         QCOMPARE(qpart.textCursor().blockNumber(), 3);

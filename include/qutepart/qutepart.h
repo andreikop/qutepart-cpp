@@ -109,6 +109,21 @@ private:
     QTextDocument* document_;
 };
 
+
+struct TextCursorPosition {
+    TextCursorPosition(int line_, int column_):
+        line(line_),
+        column(column_)
+    {}
+
+    friend bool operator== (const TextCursorPosition& a, const TextCursorPosition& b) {
+        return a.line == b.line && a.column == b.column;
+    }
+
+    int line;
+    int column;
+};
+
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
 
@@ -131,8 +146,12 @@ public:
     // Set indenter algorithm. Use chooseLanguage() to choose algorithm
     void setIndentAlgorithm(IndentAlg indentAlg);
 
-    // Go to specified line. First line is 0
-    void goToLine(int line);
+    // Convenience method to get text cursor position.
+    TextCursorPosition textCursorPosition() const;
+
+    // Go to specified line and column. First line and first column have index 0
+    void goTo(int line, int column=0);
+    void goTo(const TextCursorPosition& pos);
 
     // Indent current line using current smart indentation algorithm
     void autoIndentCurrentLine();
