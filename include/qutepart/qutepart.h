@@ -274,6 +274,8 @@ private slots:
     void updateViewport();
     void updateExtraSelections();
 
+    void onShortcutHome();
+
     void onShortcutToggleBookmark();
     void onShortcutPrevBookmark();
     void onShortcutNextBookmark();
@@ -300,6 +302,7 @@ private:
     QWidget* solidEdgeLine_;
     int totalMarginWidth_;
 
+    QAction* homeAction_;  // private, not API
     QAction* increaseIndentAction_;
     QAction* decreaseIndentAction_;
 
