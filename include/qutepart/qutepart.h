@@ -276,7 +276,7 @@ private slots:
     void updateViewport();
     void updateExtraSelections();
 
-    void onShortcutHome();
+    void onShortcutHome(QTextCursor::MoveMode moveMode);
 
     void onShortcutToggleBookmark();
     void onShortcutPrevBookmark();
@@ -308,6 +308,8 @@ private:
     int totalMarginWidth_;
 
     QAction* homeAction_;  // private, not API
+    QAction* homeSelectAction_;  // private, not API
+
     QAction* increaseIndentAction_;
     QAction* decreaseIndentAction_;
 

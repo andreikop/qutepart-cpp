@@ -423,7 +423,11 @@ void Qutepart::changeEvent(QEvent *event) {
 void Qutepart::initActions() {
     homeAction_ = createAction(
         "Home", QKeySequence(Qt::Key_Home), QString::null,
-        [this](){this->onShortcutHome();});
+        [this](){this->onShortcutHome(QTextCursor::MoveAnchor);});
+
+    homeSelectAction_ = createAction(
+        "Home (select)", QKeySequence(Qt::SHIFT | Qt::Key_Home), QString::null,
+        [this](){this->onShortcutHome(QTextCursor::KeepAnchor);});
 
     increaseIndentAction_ = createAction(
         "Increase indent", QKeySequence(Qt::Key_Tab), "format-indent-more",
@@ -991,13 +995,13 @@ void Qutepart::updateExtraSelections() {
 }
 
 // Smart Home behaviour. Move to first non-space or to beginning of line
-void Qutepart::onShortcutHome() {
+void Qutepart::onShortcutHome(QTextCursor::MoveMode moveMode) {
     QTextCursor cursor = textCursor();
     int firstNonSpace = firstNonSpaceColumn(cursor.block().text());
     if (cursor.positionInBlock() == firstNonSpace) {
-        setPositionInBlock(&cursor, 0, QTextCursor::MoveAnchor);
+        setPositionInBlock(&cursor, 0, moveMode);
     } else {
-        setPositionInBlock(&cursor, firstNonSpace, QTextCursor::MoveAnchor);
+        setPositionInBlock(&cursor, firstNonSpace, moveMode);
     }
     setTextCursor(cursor);
 }

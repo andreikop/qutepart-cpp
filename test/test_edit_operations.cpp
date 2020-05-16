@@ -29,6 +29,31 @@ private slots:
         QCOMPARE(qpart.textCursor().positionInBlock(), 4);
     }
 
+    void SmartHomeSelect() {
+        Qutepart::Qutepart qpart(nullptr, "one\n    two");
+
+        QTest::keyClick(&qpart, Qt::Key_Home, Qt::ShiftModifier);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 0);
+        QCOMPARE(qpart.textCursor().selectedText(), QString());
+
+        QTest::keyClick(&qpart, Qt::Key_Home, Qt::ShiftModifier);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 0);
+        QCOMPARE(qpart.textCursor().selectedText(), QString());
+
+        qpart.goTo(1, 6);
+        QTest::keyClick(&qpart, Qt::Key_Home, Qt::ShiftModifier);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 4);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("tw"));
+
+        QTest::keyClick(&qpart, Qt::Key_Home, Qt::ShiftModifier);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("    tw"));
+        QCOMPARE(qpart.textCursor().positionInBlock(), 0);
+
+        QTest::keyClick(&qpart, Qt::Key_Home, Qt::ShiftModifier);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 4);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("tw"));
+    }
+
     void JoinLines() {
         Qutepart::Qutepart qpart(nullptr, "one\ntwo\n    three");
 
