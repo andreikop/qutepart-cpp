@@ -281,6 +281,8 @@ private slots:
     void onShortcutToggleBookmark();
     void onShortcutPrevBookmark();
     void onShortcutNextBookmark();
+
+    void joinNextLine(QTextCursor& cursor);
     void onShortcutJoinLines();
 
 private:

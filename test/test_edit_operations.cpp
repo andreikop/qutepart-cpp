@@ -41,6 +41,36 @@ private slots:
         QTest::keyClick(&qpart, Qt::Key_J, Qt::ControlModifier);
         QCOMPARE(qpart.toPlainText(), QString("one two three"));
     }
+
+    void JoinLinesWithSelection() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\n    three");
+
+        QTextCursor cursor = qpart.textCursor();
+        cursor.movePosition(QTextCursor::NextCharacter);
+        cursor.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
+        qpart.setTextCursor(cursor);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("ne"));
+
+        QTest::keyClick(&qpart, Qt::Key_J, Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one two\n    three"));
+
+        // FIXME remove space from "ne ". Actually a bug, but will fix later (I hope)
+        QCOMPARE(qpart.textCursor().selectedText(), QString("ne "));
+    }
+
+    void JoinMultipleLines() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\n    three");
+
+        QTextCursor cursor = qpart.textCursor();
+        cursor.setPosition(13);
+        cursor.setPosition(1, QTextCursor::KeepAnchor);
+        qpart.setTextCursor(cursor);
+        QCOMPARE(qpart.textCursor().selectedText(), QString("ne\u2029two\u2029    t"));
+
+        QTest::keyClick(&qpart, Qt::Key_J, Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one two three"));
+        QCOMPARE(qpart.textCursor().selectedText(), QString("ne two t"));
+    }
 };
 
 QTEST_MAIN(Test)

@@ -1052,21 +1052,38 @@ void Qutepart::onShortcutNextBookmark() {
     }
 }
 
+// Helper function for onShortcutJoinLines()
+void Qutepart::joinNextLine(QTextCursor& cursor) {
+    cursor.movePosition(QTextCursor::EndOfBlock);
+    cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+
+    setPositionInBlock(
+        &cursor,
+        firstNonSpaceColumn(cursor.block().text()),
+        QTextCursor::KeepAnchor);
+    cursor.insertText(" ");
+}
+
 void Qutepart::onShortcutJoinLines() {
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection()) {
-        // TODO
+        QTextCursor editCursor(document());
+        editCursor.setPosition(std::min(cursor.position(), cursor.anchor()));
+        int posBlockNumber = cursor.blockNumber();
+        int anchorBlockNumber = document()->findBlock(cursor.anchor()).blockNumber();
+        int joinCount = std::abs(posBlockNumber - anchorBlockNumber);
+        if (joinCount == 0) {
+            joinCount = 1;
+        }
+
+        for(int i = 0; i < joinCount; i++) {
+            joinNextLine(editCursor);
+        }
     } else {
         if (cursor.block().next().isValid()) {
-            cursor.movePosition(QTextCursor::EndOfBlock);
 
             cursor.beginEditBlock();
-            cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
-            setPositionInBlock(
-                &cursor,
-                firstNonSpaceColumn(cursor.block().text()),
-                QTextCursor::KeepAnchor);
-            cursor.insertText(" ");
+            joinNextLine(cursor);
             cursor.endEditBlock();
 
             setTextCursor(cursor);
