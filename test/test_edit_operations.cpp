@@ -28,6 +28,19 @@ private slots:
         QTest::keyClick(&qpart, Qt::Key_Home);
         QCOMPARE(qpart.textCursor().positionInBlock(), 4);
     }
+
+    void JoinLines() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\n    three");
+
+        QTest::keyClick(&qpart, Qt::Key_J, Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one two\n    three"));
+
+        QTest::keyClick(&qpart, Qt::Key_J, Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one two three"));
+
+        QTest::keyClick(&qpart, Qt::Key_J, Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString("one two three"));
+    }
 };
 
 QTEST_MAIN(Test)

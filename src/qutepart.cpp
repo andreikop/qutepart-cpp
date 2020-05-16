@@ -290,6 +290,10 @@ QAction* Qutepart::pasteLineAction() const {
     return pasteLineAction_;
 }
 
+QAction* Qutepart::joinLinesAction() const {
+    return joinLinesAction_;
+}
+
 QAction* Qutepart::scrollDownAction() const {
     return scrollDownAction_;
 }
@@ -459,6 +463,9 @@ void Qutepart::initActions() {
         [this]{this->copyLine();});
     pasteLineAction_ = createAction("Paste line", QKeySequence(Qt::ALT | Qt::Key_V), QString::null,
         [this]{this->pasteLine();});
+
+    joinLinesAction_ = createAction("Join lines", QKeySequence(Qt::CTRL | Qt::Key_J), QString::null,
+        [this]{this->onShortcutJoinLines();});
 
     scrollDownAction_ = createAction("Scroll down", QKeySequence(Qt::CTRL | Qt::Key_Down), QString::null,
         [this](){this->scrollByOffset(1);});
@@ -1042,6 +1049,28 @@ void Qutepart::onShortcutNextBookmark() {
             return;
         }
         block = block.next();
+    }
+}
+
+void Qutepart::onShortcutJoinLines() {
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection()) {
+        // TODO
+    } else {
+        if (cursor.block().next().isValid()) {
+            cursor.movePosition(QTextCursor::EndOfBlock);
+
+            cursor.beginEditBlock();
+            cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+            setPositionInBlock(
+                &cursor,
+                firstNonSpaceColumn(cursor.block().text()),
+                QTextCursor::KeepAnchor);
+            cursor.insertText(" ");
+            cursor.endEditBlock();
+
+            setTextCursor(cursor);
+        }
     }
 }
 

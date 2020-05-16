@@ -222,6 +222,8 @@ public:
     QAction* copyLineAction() const;
     QAction* pasteLineAction() const;
 
+    QAction* joinLinesAction() const;
+
     // Convenience functions
     void resetSelection();
 
@@ -279,6 +281,7 @@ private slots:
     void onShortcutToggleBookmark();
     void onShortcutPrevBookmark();
     void onShortcutNextBookmark();
+    void onShortcutJoinLines();
 
 private:
     QSharedPointer<QSyntaxHighlighter> highlighter_;
@@ -324,6 +327,8 @@ private:
     QAction* cutLineAction_;
     QAction* copyLineAction_;
     QAction* pasteLineAction_;
+
+    QAction* joinLinesAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;

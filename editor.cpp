@@ -67,6 +67,8 @@ void initMenuBar(QMenuBar* menuBar, Qutepart::Qutepart* qutepart) {
     linesMenu->addAction(qutepart->copyLineAction());
     linesMenu->addAction(qutepart->pasteLineAction());
 
+    linesMenu->addSeparator();
+    linesMenu->addAction(qutepart->joinLinesAction());
 }
 
 QMainWindow* createMainWindow(Qutepart::Qutepart* qutepart) {
