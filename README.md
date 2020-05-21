@@ -1,3 +1,5 @@
+[![Documentation build](https://readthedocs.org/projects/qutepart-cpp/badge/?version=latest)](https://qutepart-cpp.readthedocs.io/en/latest/)
+
 # Code editor widget for C++/Qt5
 
 Written in pure C++/Qt5. No any dependencies.
