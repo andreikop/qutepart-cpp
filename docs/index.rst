@@ -10,7 +10,7 @@ Welcome to Qutepart's documentation!
    :members:
 
 
-The docs will live here!
+The docs live here! And will be more detailed soon.
 
 .. toctree::
    :maxdepth: 2

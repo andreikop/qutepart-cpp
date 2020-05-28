@@ -55,8 +55,10 @@ make
 make install  # might require sudo
 ```
 
-## Building documentation
-See [docs](docs/)
+## Documentation
+To build the docs see [docs](docs/)
+
+Online documetation is available [here](https://qutepart-cpp.readthedocs.io/en/latest/)
 
 ## Author
 Andrei Kopats
