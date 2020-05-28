@@ -6,6 +6,10 @@
 Welcome to Qutepart's documentation!
 ====================================
 
+.. doxygenclass:: Qutepart::Qutepart
+   :members:
+
+
 The docs will live here!
 
 .. toctree::

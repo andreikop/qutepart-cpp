@@ -1,3 +1,6 @@
+/** Doxy comments
+ */
+
 #pragma once
 
 #include <memory>
@@ -69,7 +72,7 @@ private:
     QTextBlock block_;
 };
 
-/* STL-compatible iterator implementation to work with document lines (blocks)
+/** STL-compatible iterator implementation to work with document lines (blocks)
 */
 class LineIterator {
 public:
@@ -84,7 +87,7 @@ private:
     QTextBlock block_;
 };
 
-/* A convenience class which provides high level interface to work with
+/** A convenience class which provides high level interface to work with
 the document lines
 */
 class Lines {
@@ -124,6 +127,10 @@ struct TextCursorPosition {
     int column;
 };
 
+
+/**
+  Code editor widget
+*/
 class Qutepart: public QPlainTextEdit {
     Q_OBJECT
 

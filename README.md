@@ -55,6 +55,9 @@ make
 make install  # might require sudo
 ```
 
+## Building documentation
+See [docs](docs/)
+
 ## Author
 Andrei Kopats
 
