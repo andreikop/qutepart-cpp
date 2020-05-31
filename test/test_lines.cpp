@@ -110,6 +110,19 @@ private slots:
         QCOMPARE(qpart.toPlainText(), text);
     }
 
+    void CountAndAt() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\n\n5\n");
+
+        Qutepart::Lines lines = qpart.lines();
+
+        QCOMPARE(lines.count(), 6);
+        QCOMPARE(lines.at(0).text(), QString("one"));
+        QCOMPARE(lines.at(2).text(), QString("three"));
+        QCOMPARE(lines.at(3).text(), QString(""));
+        QCOMPARE(lines.at(4).text(), QString("5"));
+        QCOMPARE(lines.at(6).text(), QString(""));
+    }
+
 };
 
 QTEST_MAIN(Test)

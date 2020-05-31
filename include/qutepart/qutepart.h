@@ -94,6 +94,9 @@ class Lines {
 public:
     Lines(QTextDocument* document);
 
+    int count() const; // Line count in the document
+    Line at(int index) const; // Line count in the document
+
     // STR iteration support
     LineIterator begin();
     LineIterator end();

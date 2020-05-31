@@ -11,6 +11,7 @@ Line::Line(const QTextBlock& block):
     block_(block)
 {}
 
+
 QString Line::text() const {
 	return block_.text();
 }
@@ -70,6 +71,14 @@ Line LineIterator::operator*() {
 Lines::Lines(QTextDocument* document):
     document_(document)
 {}
+
+int Lines::count() const {
+    return document_->blockCount();
+}
+
+Line Lines::at(int index) const { // Line count in the document
+    return Line(document_->findBlockByNumber(index));
+}
 
 LineIterator Lines::begin() {
     return LineIterator(document_->firstBlock());
