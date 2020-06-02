@@ -27,6 +27,6 @@ QSyntaxHighlighter* makeHighlighter(
  */
 QSyntaxHighlighter* makeHighlighter(
     QTextDocument* parent,
-    const QString& id);
+    const QString& langugeId);
 
 }
