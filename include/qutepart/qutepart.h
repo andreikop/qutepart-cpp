@@ -1,4 +1,8 @@
-/** Doxy comments
+/**
+ * \file qutepart.h
+ * \brief Main Qutepart header. Contains whole API.
+ *
+ * See also hl_factory.h if you need only syntax highlighter.
  */
 
 #pragma once
@@ -14,23 +18,41 @@
 
 namespace Qutepart {
 
+
+/**
+ * \enum IndentAlg
+ * \brief Indentation algorithm.
+ * Returned by ::chooseLanguage().
+ *
+ * Passed to ::Qutepart::Qutepart::setIndentAlgorithm()
+ */
 enum IndentAlg {
+    /// Do not apply any algorithm. Default text editor behaviour.
     INDENT_ALG_NONE = 0,
+    /// Insert to new lines indentation equal to previous line.
     INDENT_ALG_NORMAL,
+    /// Algorithm for C-style languages where curly brackets are used to mark code blocks. C, C++, PHP, Java, JS, ...
     INDENT_ALG_CSTYLE,
+    /// Lisp indentation.
     INDENT_ALG_LISP,
+    /// Scheme indentation.
     INDENT_ALG_SCHEME,
+    /// XML indentation.
     INDENT_ALG_XML,
+    /// Python indentation.
     INDENT_ALG_PYTHON,
+    /// Ruby indentation.
     INDENT_ALG_RUBY,
 };
 
 
+/**
+ * Programming language ID and related information.
+ *
+ * This structure is returned by ::chooseLanguage()
+ */
 struct LangInfo {
-    QString id;  // Internal unique language ID
-    QStringList names;   // user readable language names
-    IndentAlg indentAlg;   // indenter algorithm for the language
-
+public:
     LangInfo() = default;
 
     inline LangInfo(const QString& id, const QStringList& names, IndentAlg indentAlg):
@@ -39,14 +61,33 @@ struct LangInfo {
         indentAlg(indentAlg)
     {};
 
+    /// Check if the struct is valid (filled with meaningfull info)
     inline bool isValid() const {
         return ! id.isEmpty();
     }
+
+    /// Internal unique language ID. Pass to ::Qutepart::Qutepart::setHighlighter()
+    QString id;
+
+    /// User readable language names
+    QStringList names;
+
+    /// Indenter algorithm for the language. Pass to ::Qutepart::Qutepart::setIndentAlgorithm()
+    IndentAlg indentAlg;
+
 };
 
-/* Choose language by available parameters
- * First parameters have higher priority
- * Returns QString::null if failed
+/**
+ * Choose language by available parameters.
+ * First parameters have higher priority.
+ * Returns `QString::null` if can not detect the language.
+ *
+ * Fill as much parameters as you can. Set `QString::null` for unknown parameters.
+ *
+ * \param mimeType The file MIME type. i.e. ``text/html``
+ * \param languageName The language name as written in the <a href="https://github.com/andreikop/qutepart-cpp/blob/master/src/hl/language_db_generated.cpp">language DB</a>
+ * \param sourceFilePath The path to the file which is edited.
+ * \param firstLine Contents of the first line of the file which is going to be edited.
  */
 LangInfo chooseLanguage(
     const QString& mimeType=QString::null,
@@ -60,12 +101,22 @@ class LineNumberArea;
 class MarkArea;
 class Completer;
 
+/**
+ * Document line.
+ *
+ * A convenience class to programmatically edit the document
+ */
 class Line {
 public:
     Line(const QTextBlock& block);
+
+    /// Get line text
     QString text() const;
+
+    /// Get line length not including EOL symbol
     int length() const;
 
+    /// Remove the line from the document
     void remove(int pos, int count);
 
 private:
@@ -73,7 +124,9 @@ private:
 };
 
 /** STL-compatible iterator implementation to work with document lines (blocks)
-*/
+ *
+ * Returns ::Qutepart::Line objects
+ */
 class LineIterator {
 public:
     LineIterator(const QTextBlock& block);
@@ -88,21 +141,37 @@ private:
 };
 
 /** A convenience class which provides high level interface to work with
-the document lines
+ * the document lines.
+ *
+ * Returned by ::Qutepart::Qutepart::lines()
+ *
+ * `Lines` is a performance-effective document representation.
+ * Getting whole text of document with `QPlainTextEdit::toPlainText()`` requires a lot of memory allocations and copying. This class accesses the text line by line without copying whole document.
 */
+
 class Lines {
 public:
     Lines(QTextDocument* document);
 
-    int count() const; // Line count in the document
-    Line at(int index) const; // Line count in the document
+    /// Line count in the document
+    int count() const;
 
-    // STR iteration support
+    /// Get line by index.
+    Line at(int index) const;
+
+    /// `begin()` method for STL iteration support
     LineIterator begin();
+
+    /// `end()` method for STL iteration support
     LineIterator end();
 
+    /// First line of the document
     Line first() const;
+
+    /// Last line of the document
     Line last() const;
+
+    /// Append line to the end of the document.
     void append(const QString& lineText);
 
     // Remove and return line at number. Return the text wo \n
@@ -116,6 +185,12 @@ private:
 };
 
 
+/** Cursor position
+ *
+ * A convenience class, which is more friendly than low level QTextCursor API.
+ *
+ * Returned by ::Qutepart::Qutepart::textCursorPosition()
+ */
 struct TextCursorPosition {
     TextCursorPosition(int line_, int column_):
         line(line_),
@@ -126,7 +201,10 @@ struct TextCursorPosition {
         return a.line == b.line && a.column == b.column;
     }
 
+    /// Current line. First line is 0.
     int line;
+
+    /// Current column. First column is 0.
     int column;
 };
 
@@ -148,51 +226,77 @@ public:
 
     virtual ~Qutepart();
 
+    /// High-performance access to document lines. See ::Qutepart::Lines
     Lines lines() const;
 
-    // Set highlighter. Use chooseLanguage() to get the id
+    /**
+     * Set highlighter. Use `Qutepart::chooseLanguage()` to choose the language
+     *
+     * \param languageId Language name. See Qutepart::LangInfo::id.
+     */
     void setHighlighter(const QString& languageId);
 
-    // Set indenter algorithm. Use chooseLanguage() to choose algorithm
+    /**
+     * Set indenter algorithm. Use `Qutepart::chooseLanguage()` to choose the algorithm.
+     *
+     * \param indentAlg Algorithm name. See Qutepart::LangInfo::indentAlg.
+     */
     void setIndentAlgorithm(IndentAlg indentAlg);
 
-    // Convenience method to get text cursor position.
+    /// Convenience method to get text cursor position.
     TextCursorPosition textCursorPosition() const;
 
-    // Go to specified line and column. First line and first column have index 0
+    /// Go to specified line and column. First line and first column have index 0
     void goTo(int line, int column=0);
+    /// Go to text position specified by ::Qutepart::TextCursorPosition
     void goTo(const TextCursorPosition& pos);
 
-    // Indent current line using current smart indentation algorithm
+    /// Indent current line using current smart indentation algorithm
     void autoIndentCurrentLine();
 
-    // Editor configuration
+    /// Use Tabs instead of spaces for indentation
     bool indentUseTabs() const;
+    /// Use Tabs instead of spaces for indentation
     void setIndentUseTabs(bool);
 
+    /// Indentation width. Count of inserted spaces, Tab symbol display width
     int indentWidth() const;
+    /// Indentation width. Count of inserted spaces, Tab symbol display width
     void setIndentWidth(int);
 
-    // Editor apperance configuration
+    /// Visual option. Draw indentation symbols.
     bool drawIndentations() const;
+    /// Visual option. Draw indentation symbols.
     void setDrawIndentations(bool);
 
+    /// Visual option. Draw any whitespace symbol.
     bool drawAnyWhitespace() const;
+    /// Visual option. Draw any whitespace symbol.
     void setDrawAnyWhitespace(bool);
 
+    /// Visual option. Draw incorrent indentation. i.e. at end of line or Tab after spaces.
     bool drawIncorrectIndentation() const;
+    /// Visual option. Draw incorrent indentation. i.e. at end of line or Tab after spaces.
     void setDrawIncorrectIndentation(bool);
 
+    /// Visual option. Draw solid line length marker (usually after column 80)
     bool drawSolidEdge() const;
+    /// Visual option. Draw solid line length marker (usually after column 80)
     void setDrawSolidEdge(bool);
 
+    /// Visual option. Column on which line lendth marker is drawn.
     int lineLengthEdge() const;
+    /// Visual option. Column on which line lendth marker is drawn.
     void setLineLengthEdge(int);
 
+    /// Visual option. Color of line lendth edge.
     QColor lineLengthEdgeColor() const;
+    /// Visual option. Color of line lendth edge.
     void setLineLengthEdgeColor(QColor);
 
+    /// Visual option. Color of current line highlighting. `QColor()` if disabled.
     QColor currentLineColor() const;
+    /// Visual option. Color of current line highlighting. `QColor()` if disabled.
     void setCurrentLineColor(QColor);
 
     bool bracketHighlightingEnabled() const;
@@ -348,14 +452,15 @@ private:
     friend class MarkArea;
 };
 
-/*
-A helper class which allows to group edit operations on Qutepart using RAII approach
-Operations are undo-redoble as single change.
-Example
+/**
+A helper class which allows to group edit operations on Qutepart using RAII approach.
+Operations are undo-redoble as a single change.
+Example:
+
     {
         AtomicEditOperation op(qutepart);
-        qutepart.editText();
-        qutepart.editMoreText();
+        qutepart.lines().insertAt(3, "line three");
+        qutepart.lines().insertAt(4, "line four");
     }
  */
 class AtomicEditOperation {

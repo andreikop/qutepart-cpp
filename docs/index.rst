@@ -69,14 +69,19 @@ Basic usage
 
 Detecting programming language
 ------------------------------
-The function ``Qutepart::chooseLanguage( )`` detects syntax using next parameters:
+The function ``Qutepart::chooseLanguage( )`` detects syntax using next parameters. Later ``LangInfo`` can be used to apply syntax highlighter and indenter.
 
-* ``mimeType``: the file MIME type. i.e. ``text/html``
-* ``languageName``: the language name as written in the `language DB <https://github.com/andreikop/qutepart-cpp/blob/master/src/hl/language_db_generated.cpp>`_
-* ``sourceFilePath``: the path to the file which is edited.
-* ``firstLine``: contents of the first line of the file which is going to be edited
 
-Fill as much parameters as you can. Set ``QString::null`` for unknown parameters.
+.. doxygenfunction:: Qutepart::chooseLanguage
+
+.. doxygenstruct:: Qutepart::LangInfo
+    :members:
+
+Smart indentation
+-----------------
+Qutepart supports smart indentation algorithms for many languages.
+
+.. doxygenenum:: Qutepart::IndentAlg
 
 Accessing document lines
 ------------------------
@@ -110,28 +115,32 @@ Inserting new line before the last line
 .. doxygenclass:: Qutepart::Line
    :members:
 
+.. doxygenclass:: Qutepart::LineIterator
+   :members:
+
+Cursor position
+---------------
+
+.. doxygenstruct:: Qutepart::TextCursorPosition
+
 
 Atomic operations
 -----------------
 It is often necessary to make multiple changes in a file which can be undo/redo as a single operation. Use helper class ``AtomicEditOperation``.
 
 
-.. code-block:: cpp
+.. doxygenclass:: Qutepart::AtomicEditOperation
+   :members:
 
-    {
-        Qutepart::AtomicEditOperation op(&qutepart);
-        qutepart.lines().insertAt(3, "line three");
-        qutepart.lines().insertAt(4, "line four");
-    }
-
-The API
--------
+Whole Qutepart class API
+------------------------
 
 The widget is based on ``QPlainTextEdit``. Read parent class documentation for general understanding how it works.
 Quteparts own methods provide additional features and convenience APIs.
 
 .. doxygenclass:: Qutepart::Qutepart
    :members:
+   :undoc-members:
 
 Using only the syntax highlighter
 ---------------------------------
@@ -150,6 +159,8 @@ In some cases it might be useful to use only syntax highligher but not other Qut
     QSyntaxHighlighter* highlighter =
         Qutepart::makeHighlighter(langInfo.id, textEdit.document());
 
+
+.. doxygenfile:: hl_factory.h
 
 Indices and tables
 ==================
