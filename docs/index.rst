@@ -122,6 +122,7 @@ Cursor position
 ---------------
 
 .. doxygenstruct:: Qutepart::TextCursorPosition
+   :members:
 
 
 Atomic operations
