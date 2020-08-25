@@ -294,6 +294,14 @@ QAction* Qutepart::joinLinesAction() const {
     return joinLinesAction_;
 }
 
+QAction* Qutepart::zoomInAction() const {
+    return zoomInAction_;
+}
+
+QAction* Qutepart::zoomOutAction() const {
+    return zoomOutAction_;
+}
+
 QAction* Qutepart::scrollDownAction() const {
     return scrollDownAction_;
 }
@@ -475,6 +483,11 @@ void Qutepart::initActions() {
         [this](){this->scrollByOffset(1);});
     scrollUpAction_ = createAction("Scroll up", QKeySequence(Qt::CTRL | Qt::Key_Up), QString::null,
         [this](){this->scrollByOffset(-1);});
+
+    zoomInAction_ = createAction("Zoom In", QKeySequence(Qt::CTRL | Qt::Key_Equal), QString::null,
+        [this]{this->zoomIn();});
+    zoomOutAction_ = createAction("Zoom Out", QKeySequence(Qt::CTRL | Qt::Key_Minus), QString::null,
+        [this]{this->zoomOut();});
 }
 
 QAction* Qutepart::createAction(

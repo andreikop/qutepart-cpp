@@ -42,6 +42,10 @@ void initMenuBar(QMenuBar* menuBar, Qutepart::Qutepart* qutepart) {
     editMenu->addAction(qutepart->increaseIndentAction());
     editMenu->addAction(qutepart->decreaseIndentAction());
 
+    QMenu* viewMenu = menuBar->addMenu("View");
+    viewMenu->addAction(qutepart->zoomInAction());
+    viewMenu->addAction(qutepart->zoomOutAction());
+
     QMenu* navMenu = menuBar->addMenu("Navigation");
     navMenu->addAction(qutepart->toggleBookmarkAction());
     navMenu->addAction(qutepart->prevBookmarkAction());

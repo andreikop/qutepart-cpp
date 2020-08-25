@@ -338,6 +338,11 @@ public:
 
     QAction* joinLinesAction() const;
 
+    /// Zoom In the document by scaling fonts
+    QAction* zoomInAction() const;
+    /// Zoom Out the document by scaling fonts
+    QAction* zoomOutAction() const;
+
     // Convenience functions
     void resetSelection();
 
@@ -447,6 +452,9 @@ private:
     QAction* pasteLineAction_;
 
     QAction* joinLinesAction_;
+
+    QAction* zoomInAction_;
+    QAction* zoomOutAction_;
 
     friend class LineNumberArea;
     friend class MarkArea;
