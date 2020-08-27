@@ -893,12 +893,13 @@ void Qutepart::duplicateSelection() {
         setTextCursor(cursor);
     } else {
         // duplicate current line
+        int cursorColumn = cursor.positionInBlock();
         QString text = cursor.block().text();
         cursor.movePosition(QTextCursor::EndOfBlock);
         cursor.insertBlock();
         cursor.insertText(text);
         cursor.movePosition(QTextCursor::StartOfBlock);
-        cursor.setPosition(cursor.position() + firstNonSpaceColumn(cursor.block().text()));
+        cursor.setPosition(cursor.position() + cursorColumn);
         setTextCursor(cursor);
     }
 }

@@ -134,11 +134,11 @@ private slots:
 
         QTextCursor cursor = qpart.textCursor();
 
-        qpart.goTo(1);
+        qpart.goTo(1, 2);
         QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\ntwo\n   three\nfour"));
         QCOMPARE(qpart.textCursor().blockNumber(), 2);
-        QCOMPARE(qpart.textCursor().positionInBlock(), 0);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 2);
     }
 
     void DuplicateIndentedLine() {
@@ -150,7 +150,7 @@ private slots:
         QTest::keyClick(&qpart, Qt::Key_D, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\n   three\n   three\nfour"));
         QCOMPARE(qpart.textCursor().blockNumber(), 3);
-        QCOMPARE(qpart.textCursor().positionInBlock(), 3);
+        QCOMPARE(qpart.textCursor().positionInBlock(), 0);
     }
 
     void DuplicateSelection() {  // TODO move from this file
