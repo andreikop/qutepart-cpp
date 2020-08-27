@@ -290,6 +290,14 @@ QAction* Qutepart::pasteLineAction() const {
     return pasteLineAction_;
 }
 
+QAction* Qutepart::insertLineAboveAction() const {
+    return insertLineAboveAction_;
+}
+
+QAction* Qutepart::insertLineBelowAction() const {
+    return insertLineBelowAction_;
+}
+
 QAction* Qutepart::joinLinesAction() const {
     return joinLinesAction_;
 }
@@ -475,6 +483,11 @@ void Qutepart::initActions() {
         [this]{this->copyLine();});
     pasteLineAction_ = createAction("Paste line", QKeySequence(Qt::ALT | Qt::Key_V), QString::null,
         [this]{this->pasteLine();});
+
+    insertLineAboveAction_ = createAction("Insert line above", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return), QString::null,
+        [this]{this->insertLineAbove();});
+    insertLineBelowAction_ = createAction("Insert line below", QKeySequence(Qt::CTRL | Qt::Key_Return), QString::null,
+        [this]{this->insertLineBelow();});
 
     joinLinesAction_ = createAction("Join lines", QKeySequence(Qt::CTRL | Qt::Key_J), QString::null,
         [this]{this->onShortcutJoinLines();});
@@ -985,10 +998,40 @@ void Qutepart::pasteLine() {
     QTextCursor cursor = textCursor();
     cursor.movePosition(QTextCursor::EndOfBlock);
 
-    cursor.beginEditBlock();
+    AtomicEditOperation op(this);
     cursor.insertBlock();
     cursor.insertText(QApplication::clipboard()->text());
-    cursor.endEditBlock();
+}
+
+void Qutepart::insertLineAbove() {
+    QTextCursor cursor = textCursor();
+
+    AtomicEditOperation op(this);
+
+    if (cursor.blockNumber() == 0) {
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.insertBlock();
+        cursor.movePosition(QTextCursor::PreviousBlock);
+    } else {
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.movePosition(QTextCursor::Left);
+        cursor.insertBlock();
+    }
+
+    setTextCursor(cursor);
+    autoIndentCurrentLine();
+}
+
+void Qutepart::insertLineBelow() {
+    QTextCursor cursor = textCursor();
+
+    AtomicEditOperation op(this);
+
+    cursor.movePosition(QTextCursor::EndOfBlock);
+    cursor.insertBlock();
+
+    setTextCursor(cursor);
+    autoIndentCurrentLine();
 }
 
 void Qutepart::updateExtraSelections() {

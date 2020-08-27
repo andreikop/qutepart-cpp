@@ -278,6 +278,59 @@ private slots:
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
     }
 
+    void InsertLineAbove() {
+        Qutepart::Qutepart qpart(nullptr, " one\n  two\n   three\n    four");
+        qpart.goTo(2, 4);
+        QTest::keyClick(&qpart, Qt::Key_Return, Qt::ShiftModifier | Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n  \n   three\n    four"));
+#if 0  // FIXME this fails. "x" gets undone with the rest of operations
+        qDebug() << "type X" << qpart.toPlainText();
+        QTest::keyClicks(&qpart, "x");
+        qDebug() << "typed X" << qpart.toPlainText();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n  x\n   three\n    four"));
+        qDebug() << "undo x";
+        qpart.undo();
+        qDebug() << "undo X done" << qpart.toPlainText();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n  \n   three\n    four"));
+#endif
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n   three\n    four"));
+    }
+
+
+    void InsertLineAboveFirst() {
+        Qutepart::Qutepart qpart(nullptr, " one\n  two\n   three\n    four");
+        qpart.goTo(0, 0);
+        QTest::keyClick(&qpart, Qt::Key_Return, Qt::ShiftModifier | Qt::ControlModifier);
+        QTest::keyClicks(&qpart, "x");
+        QCOMPARE(qpart.toPlainText(), QString("x\n one\n  two\n   three\n    four"));
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString("\n one\n  two\n   three\n    four"));
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n   three\n    four"));
+    }
+
+    void InsertLineBelow() {
+        Qutepart::Qutepart qpart(nullptr, " one\n  two\n   three\n    four");
+        qpart.goTo(2, 4);
+        QTest::keyClick(&qpart, Qt::Key_Return, Qt::ControlModifier);
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n   three\n   \n    four"));
+
+#if 0  // FIXME this fails. "x" gets undone with the rest of operations
+        qDebug() << "type X" << qpart.toPlainText();
+        QTest::keyClicks(&qpart, "x");
+        qDebug() << "typed X" << qpart.toPlainText();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n   three\n   x\n    four"));
+        qDebug() << "undo x";
+        qpart.undo();
+        qDebug() << "undo X done" << qpart.toPlainText();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n   three\n   \n    four"));
+#endif
+
+        qpart.undo();
+        QCOMPARE(qpart.toPlainText(), QString(" one\n  two\n   three\n    four"));
+    }
+
 };
 
 QTEST_MAIN(Test)

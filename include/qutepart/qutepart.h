@@ -336,6 +336,9 @@ public:
     QAction* copyLineAction() const;
     QAction* pasteLineAction() const;
 
+    QAction* insertLineAboveAction() const;
+    QAction* insertLineBelowAction() const;
+
     QAction* joinLinesAction() const;
 
     /// Zoom In the document by scaling fonts
@@ -390,6 +393,9 @@ private:
     void cutLine();
     void copyLine();
     void pasteLine();
+
+    void insertLineAbove();
+    void insertLineBelow();
 
 private slots:
     void updateViewport();
@@ -450,6 +456,9 @@ private:
     QAction* cutLineAction_;
     QAction* copyLineAction_;
     QAction* pasteLineAction_;
+
+    QAction* insertLineAboveAction_;
+    QAction* insertLineBelowAction_;
 
     QAction* joinLinesAction_;
 
