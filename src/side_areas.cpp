@@ -21,22 +21,37 @@ const int MARK_MARGIN = 1;
 
 }
 
-LineNumberArea::LineNumberArea(Qutepart* textEdit):
+SideArea::SideArea(Qutepart *textEdit):
     QWidget(textEdit),
-    textEdit_(textEdit)
+    qpart_(textEdit)
+{
+    connect(textEdit, &Qutepart::updateRequest, this, &SideArea::onTextEditUpdateRequest);
+}
+
+void SideArea::onTextEditUpdateRequest(const QRect &rect, int dy) {
+    if (dy) {
+        scroll(0, dy);
+    } else {
+        update(0, rect.y(), width(), rect.height());
+    }
+
+    if (rect.contains(qpart_->viewport()->rect()))
+        updateWidth();
+}
+
+LineNumberArea::LineNumberArea(Qutepart* textEdit):
+    SideArea(textEdit)
 {
     resize(widthHint(), height());
     connect(textEdit->document(), &QTextDocument::blockCountChanged, this, &LineNumberArea::updateWidth);
     updateWidth();
-
-    connect(textEdit->verticalScrollBar(), &QScrollBar::valueChanged, [this] {this->update();});
 }
 
 int LineNumberArea::widthHint() const {
-    int lines = std::max(1, textEdit_->document()->blockCount());
+    int lines = std::max(1, qpart_->document()->blockCount());
     int digits = QString("%1").arg(lines).length();
 
-    return LEFT_LINE_NUM_MARGIN + textEdit_->fontMetrics().width('9') * digits + RIGHT_LINE_NUM_MARGIN;
+    return LEFT_LINE_NUM_MARGIN + qpart_->fontMetrics().width('9') * digits + RIGHT_LINE_NUM_MARGIN;
 }
 
 void LineNumberArea::updateWidth() {
@@ -54,15 +69,15 @@ void LineNumberArea::paintEvent(QPaintEvent* event) {
     painter.fillRect(event->rect(), palette().color(QPalette::Window));
     painter.setPen(Qt::black);
 
-    QTextBlock block = textEdit_->firstVisibleBlock();
+    QTextBlock block = qpart_->firstVisibleBlock();
     int blockNumber = block.blockNumber();
-    int top = int(textEdit_->blockBoundingGeometry(block).translated(textEdit_->contentOffset()).top());
-    int bottom = top + int(textEdit_->blockBoundingRect(block).height());
-    int singleBlockHeight = textEdit_->cursorRect(block, 0, 0).height();
+    int top = int(qpart_->blockBoundingGeometry(block).translated(qpart_->contentOffset()).top());
+    int bottom = top + int(qpart_->blockBoundingRect(block).height());
+    int singleBlockHeight = qpart_->cursorRect(block, 0, 0).height();
 
-    QRectF boundingRect = textEdit_->blockBoundingRect(block);
+    QRectF boundingRect = qpart_->blockBoundingRect(block);
     int availableWidth = width() - RIGHT_LINE_NUM_MARGIN - LEFT_LINE_NUM_MARGIN;
-    int availableHeight = textEdit_->fontMetrics().height();
+    int availableHeight = qpart_->fontMetrics().height();
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString("%1").arg(blockNumber + 1);
@@ -77,7 +92,7 @@ void LineNumberArea::paintEvent(QPaintEvent* event) {
         }
 
         block = block.next();
-        boundingRect = textEdit_->blockBoundingRect(block);
+        boundingRect = qpart_->blockBoundingRect(block);
         top = bottom;
         bottom = top + int(boundingRect.height());
         blockNumber++;
@@ -91,9 +106,9 @@ void LineNumberArea::changeEvent(QEvent* event) {
 }
 
 
-MarkArea::MarkArea(Qutepart* qpart):
-    QWidget(qpart),
-    qpart_(qpart) {
+MarkArea::MarkArea(Qutepart* textEdit):
+    SideArea(textEdit)
+{
 #if 0
     setMouseTracking(true);
 #endif
@@ -103,8 +118,8 @@ MarkArea::MarkArea(Qutepart* qpart):
     //                      qpart.LINT_WARNING: self._loadIcon('emblem-warning'),
     //                      qpart.LINT_NOTE: self._loadIcon('emblem-information')}
 
-    connect(qpart->document(), &QTextDocument::blockCountChanged, [this] {this->update();});
-    connect(qpart->verticalScrollBar(), &QScrollBar::valueChanged, [this] {this->update();});
+    connect(textEdit->document(), &QTextDocument::blockCountChanged, [this] {this->update();});
+    connect(textEdit->verticalScrollBar(), &QScrollBar::valueChanged, [this] {this->update();});
 }
 
 QPixmap MarkArea::loadIcon(const QString& name) const {
@@ -131,8 +146,8 @@ void MarkArea::paintEvent(QPaintEvent* event) {
 
         if (block.isVisible() && bottom >= event->rect().top()) {
 #if 0
-            if block.blockNumber() in self._qpart.lintMarks:
-                msgType, msgText = self._qpart.lintMarks[block.blockNumber()]
+            if block.blockNumber() in self.qpart_.lintMarks:
+                msgType, msgText = self.qpart_.lintMarks[block.blockNumber()]
                 pixMap = self._lintPixmaps[msgType]
                 yPos = top + ((height - pixMap.height()) / 2)  # centered
                 painter.drawPixmap(0, yPos, pixMap)
@@ -151,9 +166,9 @@ void MarkArea::paintEvent(QPaintEvent* event) {
 
 #if 0  // TODO linter marks
 void MarkArea::mouseMoveEvent(QMouseEvent* event) {
-    blockNumber = self._qpart.cursorForPosition(event.pos()).blockNumber()
-    if blockNumber in self._qpart._lintMarks:
-        msgType, msgText = self._qpart._lintMarks[blockNumber]
+    blockNumber = self.qpart_.cursorForPosition(event.pos()).blockNumber()
+    if blockNumber in self.qpart_._lintMarks:
+        msgType, msgText = self.qpart_._lintMarks[blockNumber]
         QToolTip.showText(event.globalPos(), msgText)
     else:
         QToolTip.hideText()

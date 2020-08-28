@@ -5,7 +5,22 @@ namespace Qutepart {
 
 class Qutepart;
 
-class LineNumberArea: public QWidget {
+class SideArea: public QWidget {
+    Q_OBJECT
+
+public:
+    SideArea(Qutepart *textEdit);
+
+private slots:
+    void onTextEditUpdateRequest(const QRect &rect, int dy);
+
+protected:
+    Qutepart* qpart_;
+
+    virtual void updateWidth() {};
+};
+
+class LineNumberArea: public SideArea {
     Q_OBJECT
 
 public:
@@ -17,18 +32,17 @@ signals:
     void widthChanged();
 
 private slots:
-    void updateWidth();
+    void updateWidth() override;
 
 private:
     void paintEvent(QPaintEvent* event) override;
     void changeEvent(QEvent* event) override;
 
-    Qutepart* textEdit_;
     int desiredWidth_;
 };
 
 
-class MarkArea: public QWidget {
+class MarkArea: public SideArea {
 public:
     MarkArea(Qutepart* qpart);
     int widthHint() const;
@@ -43,7 +57,6 @@ private:
 #endif
 
     QPixmap bookmarkPixmap_;
-    Qutepart* qpart_;
 };
 
 }  // namespace Qutepart
