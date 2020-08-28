@@ -50,8 +50,8 @@ void Language::printDescription(QTextStream& out) const {
     }
 }
 
-void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats) {
-    //qDebug() << "Highlighting: " << block.text();
+int Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange>& formats) {
+    // qDebug() << "Highlighting: " << block.text();
     ContextStack contextStack = getContextStack(block);
 
     TextToMatch textToMatch(block.text(), contextStack.currentData());
@@ -73,6 +73,9 @@ void Language::highlightBlock(QTextBlock block, QVector<QTextLayout::FormatRange
     }
 
     block.setUserData(new TextBlockUserData(textTypeMap, contextStack));
+
+    // Assume that last 32 bits of context address can be used as context ID
+    return *((int*)contextStack.currentContext());
 }
 
 ContextPtr Language::getContext(const QString& name) const {
