@@ -961,7 +961,10 @@ void Qutepart::deleteLine() {
         lines().popAt(i);
     }
 
-    cursor.movePosition(QTextCursor::NextBlock);
+    if (anchorBlock != 0) {
+        cursor.movePosition(QTextCursor::NextBlock);
+    }
+
     setTextCursor(cursor);
 }
 

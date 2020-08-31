@@ -267,15 +267,28 @@ private slots:
         QTest::keyClick(&qpart, Qt::Key_Delete, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("one\nfour"));
         QCOMPARE(qpart.textCursor().block().text(), QString("four"));
+        QCOMPARE(qpart.textCursorPosition().line, 1);
 
         QTest::keyClick(&qpart, Qt::Key_Delete, Qt::AltModifier);
         QCOMPARE(qpart.toPlainText(), QString("one"));
+        QCOMPARE(qpart.textCursorPosition().line, 0);
 
         qpart.undo();
         QCOMPARE(qpart.toPlainText(), QString("one\nfour"));
 
         qpart.undo();
         QCOMPARE(qpart.toPlainText(), QString("one\ntwo\nthree\nfour"));
+    }
+
+    void DeleteFirstLine() {
+        Qutepart::Qutepart qpart(nullptr, "one\ntwo\nthree\nfour");
+
+        QTextCursor cursor = qpart.textCursor();
+
+        QTest::keyClick(&qpart, Qt::Key_Delete, Qt::AltModifier);
+        QCOMPARE(qpart.toPlainText(), QString("two\nthree\nfour"));
+
+        QCOMPARE(qpart.textCursorPosition().line, 0);
     }
 
     void InsertLineAbove() {
