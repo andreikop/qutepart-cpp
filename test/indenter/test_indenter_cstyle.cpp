@@ -740,6 +740,7 @@ private slots:
                 "  public:\n"
                 "    A()\n";
 
+#if 0 // this indentation alogrithm disabled. Not indenting access modifiers
         QTest::newRow("visib2")
             <<  "class A {\n"
                 "  public:\n"
@@ -761,7 +762,7 @@ private slots:
             <<  "class A {\n"
                 "  public:\n"
                 "  protected:\n";
-
+#endif
         QTest::newRow("visib4")
             <<  "class A {\n"
                 "             public:\n"

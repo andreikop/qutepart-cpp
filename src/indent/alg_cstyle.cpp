@@ -20,7 +20,7 @@ const bool CFG_AUTO_INSERT_SLACHES = false;  // auto insert '//' after C++-comme
 /* indent level of access modifiers, relative to the class indent level
    set to -1 to disable auto-indendation after access modifiers.
  */
-const int CFG_ACCESS_MODIFIERS = 1;
+const int CFG_ACCESS_MODIFIERS = -1;
 
 
 void dbg(const QString& text) {
