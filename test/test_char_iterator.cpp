@@ -45,6 +45,20 @@ private slots:
                 <<  1
                 <<  false
                 <<  "htowteno";
+
+        QTest::newRow("with new lines")
+                <<  "{\n    new OpenFileList(mainWindow_, this);\n\n}"
+                <<  0
+                <<  0
+                <<  true
+                <<  "{    new OpenFileList(mainWindow_, this);}";
+
+        QTest::newRow("with new lines backward")
+                <<  "{\n    new OpenFileList(mainWindow_, this);\n\n}"
+                <<  3
+                <<  0
+                <<  false
+                <<  "};)siht ,_wodniWniam(tsiLeliFnepO wen    {";
     }
 
     void DataDrivenTest() {

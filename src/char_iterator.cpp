@@ -38,6 +38,11 @@ void ForwardCharIterator::movePosition() {
             break;
         } else {
             position_.block = position_.block.next();
+
+            while(position_.block.isValid() && position_.block.text().isEmpty()) {
+                position_.block = position_.block.next();
+            }
+
             if ( ! position_.block.isValid()) {
                 break;
             }
