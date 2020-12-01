@@ -139,13 +139,13 @@ void MarkArea::paintEvent(QPaintEvent* event) {
     QTextBlock block = qpart_->firstVisibleBlock();
     QRectF blockBoundingGeometry = qpart_->blockBoundingGeometry(block).translated(qpart_->contentOffset());
     int top = blockBoundingGeometry.top();
-    int bottom = top + blockBoundingGeometry.height();
 
     while (block.isValid() && top <= event->rect().bottom()) {
         int height = qpart_->blockBoundingGeometry(block).height();
+        int bottom = top + height;
 
         if (block.isVisible() && bottom >= event->rect().top()) {
-#if 0
+#if 0 // TODO linter marks
             if block.blockNumber() in self.qpart_.lintMarks:
                 msgType, msgText = self.qpart_.lintMarks[block.blockNumber()]
                 pixMap = self._lintPixmaps[msgType]
