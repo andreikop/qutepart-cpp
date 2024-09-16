@@ -1,3 +1,7 @@
+This fork is no longer maintained. Development continues here:
+
+https://github.com/diegoiast/qutepart-cpp
+
 [![Documentation build](https://readthedocs.org/projects/qutepart-cpp/badge/?version=latest)](https://qutepart-cpp.readthedocs.io/en/latest/)
 
 # Code editor widget for C++/Qt5
